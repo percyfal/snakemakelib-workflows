@@ -6,7 +6,8 @@ from snakemake.report import data_uri
 from snakemake.utils import update_config, set_temporary_output, set_protected_output
 from snakemake_rules import SNAKEMAKE_RULES_PATH
 from snakemakelib.resources import SmlTemplateEnv, css_files
-# from snakemakelib.bio.ngs.targets import generic_target_generator
+from snakemakelib.targets import make_targets
+from snakemakelib.sample.input import initialize_input
 # from snakemakelib.bio.ngs.qc.cutadapt import make_cutadapt_summary_plot
 # from snakemakelib.bio.ngs.qc.qualimap import make_qualimap_plots
 # from snakemakelib.bio.ngs.qc.picard import make_picard_summary_plots
@@ -116,7 +117,7 @@ if config['workflows.bio.atac_seq']['bamfilter']:
 ruleorder: picard_merge_sam > picard_sort_sam 
 ruleorder: picard_sort_sam > picard_add_or_replace_read_groups
 ruleorder: picard_add_or_replace_read_groups > picard_mark_duplicates
-#ruleorder: picard_mark_duplicates > atacseq_correct_coordinates
+ruleorder: picard_mark_duplicates > atacseq_correct_coordinates
 
 # Set temporary and protected outputs
 set_temporary_output(*[workflow.get_rule(x) for x in config['settings']['temporary_rules']])
@@ -128,119 +129,114 @@ if workflow._workdir is None:
 ##############################
 # Targets
 ##############################
-# ALIGN_TARGETS = generic_target_generator(
-#     tgt_re = config['bio.ngs.settings']['sampleorg'].run_id_re, 
-#     src_re = config['bio.ngs.settings']['sampleorg'].raw_run_re, 
-#     target_suffix = ALIGN_TARGET_SUFFIX, 
-#     **config['bio.ngs.settings'])
+config["_samples"] = initialize_input(src_re = config['bio.ngs.settings']['sampleorg'].raw_run_re,
+                                      sampleinfo = config['settings'].get('sampleinfo', None),
+                                      filter_suffix = config['bio.ngs.settings'].get("filter_suffix", ""),
+                                      sample_column_map = config['bio.ngs.settings'].get("sample_column_map", ""))
+_samples = config["_samples"]
+if not config.get("samples", None)  is None:
+    _samples = [s for s in _samples if s["SM"] in config["samples"]]
 
-# MERGE_TARGET_SUFFIX = ".sort.merge.bam"
-# MERGE_TARGETS = generic_target_generator(
-#     tgt_re = config['bio.ngs.settings']['sampleorg'].sample_re, 
-#     src_re = config['bio.ngs.settings']['sampleorg'].raw_run_re, 
-#     target_suffix = MERGE_TARGET_SUFFIX, 
-#     **config['bio.ngs.settings'])
+ALIGN_TARGETS = make_targets(tgt_re = config['bio.ngs.settings']['sampleorg'].run_id_re,
+                             samples = _samples,
+                             target_suffix = ALIGN_TARGET_SUFFIX)
 
-# PREFIX = ".sort.merge.filter" if config['workflows.bio.atac_seq']['bamfilter'] else ".sort.merge"
+MERGE_TARGET_SUFFIX = ".sort.merge.bam"
+MERGE_TARGETS = make_targets(tgt_re = config['bio.ngs.settings']['sampleorg'].run_id_re,
+                             samples = _samples,
+                             target_suffix = MERGE_TARGET_SUFFIX)
 
-# DFILTER_TARGET_SUFFIX = PREFIX + ".offset.dfilt.bed"
-# DFILTER_TARGETS = []
-# if 'dfilter' in config['workflows.bio.atac_seq']['peakcallers']:
-#     DFILTER_TARGETS = generic_target_generator(
-#         tgt_re = config['bio.ngs.settings']['sampleorg'].sample_re, 
-#         src_re = config['bio.ngs.settings']['sampleorg'].raw_run_re, 
-#         target_suffix = DFILTER_TARGET_SUFFIX, 
-#         **config['bio.ngs.settings']) 
 
-# MACS2_TARGET_SUFFIX = PREFIX + ".offset_peaks.xls"
-# MACS2_TARGETS = []
-# if 'macs2' in config['workflows.bio.atac_seq']['peakcallers']:
-#     MACS2_TARGETS = generic_target_generator(
-#         tgt_re = config['bio.ngs.settings']['sampleorg'].sample_re, 
-#         src_re = config['bio.ngs.settings']['sampleorg'].raw_run_re, 
-#         target_suffix = MACS2_TARGET_SUFFIX,  
-#         **config['bio.ngs.settings']) 
+PREFIX = ".sort.merge.filter" if config['workflows.bio.atac_seq']['bamfilter'] else ".sort.merge"
 
-# DUP_METRICS_SUFFIX = ".sort.merge.dup.dup_metrics"
-# DUP_METRICS_TARGETS = generic_target_generator(
-#     tgt_re = config['bio.ngs.settings']['sampleorg'].sample_re, 
-#     target_suffix =  DUP_METRICS_SUFFIX, 
-#     src_re = config['bio.ngs.settings']['sampleorg'].raw_run_re, 
-#     **config['bio.ngs.settings'])
+DFILTER_TARGET_SUFFIX = PREFIX + ".offset.dfilt.bed"
+DFILTER_TARGETS = []
+if 'dfilter' in config['workflows.bio.atac_seq']['peakcallers']:
+    DFILTER_TARGETS = make_targets(tgt_re = config['bio.ngs.settings']['sampleorg'].sample_re,
+                                   target_suffix = DFILTER_TARGET_SUFFIX,
+                                   samples = _samples)
 
-# ALIGN_METRICS_SUFFIX = ".sort.merge.dup.align_metrics"
-# ALIGN_METRICS_TARGETS = generic_target_generator(
-#     tgt_re = config['bio.ngs.settings']['sampleorg'].sample_re, 
-#     target_suffix =  ALIGN_METRICS_SUFFIX, 
-#     src_re = config['bio.ngs.settings']['sampleorg'].raw_run_re, 
-#     **config['bio.ngs.settings'])
+MACS2_TARGET_SUFFIX = PREFIX + ".offset_peaks.xls"
+MACS2_TARGETS = []
+if 'macs2' in config['workflows.bio.atac_seq']['peakcallers']:
+    MACS2_TARGETS = make_targets(tgt_re = config['bio.ngs.settings']['sampleorg'].sample_re, 
+                                 target_suffix = MACS2_TARGET_SUFFIX,
+                                 samples = _samples)
+                                 
+DUP_METRICS_SUFFIX = ".sort.merge.dup.dup_metrics"
+DUP_METRICS_TARGETS = make_targets(tgt_re = config['bio.ngs.settings']['sampleorg'].sample_re, 
+                                   target_suffix =  DUP_METRICS_SUFFIX,
+                                   samples = _samples)
 
-# INSERT_METRICS_SUFFIX = ".sort.merge.dup.insert_metrics"
-# INSERT_METRICS_TARGETS = generic_target_generator(
-#     tgt_re = config['bio.ngs.settings']['sampleorg'].sample_re, 
-#     target_suffix =  INSERT_METRICS_SUFFIX, 
-#     src_re = config['bio.ngs.settings']['sampleorg'].raw_run_re, 
-#     **config['bio.ngs.settings'])
+ALIGN_METRICS_SUFFIX = ".sort.merge.dup.align_metrics"
+ALIGN_METRICS_TARGETS = make_targets(tgt_re = config['bio.ngs.settings']['sampleorg'].sample_re, 
+                                     target_suffix =  ALIGN_METRICS_SUFFIX, 
+                                     samples = _samples)
 
-# REPORT_TARGETS = ["report/atacseq_all_rulegraph.png", "report/atacseq_summary.html"]
+INSERT_METRICS_SUFFIX = ".sort.merge.dup.insert_metrics"
+INSERT_METRICS_TARGETS = make_targets(tgt_re = config['bio.ngs.settings']['sampleorg'].sample_re, 
+                                      target_suffix =  INSERT_METRICS_SUFFIX,
+                                      samples = _samples)
 
-# BIGWIG_TARGETS = [x.replace(".bed", ".bed.wig.bw") for x in DFILTER_TARGETS] +\
-#                  [x.replace("_peaks.xls", "_treat_pileup.bdg.bw") for x in MACS2_TARGETS] +\
-#                  [x.replace("_peaks.xls", "_control_lambda.bdg.bw") for x in MACS2_TARGETS]
+REPORT_TARGETS = ["report/atacseq_all_rulegraph.png", "report/atacseq_summary.html"]
+
+BIGWIG_TARGETS = [x.replace(".bed", ".bed.wig.bw") for x in DFILTER_TARGETS] +\
+                 [x.replace("_peaks.xls", "_treat_pileup.bdg.bw") for x in MACS2_TARGETS] +\
+                 [x.replace("_peaks.xls", "_control_lambda.bdg.bw") for x in MACS2_TARGETS]
 
 # ##############################
 # # Collection rules
 # ##############################
-# rule atacseq_all:
-#     """Run ATAC-seq pipeline"""
-#     input: DFILTER_TARGETS + MACS2_TARGETS + DUP_METRICS_TARGETS + ALIGN_METRICS_TARGETS + INSERT_METRICS_TARGETS + REPORT_TARGETS
+rule atacseq_all:
+    """Run ATAC-seq pipeline"""
+    input: DFILTER_TARGETS + MACS2_TARGETS + DUP_METRICS_TARGETS + ALIGN_METRICS_TARGETS + INSERT_METRICS_TARGETS + REPORT_TARGETS
 
-# rule atacseq_align:
-#     """Run ATAC-seq alignment"""
-#     input: ALIGN_TARGETS
+rule atacseq_align:
+    """Run ATAC-seq alignment"""
+    input: ALIGN_TARGETS
 
-# rule atacseq_merge:
-#     """Run ATAC-seq alignment, duplication removal and merge"""
-#     input: MERGE_TARGETS
+rule atacseq_merge:
+    """Run ATAC-seq alignment, duplication removal and merge"""
+    input: MERGE_TARGETS
 
-# rule atacseq_metrics:
-#     """Run ATAC-seq alignment and corresponding metrics only"""
-#     input: DUP_METRICS_TARGETS + ALIGN_METRICS_TARGETS + INSERT_METRICS_TARGETS
+rule atacseq_metrics:
+    """Run ATAC-seq alignment and corresponding metrics only"""
+    input: DUP_METRICS_TARGETS + ALIGN_METRICS_TARGETS + INSERT_METRICS_TARGETS
 
-# rule atacseq_bigwig:
-#     """Convert peak-calling bed output to bigwig"""
-#     input: BIGWIG_TARGETS
+rule atacseq_bigwig:
+    """Convert peak-calling bed output to bigwig"""
+    input: BIGWIG_TARGETS
 
 
-# ##############################
-# # Specific rules
-# ##############################    
-# rule atacseq_correct_coordinates:
-#     """From Buenrostro paper: 
+##############################
+# Specific rules
+##############################    
+rule atacseq_correct_coordinates:
+    """From Buenrostro paper: 
 
-#     'Previous descriptions of the Tn5 transposase show that the
-#     transposon binds as a dimer and inserts two adaptors separated by
-#     9 bp (ref. 11). Therefore, all reads aligning to the + strand were
-#     offset by +4 bp, and all reads aligning to the – strand were
-#     offset −5 bp'
-#     """
-#     input: bam = "{prefix}.bam"
-#     output: bam = "{prefix}.offset.bam"
-#     run:
-#         # Use pysam to modify input
-#         samfile = pysam.AlignmentFile(input.bam, "rb")
-#         outfile = pysam.AlignmentFile(output.bam, "wb", template=samfile)
-#         for s in samfile:
-#             # Modify s here
-#             if not s.is_unmapped:
-#                 l = samfile.lengths[s.rname]
-#                 if not s.is_reverse:
-#                     s.pos = min(l, s.pos + 4)
-#                     s.pnext = max(0, s.pnext - 5)
-#                 else:
-#                     s.pos = max(0, s.pos - 5)
-#                     s.pnext = min(l, s.pnext + 4)
-#             outfile.write(s)
+    'Previous descriptions of the Tn5 transposase show that the
+    transposon binds as a dimer and inserts two adaptors separated by
+    9 bp (ref. 11). Therefore, all reads aligning to the + strand were
+    offset by +4 bp, and all reads aligning to the – strand were
+    offset −5 bp'
+    """
+    input: bam = "{prefix}.bam"
+    output: bam = "{prefix}.offset.bam"
+    run:
+        # Use pysam to modify input
+        samfile = pysam.AlignmentFile(input.bam, "rb")
+        outfile = pysam.AlignmentFile(output.bam, "wb", template=samfile)
+        for s in samfile:
+            # Modify s here
+            if not s.is_unmapped:
+                l = samfile.lengths[s.rname]
+                if not s.is_reverse:
+                    s.pos = min(l, s.pos + 4)
+                    s.pnext = max(0, s.pnext - 5)
+                else:
+                    s.pos = max(0, s.pos - 5)
+                    s.pnext = min(l, s.pnext + 4)
+            outfile.write(s)
 
 # rule atacseq_report:
 #     """Write report"""
@@ -264,28 +260,28 @@ if workflow._workdir is None:
 #             fh.write(static_html(tp, template_variables=d, css_raw=css_files))
 
                 
-# #
-# # Putative additional data and methods
-# #
-# # Section ATAC-seq insertion size enrichment analysis
-# # No Segmentation data available for current ensembl build ?!? Use old data:
-# # ftp://ftp.ensembl.org/pub/release-73/regulation/homo_sapiens/Segmentation_GM12878.gff.gz
-# #
-# # Section Nucleosome positioning
-# # Danpos, Dantools: https://sites.google.com/site/danposdoc/
-# # 
-# # Section ChIP-seq peak-calling and clustering
-# # ChIP data for 50 antibodies downloaded from
-# # Stanford/Yale/USC/Harvard (SYDH) ENCODE data repository available at the UCSC genome browser:
-# # http://hgdownload.cse.ucsc.edu/goldenPath/hg19/encodeDCC/wgEncodeSydhTfbs/
-# # 
-# # Section Footprinting using CENTIPEDE
+#
+# Putative additional data and methods
+#
+# Section ATAC-seq insertion size enrichment analysis
+# No Segmentation data available for current ensembl build ?!? Use old data:
+# ftp://ftp.ensembl.org/pub/release-73/regulation/homo_sapiens/Segmentation_GM12878.gff.gz
+#
+# Section Nucleosome positioning
+# Danpos, Dantools: https://sites.google.com/site/danposdoc/
+# 
+# Section ChIP-seq peak-calling and clustering
+# ChIP data for 50 antibodies downloaded from
+# Stanford/Yale/USC/Harvard (SYDH) ENCODE data repository available at the UCSC genome browser:
+# http://hgdownload.cse.ucsc.edu/goldenPath/hg19/encodeDCC/wgEncodeSydhTfbs/
+# 
+# Section Footprinting using CENTIPEDE
 
-# # Use motif data from http://compbio.mit.edu/encode-motifs/; most
-# # likely need matches.txt.gz to find genomic regions matching a motif;
-# # the genome-wide set of motifs is in motifs.txt (?).
+# Use motif data from http://compbio.mit.edu/encode-motifs/; most
+# likely need matches.txt.gz to find genomic regions matching a motif;
+# the genome-wide set of motifs is in motifs.txt (?).
 
-# # Other papers
-# # http://journals.plos.org/plosgenetics/article?id=10.1371/journal.pgen.1004994
-# # use macs2 with -g dm –nomodel –shiftsize 50 –q 0.01; however single-end 50bp reads
+# Other papers
+# http://journals.plos.org/plosgenetics/article?id=10.1371/journal.pgen.1004994
+# use macs2 with -g dm –nomodel –shiftsize 50 –q 0.01; however single-end 50bp reads
 
