@@ -18,16 +18,25 @@ from snakemakelib.sample.input import initialize_input
 ##############################
 def _merge_suffix():
     """Determine the merge suffix of the run files"""
-    if config['workflows.bio.atac_seq']['trimadaptor']:
+    if config['workflows.bio.atacseq']['trimadaptor']:
         return ".trimmed.sort.bam"
     else:
         return ".sort.bam"
+
+def _atacseq_picard_merge_sam_input_fn(wildcards):
+    sources = make_targets(tgt_re = config['bio.ngs.settings']['sampleorg'].run_id_re,
+                           samples = _samples,
+                           target_suffix = config['bio.ngs.qc.picard']['merge_sam']['suffix'])
+    m = config['bio.ngs.settings']['sampleorg'].sample_re.parse(wildcards.prefix)
+    sources = [src for src in sources if os.path.dirname(src).startswith(m['PATH'])]
+    return sources
+
 
 ##############################
 # Default configuration settings custom-tailored for ATAC-Seq analysis
 ##############################
 atac_config = {
-    'workflows.bio.atac_seq' : {
+    'workflows.bio.atacseq' : {
         'aligner' : 'bowtie2',
         'peakcallers' : ['dfilter', 'macs2'],
         'trimadaptor' : True,
@@ -39,7 +48,9 @@ atac_config = {
     },
     'bio.ngs.qc.picard' : {
         'merge_sam' : {
+            'label': 'sort.merge',
             'suffix' : '.sort.bam',
+            'inputfun': _atacseq_picard_merge_sam_input_fn,
         },
         'qcrules' : ['picard_collect_insert_size_metrics',
                      'picard_mark_duplicates'],
@@ -81,11 +92,11 @@ update_config(atac_config, config)
 config = atac_config
 
 ALIGN_TARGET_SUFFIX = ".bam"
-if config['workflows.bio.atac_seq']['trimadaptor']:
+if config['workflows.bio.atacseq']['trimadaptor']:
     config['bio.ngs.qc.picard']['merge_sam']['suffix'] = '.trimmed.sort.bam'
     ALIGN_TARGET_SUFFIX = ".trimmed.bam"
 
-aligner = config['workflows.bio.atac_seq']['aligner']
+aligner = config['workflows.bio.atacseq']['aligner']
 key = 'bio.ngs.align.' + aligner
 
 config_default = aligner_config[key]
@@ -104,13 +115,13 @@ include: join(SNAKEMAKE_RULES_PATH, "bio/ngs/db", "ucsc.rules")
 include: join(SNAKEMAKE_RULES_PATH, "bio/ngs/qc", "picard.rules")
 include: join(SNAKEMAKE_RULES_PATH, "bio/ngs/qc", "qualimap.rules")
 include: join(SNAKEMAKE_RULES_PATH, "bio/ngs/chromatin", "danpos.rules")
-if 'dfilter' in config['workflows.bio.atac_seq']['peakcallers']:
+if 'dfilter' in config['workflows.bio.atacseq']['peakcallers']:
     include: join(SNAKEMAKE_RULES_PATH, "bio/ngs/enrichment", "dfilter.rules")
-if 'macs2' in config['workflows.bio.atac_seq']['peakcallers']:
+if 'macs2' in config['workflows.bio.atacseq']['peakcallers']:
     include: join(SNAKEMAKE_RULES_PATH, "bio/ngs/enrichment", "macs2.rules")
-if config['workflows.bio.atac_seq']['trimadaptor']:
+if config['workflows.bio.atacseq']['trimadaptor']:
     include: join(SNAKEMAKE_RULES_PATH, "bio/ngs/qc", "cutadapt.rules")
-if config['workflows.bio.atac_seq']['bamfilter']:
+if config['workflows.bio.atacseq']['bamfilter']:
     include: join(SNAKEMAKE_RULES_PATH, "bio/ngs/tools", "bamtools.rules")
 
     
@@ -146,19 +157,18 @@ MERGE_TARGETS = make_targets(tgt_re = config['bio.ngs.settings']['sampleorg'].ru
                              samples = _samples,
                              target_suffix = MERGE_TARGET_SUFFIX)
 
-
-PREFIX = ".sort.merge.filter" if config['workflows.bio.atac_seq']['bamfilter'] else ".sort.merge"
+PREFIX = ".sort.merge.filter" if config['workflows.bio.atacseq']['bamfilter'] else ".sort.merge"
 
 DFILTER_TARGET_SUFFIX = PREFIX + ".offset.dfilt.bed"
 DFILTER_TARGETS = []
-if 'dfilter' in config['workflows.bio.atac_seq']['peakcallers']:
+if 'dfilter' in config['workflows.bio.atacseq']['peakcallers']:
     DFILTER_TARGETS = make_targets(tgt_re = config['bio.ngs.settings']['sampleorg'].sample_re,
                                    target_suffix = DFILTER_TARGET_SUFFIX,
                                    samples = _samples)
 
 MACS2_TARGET_SUFFIX = PREFIX + ".offset_peaks.xls"
 MACS2_TARGETS = []
-if 'macs2' in config['workflows.bio.atac_seq']['peakcallers']:
+if 'macs2' in config['workflows.bio.atacseq']['peakcallers']:
     MACS2_TARGETS = make_targets(tgt_re = config['bio.ngs.settings']['sampleorg'].sample_re, 
                                  target_suffix = MACS2_TARGET_SUFFIX,
                                  samples = _samples)
@@ -240,7 +250,7 @@ rule atacseq_correct_coordinates:
 
 # rule atacseq_report:
 #     """Write report"""
-#     input: cutadapt = join("{path}", "cutadapt.summary.csv") if config['workflows.bio.atac_seq']['trimadaptor'] else [],
+#     input: cutadapt = join("{path}", "cutadapt.summary.csv") if config['workflows.bio.atacseq']['trimadaptor'] else [],
 #            picard = [("report/picard.sort.merge.dup{sfx}.metrics.csv".format(sfx=sfx), 
 #            "report/picard.sort.merge.dup{sfx}.hist.csv".format(sfx=sfx)) for sfx in [workflow._rules[x].params.suffix for x in config['bio.ngs.qc.picard']['qcrules']]],
 #            qualimap = [join("{path}", "sample{}.qualimap.globals.csv".format(MERGE_TARGET_SUFFIX)),
@@ -250,7 +260,7 @@ rule atacseq_correct_coordinates:
 #     run:
 #         d = {}
 #         tp = SmlTemplateEnv.get_template('workflow_atacseq_qc.html')
-#         if config['workflows.bio.atac_seq']['trimadaptor']:
+#         if config['workflows.bio.atacseq']['trimadaptor']:
 #             d.update({'cutadapt' : make_cutadapt_summary_plot(input.cutadapt)})
 #         d.update({'qualimap' : make_qualimap_plots(*input.qualimap)})
 #         d.update({'picard' : make_picard_summary_plots(input.picard)})
