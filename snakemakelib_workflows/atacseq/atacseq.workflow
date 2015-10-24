@@ -1,17 +1,11 @@
 # -*- snakemake -*-
 from os.path import join
 import pysam
-from bokehutils.publish import static_html
-from snakemake.report import data_uri
 from snakemake.utils import update_config, set_temporary_output, set_protected_output
 from snakemake_rules import SNAKEMAKE_RULES_PATH
-from snakemakelib.resources import SmlTemplateEnv, css_files
 from snakemakelib.targets import make_targets
 from snakemakelib.sample.input import initialize_input
-from snakemakelib_workflows.atacseq import _collect_cutadapt_metrics
-# from snakemakelib.bio.ngs.qc.cutadapt import make_cutadapt_summary_plot
-# from snakemakelib.bio.ngs.qc.qualimap import make_qualimap_plots
-# from snakemakelib.bio.ngs.qc.picard import make_picard_summary_plots
+from snakemakelib_workflows.atacseq import set_protected_output_by_extension, atacseq_summary
 
 # Should be done first of all
 config["_samples"] = initialize_input(src_re = config['bio.ngs.settings']['sampleorg'].raw_run_re,
@@ -136,10 +130,6 @@ ruleorder: picard_sort_sam > picard_add_or_replace_read_groups
 ruleorder: picard_add_or_replace_read_groups > picard_mark_duplicates
 ruleorder: picard_mark_duplicates > atacseq_correct_coordinates
 
-# Set temporary and protected outputs
-set_temporary_output(*[workflow.get_rule(x) for x in config['settings']['temporary_rules']])
-set_protected_output(*[workflow.get_rule(x) for x in config['settings']['protected_rules']])
-
 if workflow._workdir is None:
     raise Exception("no workdir set, or set after include of 'atacseq.workflow'; set workdir before include statement!")
 
@@ -156,7 +146,8 @@ if config['atacseq.workflow']['trimadaptor']:
     TRIM_TARGETS = make_targets(tgt_re = config['bio.ngs.settings']['sampleorg'].run_id_re,
                                 samples = _samples,
                                 target_suffix = ".cutadapt_metrics")
-    
+
+
 ALIGN_TARGETS = make_targets(tgt_re = config['bio.ngs.settings']['sampleorg'].run_id_re,
                              samples = _samples,
                              target_suffix = ALIGN_TARGET_SUFFIX)
@@ -165,6 +156,11 @@ MERGE_TARGET_SUFFIX = ".sort.merge.bam"
 MERGE_TARGETS = make_targets(tgt_re = config['bio.ngs.settings']['sampleorg'].run_id_re,
                              samples = _samples,
                              target_suffix = MERGE_TARGET_SUFFIX)
+
+QUALIMAP_TARGETS = []
+QUALIMAP_TARGETS = make_targets(tgt_re = config['bio.ngs.settings']['sampleorg'].sample_re,
+                                samples = _samples,
+                                target_suffix = MERGE_TARGET_SUFFIX + ".qualimap" + os.sep + 'genome_results.txt')
 
 PREFIX = ".sort.merge.filter" if config['atacseq.workflow']['bamfilter'] else ".sort.merge"
 
@@ -257,31 +253,26 @@ rule atacseq_correct_coordinates:
                     s.pnext = min(l, s.pnext + 4)
             outfile.write(s)
 
+rule atacseq_report:
+    """Write report"""
+    input: cutadapt = TRIM_TARGETS if config['atacseq.workflow']['trimadaptor'] else [],
+           qualimap = QUALIMAP_TARGETS,
+           align_metrics = ALIGN_METRICS_TARGETS,
+           insert_metrics = INSERT_METRICS_TARGETS,
+           dup_metrics = DUP_METRICS_TARGETS,
+           rulegraph = "report/atacseq_all_rulegraph.png"
+    output: html = join("{path}", "atacseq_summary.html")
+    run:
+        atacseq_summary(config, input, output)
 
-_collect_cutadapt_metrics(TRIM_TARGETS, config['bio.ngs.settings']['sampleorg'].run_id_re)
 
-# rule atacseq_report:
-#     """Write report"""
-#     input: cutadapt = join("{path}", "cutadapt.summary.csv") if config['atacseq.workflow']['trimadaptor'] else [],
-#            picard = [("report/picard.sort.merge.dup{sfx}.metrics.csv".format(sfx=sfx), 
-#            "report/picard.sort.merge.dup{sfx}.hist.csv".format(sfx=sfx)) for sfx in [workflow._rules[x].params.suffix for x in config['bio.ngs.qc.picard']['qcrules']]],
-#            qualimap = [join("{path}", "sample{}.qualimap.globals.csv".format(MERGE_TARGET_SUFFIX)),
-#                        join("{path}", "sample{}.qualimap.coverage_per_contig.csv".format(MERGE_TARGET_SUFFIX))],
-#            rulegraph = "report/atacseq_all_rulegraph.png"
-#     output: html = join("{path}", "atacseq_summary.html")
-#     run:
-#         d = {}
-#         tp = SmlTemplateEnv.get_template('workflow_atacseq_qc.html')
-#         if config['atacseq.workflow']['trimadaptor']:
-#             d.update({'cutadapt' : make_cutadapt_summary_plot(input.cutadapt)})
-#         d.update({'qualimap' : make_qualimap_plots(*input.qualimap)})
-#         d.update({'picard' : make_picard_summary_plots(input.picard)})
-#         d.update({'rulegraph' : {'uri' : data_uri(input.rulegraph), 'file' : input.rulegraph, 'fig' : input.rulegraph,
-#                                  'target' : 'atacseq_all'}})
-#         with open(output.html, "w") as fh:
-#             fh.write(static_html(tp, template_variables=d, css_raw=css_files))
+# Set temporary and protected outputs
+set_temporary_output(*[workflow.get_rule(x) for x in config['settings']['temporary_rules']])
+set_protected_output(*[workflow.get_rule(x) for x in config['settings']['protected_rules']])
+set_protected_output_by_extension(*[workflow.get_rule(x) for x in config['settings']['temporary_rules']],
+                                  re_extension = re.compile("(.align_metrics$|.dup_metrics$|.insert_metrics$)"))
 
-                
+
 #
 # Putative additional data and methods
 #
