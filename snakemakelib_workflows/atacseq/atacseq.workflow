@@ -24,10 +24,10 @@ def _merge_suffix():
         return ".sort.bam"
 
 def _atacseq_picard_merge_sam_input_fn(wildcards):
-    sources = make_targets(tgt_re = config['bio.ngs.settings']['sampleorg'].run_id_re,
+    sources = make_targets(tgt_re = config['settings']['sample_organization'].run_id_re,
                            samples = _samples,
                            target_suffix = config['bio.ngs.qc.picard']['merge_sam']['suffix'])
-    m = config['bio.ngs.settings']['sampleorg'].sample_re.parse(wildcards.prefix)
+    m = config['settings']['sample_organization'].sample_re.parse(wildcards.prefix)
     sources = [src for src in sources if os.path.dirname(src).startswith(m['PATH'])]
     return sources
 
@@ -143,22 +143,22 @@ if not config.get("samples", None)  is None:
 
 TRIM_TARGETS = []
 if config['atacseq.workflow']['trimadaptor']:
-    TRIM_TARGETS = make_targets(tgt_re = config['bio.ngs.settings']['sampleorg'].run_id_re,
+    TRIM_TARGETS = make_targets(tgt_re = config['settings']['sample_organization'].run_id_re,
                                 samples = _samples,
                                 target_suffix = ".cutadapt_metrics")
 
 
-ALIGN_TARGETS = make_targets(tgt_re = config['bio.ngs.settings']['sampleorg'].run_id_re,
+ALIGN_TARGETS = make_targets(tgt_re = config['settings']['sample_organization'].run_id_re,
                              samples = _samples,
                              target_suffix = ALIGN_TARGET_SUFFIX)
 
 MERGE_TARGET_SUFFIX = ".sort.merge.bam"
-MERGE_TARGETS = make_targets(tgt_re = config['bio.ngs.settings']['sampleorg'].run_id_re,
+MERGE_TARGETS = make_targets(tgt_re = config['settings']['sample_organization'].run_id_re,
                              samples = _samples,
                              target_suffix = MERGE_TARGET_SUFFIX)
 
 QUALIMAP_TARGETS = []
-QUALIMAP_TARGETS = make_targets(tgt_re = config['bio.ngs.settings']['sampleorg'].sample_re,
+QUALIMAP_TARGETS = make_targets(tgt_re = config['settings']['sample_organization'].sample_re,
                                 samples = _samples,
                                 target_suffix = MERGE_TARGET_SUFFIX + ".qualimap" + os.sep + 'genome_results.txt')
 
@@ -167,29 +167,29 @@ PREFIX = ".sort.merge.filter" if config['atacseq.workflow']['bamfilter'] else ".
 DFILTER_TARGET_SUFFIX = PREFIX + ".offset.dfilt.bed"
 DFILTER_TARGETS = []
 if 'dfilter' in config['atacseq.workflow']['peakcallers']:
-    DFILTER_TARGETS = make_targets(tgt_re = config['bio.ngs.settings']['sampleorg'].sample_re,
+    DFILTER_TARGETS = make_targets(tgt_re = config['settings']['sample_organization'].sample_re,
                                    target_suffix = DFILTER_TARGET_SUFFIX,
                                    samples = _samples)
 
 MACS2_TARGET_SUFFIX = PREFIX + ".offset_peaks.xls"
 MACS2_TARGETS = []
 if 'macs2' in config['atacseq.workflow']['peakcallers']:
-    MACS2_TARGETS = make_targets(tgt_re = config['bio.ngs.settings']['sampleorg'].sample_re, 
+    MACS2_TARGETS = make_targets(tgt_re = config['settings']['sample_organization'].sample_re, 
                                  target_suffix = MACS2_TARGET_SUFFIX,
                                  samples = _samples)
                                  
 DUP_METRICS_SUFFIX = ".sort.merge.dup.dup_metrics"
-DUP_METRICS_TARGETS = make_targets(tgt_re = config['bio.ngs.settings']['sampleorg'].sample_re, 
+DUP_METRICS_TARGETS = make_targets(tgt_re = config['settings']['sample_organization'].sample_re, 
                                    target_suffix =  DUP_METRICS_SUFFIX,
                                    samples = _samples)
 
 ALIGN_METRICS_SUFFIX = ".sort.merge.dup.align_metrics"
-ALIGN_METRICS_TARGETS = make_targets(tgt_re = config['bio.ngs.settings']['sampleorg'].sample_re, 
+ALIGN_METRICS_TARGETS = make_targets(tgt_re = config['settings']['sample_organization'].sample_re, 
                                      target_suffix =  ALIGN_METRICS_SUFFIX, 
                                      samples = _samples)
 
 INSERT_METRICS_SUFFIX = ".sort.merge.dup.insert_metrics"
-INSERT_METRICS_TARGETS = make_targets(tgt_re = config['bio.ngs.settings']['sampleorg'].sample_re, 
+INSERT_METRICS_TARGETS = make_targets(tgt_re = config['settings']['sample_organization'].sample_re, 
                                       target_suffix =  INSERT_METRICS_SUFFIX,
                                       samples = _samples)
 

@@ -105,7 +105,7 @@ def atacseq_summary(config, input, output):
 
     # Cutadapt
     if config['atacseq.workflow']['trimadaptor']:
-        cutadapt_metrics = _collect_cutadapt_metrics(input.cutadapt, config['bio.ngs.settings']['sampleorg'].run_id_re)
+        cutadapt_metrics = _collect_cutadapt_metrics(input.cutadapt, config['settings']['sample_organization'].run_id_re)
         df = cutadapt_metrics.loc[:,:,["Read 1 percent", "Read 2 percent"]].reset_index()
         # FIXME: remove when multiple grouping possible
         df['SampleUnit'] = df['SM'] + "__" + df['PU']
@@ -114,7 +114,7 @@ def atacseq_summary(config, input, output):
                                               title="Cutadapt metrics")}})
 
     # Qualimap
-    qualimap_metrics_dict = _collect_qualimap_metrics(input.qualimap, config['bio.ngs.settings']['sampleorg'].sample_re)
+    qualimap_metrics_dict = _collect_qualimap_metrics(input.qualimap, config['settings']['sample_organization'].sample_re)
     READ_ROWS = ["number of reads",
                  "number of mapped reads",
                  "number of duplicated reads",
@@ -147,8 +147,8 @@ def atacseq_summary(config, input, output):
     d.update({'qualimap' : {'fig':{'globals': gridplot([[p1, p2]]), 'coverage_per_contig': gp}}})
 
     # Picard
-    align_metrics, _ = _collect_picard_metrics(input.align_metrics, config['bio.ngs.settings']['sampleorg'].sample_re)
-    insert_metrics, insert_hist = _collect_picard_metrics(input.insert_metrics, config['bio.ngs.settings']['sampleorg'].sample_re)
+    align_metrics, _ = _collect_picard_metrics(input.align_metrics, config['settings']['sample_organization'].sample_re)
+    insert_metrics, insert_hist = _collect_picard_metrics(input.insert_metrics, config['settings']['sample_organization'].sample_re)
 
     # Insert metrics
     i1 = Scatter(insert_metrics, x="SM", y="MEAN_INSERT_SIZE",
@@ -169,7 +169,7 @@ def atacseq_summary(config, input, output):
     d.update({'picard': {'InsertMetrics': {'atacseq' : {'fig': gp}}}})
     
     # Duplication metrics
-    dup_metrics, dup_hist = _collect_picard_metrics(input.dup_metrics, config['bio.ngs.settings']['sampleorg'].sample_re)
+    dup_metrics, dup_hist = _collect_picard_metrics(input.dup_metrics, config['settings']['sample_organization'].sample_re)
     dup_metrics["PERCENT_DUPLICATION"] = 100.0 * dup_metrics["PERCENT_DUPLICATION"]
     d1 = Scatter(dup_metrics, x="SM", y="PERCENT_DUPLICATION",
                  legend="top_right",
