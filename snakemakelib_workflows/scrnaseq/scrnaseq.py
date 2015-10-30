@@ -27,8 +27,12 @@ loader = jinja2.FileSystemLoader([SNAKEMAKELIB_TEMPLATES_PATH,
                                   SNAKEMAKELIB_WORKFLOWS_TEMPLATES_PATH])
 Env = jinja2.Environment(loader=loader)
 
+
 def _collect_alignment_metrics(targets, parser):
-    """Collect alignment metrics"""
+    """Collect alignment metrics
+
+    FIXME: move to snakemakelib-core
+    """
     def _add_rows(df):
         df.loc['mismatch_sum', :] = df.loc['Mismatch rate per base, %',:].copy()
         df.loc['mismatch_sum', "value"] = df.loc['Mismatch rate per base, %', "value"]   + df.loc['Deletion rate per base', "value"] + df.loc['Insertion rate per base', "value"]
@@ -40,8 +44,12 @@ def _collect_alignment_metrics(targets, parser):
     df_long = pd.concat(dflist)
     return df_long
 
+
 def _collect_rseqc_metrics(read_distribution, gene_body_coverage, parser):
-    """Collect rseqc metrics"""
+    """Collect rseqc metrics
+
+    FIXME: move to snakemakelib-core
+    """
     def _add_gbc_rows(df):
         df['three_prime_map'] = 100.0 * df.loc[:, "91":"100"].sum(axis=1) / df.loc[:, "1":"100"].sum(axis=1)
         return df
@@ -57,10 +65,32 @@ def _collect_rseqc_metrics(read_distribution, gene_body_coverage, parser):
     return {"read_distribution": rd, "gene_body_coverage": gbc}
 
 
+def _save_align_rseqc_metrics(config, input, output):
+    align_metrics = _collect_alignment_metrics(
+        input.align_log,
+        config['settings']['sample_organization'].run_id_re
+    )
+    rseqc_metrics = _collect_rseqc_metrics(
+        input.rseqc_read_distribution,
+        input.rseqc_gene_body_coverage,
+        config['settings']['sample_organization'].sample_re
+    )
+    # Removing datetimes for now; try pandas (odo?) coerce_datetimes
+    df = align_metrics.drop(align_metrics.index[[0,1,2]]).reset_index()
+    df["value"] = pd.to_numeric(df["value"])
+    df = df.pivot_table(values="value", index="SM", columns="name")
+    df = df.join(rseqc_metrics["read_distribution"].reset_index().pivot_table(columns="Group", values="Tag_count", index="SM"))
+    df = df.join(rseqc_metrics["gene_body_coverage"])
+    # Remember: ColumnDataSource column names cannot include spaces or %
+    df.columns = [x.replace(" ", "_").replace("%", "PCT") for x in df.columns]
+    df.to_csv(output.csv)
+
+    
 def _dotplot(**kwargs):
     """Make a dotplot figure. 
 
     FIXME: still depends on bokehutils
+    FIXME: make wrapper function in snakemakelib/plot/bokeh
     """
     kwfig = kwargs.pop('kwfig', {})
     kwxaxis = kwargs.pop('kwxaxis', {})
@@ -74,15 +104,10 @@ def _dotplot(**kwargs):
     yaxis(fig, **kwyaxis)
     return fig
 
-def _align_rseqc_plot(align_metrics, rseqc_metrics, outfile):
-    df = align_metrics.drop(align_metrics.index[[0,1,2]]).reset_index()
-    df["value"] = pd.to_numeric(df["value"])
-    df = df.pivot_table(values="value", index="SM", columns="name")
-    df = df.join(rseqc_metrics["read_distribution"].reset_index().pivot_table(columns="Group", values="Tag_count", index="SM"))
-    df = df.join(rseqc_metrics["gene_body_coverage"])
-    # Remember: ColumnDataSource column names cannot include spaces or %
-    df.columns = [x.replace(" ", "_").replace("%", "PCT") for x in df.columns]
-    df.to_csv(outfile)
+
+def _align_rseqc_plot(infile):
+    df = pd.read_csv(infile)
+    df = df.set_index("SM")
     source = ColumnDataSource(df)
     columns = [
         TableColumn(field="SM", title="Sample"),
@@ -200,41 +225,38 @@ def _align_rseqc_plot(align_metrics, rseqc_metrics, outfile):
 
     return {'fig': gridplot([[p1, p2, p3], [p4, p5, p6], [p7]]), 'table': table}
 
+
 def scrnaseq_qc(config, input, output):
     """Do QC of scrnaseq"""
-    align_metrics = _collect_alignment_metrics(
-        input.align_log,
-        config['settings']['sample_organization'].run_id_re
-    )
-    rseqc_metrics = _collect_rseqc_metrics(
-        input.rseqc_read_distribution,
-        input.rseqc_gene_body_coverage,
-        config['settings']['sample_organization'].sample_re
-    )
-    
     # Alignment stats
-    d = {'align': _align_rseqc_plot(align_metrics, rseqc_metrics, output.alignqc)}
+    d = {'align': _align_rseqc_plot(input.alignqc)}
 
     # rsem plots
     if input.rsemgenes:
         d.update({'rsem': plot_pca(input.rsemgenespca,
-                                  config['workflows.bio.scrnaseq']['metadata'],
+                                   config['workflows.bio.scrnaseq']['metadata'],
                                    input.rsemgenespca.replace(".pca.csv", ".pcaobj.pickle"))})
 
     # rpkmforgenes plots
     if input.rpkmforgenes:
         d.update({'rpkmforgenes': plot_pca(input.rpkmforgenespca,
-                                  config['workflows.bio.scrnaseq']['metadata'],
-                                   input.rpkmforgenespca.replace(".pca.csv", ".pcaobj.pickle"))})
+                                           config['workflows.bio.scrnaseq']['metadata'],
+                                           input.rpkmforgenespca.replace(".pca.csv", ".pcaobj.pickle"))})
 
     
     d.update({'version' : config['_version'], 'config' : {'uri' : data_uri(input.globalconf), 'file' : input.globalconf}})
+    d.update({'rulegraph': {'fig': input.rulegraph, 'uri': data_uri(input.rulegraph),
+                            'target': 'scrnaseq_all'}})
     tp = Env.get_template('workflow_scrnaseq_qc.html')
     with open(output.html, "w") as fh:
         fh.write(static_html(tp, template_variables=d, css_raw=css_files, js_raw=js_files))
 
 
 def scrnaseq_pca(config, input, output):
+    """Run pca on expression values
+    
+    FIXME: generic enough to put in snakemakelib-core?
+    """
     expr_long = pd.read_csv(input.expr)
     expr_long["TPM"] = [math.log2(x+1.0) for x in expr_long["TPM"]]
     expr = expr_long.pivot_table(columns="gene_id", values="TPM",

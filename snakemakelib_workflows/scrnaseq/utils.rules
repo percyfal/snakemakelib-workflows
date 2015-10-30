@@ -1,10 +1,13 @@
 # -*- snakemake -*-
+import re
 import pandas as pd
-from snakemakelib.applications.rnaseq import summarize_expression_data
-from snakemakelib.plot.sklearn import plot_pca
-from snakemakelib_workflows.scrnaseq import scrnaseq_pca
+from snakemakelib.applications import summarize_expression_data
+from snakemakelib_workflows.scrnaseq import scrnaseq_pca, scrnaseq_qc, _save_align_rseqc_metrics
 
+
+##############################
 # Additional merge rule for transcript alignment files
+##############################
 rule scrnaseq_picard_merge_sam_transcript:
     """scrnaseq picard: merge sam files from transcript alignments.
 
@@ -87,6 +90,17 @@ rule rpkmforgenes_summarize_expression_data:
         summarize_expression_data(input, output.csv,
                                   config['settings']['sample_organization'].sample_re)
 
+
+rule save_align_rseqc_data:
+    """Save joint alignment and rseqc data"""
+    input: align_log = ALIGN_LOG_TARGETS,
+           rseqc_read_distribution = RSEQC_READ_DISTRIBUTION,
+           rseqc_gene_body_coverage = RSEQC_GENE_BODY_COVERAGE
+    output: csv = "{prefix}align_rseqc.csv"
+    run:
+        _save_align_rseqc_metrics(config, input, output)
+
+
 ##############################
 # QC - create html report
 ##############################
@@ -95,24 +109,54 @@ pcacsv = "{annot}.pca.csv".format(annot=annotationstring)
 
 rule scrnaseq_qc:
     """Perform basic qc on samples. First qc summary report"""
-    input: align_log = ALIGN_LOG_TARGETS,
-           rseqc_read_distribution = RSEQC_READ_DISTRIBUTION,
-           rseqc_gene_body_coverage = RSEQC_GENE_BODY_COVERAGE,
-           rpkmforgenes = RPKMFORGENES_TARGETS,
+    input: alignqc = join("{path}", "align_rseqc.csv"),
+           rpkmforgenes = join("{path}", "rpkmforgenes.merge" + csv) if 'rpkmforgenes' in config['workflows.bio.scrnaseq']['quantification'] else [],
            rpkmforgenespca = join("{path}", "rpkmforgenes.merge" + pcacsv) if 'rpkmforgenes' in config['workflows.bio.scrnaseq']['quantification'] else [],
-           rsem = RSEM_TARGETS,
            rsemgenes = join("{path}", "rsem.merge.tx.genes" + csv) if 'rsem' in config['workflows.bio.scrnaseq']['quantification'] else [],
            rsemisoforms = join("{path}", "rsem.merge.tx.isoforms" + csv) if 'rsem' in config['workflows.bio.scrnaseq']['quantification'] else [],
            rsemgenespca = join("{path}", "rsem.merge.tx.genes" + pcacsv) if 'rsem' in config['workflows.bio.scrnaseq']['quantification'] else [],
            rulegraph = join("{path}", "scrnaseq_all_rulegraph.png"),
            globalconf = join("{path}", "smlconf_global.yaml")
-    output: html = join("{path}", "scrnaseq_summary.html"),
-            alignqc = join("{path}", "align_rseqc.csv")
+    output: html = join("{path}", "scrnaseq_summary.html")
     run:
         scrnaseq_qc(config, input, output)
 
-rule test_qc:
-    input: join("{path}", "align_rseqc.csv")
-    output: "tabort.txt"
+
+
+##############################
+# Test rules
+##############################
+rule brenecke:
+    input: csv = "report_single_cell/rpkmforgenes.merge.annotated.csv"
     run:
-        pass
+        from snakemakelib.applications import ScrnaseqTechnicalNoise
+        df_raw = pd.read_csv(input.csv, index_col=0, nrows=79306)
+        df_raw = df_raw.set_index(["SM", "gene_id", "transcript_id", "gene_name"])
+        # Normalize reads for genes and spikeins
+        df = df_raw["TPM"].unstack(level="SM")
+
+        # Partition data set inte genes and spikeins
+        i_spikes = df.index.map(lambda s: bool(re.search("^ERCC", s[0])))
+        test = ScrnaseqTechnicalNoise(df[~i_spikes], df[i_spikes])
+        test.fit()
+        print(test.coefficients)
+        print(test._fitted_data.head())
+        # # Fit the model
+        # scrnaseq_brenecke_technical_noise(df[~i_spikes], df[i_spikes])
+        # #scrnaseq_brenecke_plot(df, spikein_re=re.compile(r"^ERCC"))
+        # f = figure()
+        # df = pd.DataFrame({'x': [1,2,3], 'y': [1,2,4]})
+        # source = ColumnDataSource(df)
+        # print(source)
+
+        # f.circle('x', 'y', source=source)
+        # print(dir(f))
+
+        from bokeh.plotting import output_file, show
+        from snakemakelib.graphics.regressionplots import plot_regression
+        from snakemakelib.graphics import scatter
+        
+        # output_file("tabort.html")
+        # fig = plot_regression("cv2", "normalized mean", test._fitted_data.dropna())
+        # show(fig)
+
