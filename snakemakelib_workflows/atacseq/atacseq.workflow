@@ -8,7 +8,7 @@ from snakemakelib.sample.input import initialize_input
 from snakemakelib_workflows.atacseq import set_protected_output_by_extension, atacseq_summary
 
 # Should be done first of all
-config["_samples"] = initialize_input(src_re = config['bio.ngs.settings']['sampleorg'].raw_run_re,
+config["_samples"] = initialize_input(src_re = config['settings']['sample_organization'].raw_run_re,
                                       sampleinfo = config['settings'].get('sampleinfo', None),
                                       filter_suffix = config['bio.ngs.settings'].get("filter_suffix", ""),
                                       sample_column_map = config['bio.ngs.settings'].get("sample_column_map", ""))
