@@ -1,7 +1,7 @@
 # -*- snakemake -*-
 import re
 import pandas as pd
-from snakemakelib.applications import summarize_expression_data
+from snakemakelib.applications import summarize_expression_data, scrnaseq_brenecke_plot
 from snakemakelib_workflows.scrnaseq import scrnaseq_pca, scrnaseq_qc, _save_align_rseqc_metrics
 
 
@@ -129,34 +129,4 @@ rule scrnaseq_qc:
 rule brenecke:
     input: csv = "report_single_cell/rpkmforgenes.merge.annotated.csv"
     run:
-        from snakemakelib.applications import ScrnaseqTechnicalNoise
-        df_raw = pd.read_csv(input.csv, index_col=0, nrows=79306)
-        df_raw = df_raw.set_index(["SM", "gene_id", "transcript_id", "gene_name"])
-        # Normalize reads for genes and spikeins
-        df = df_raw["TPM"].unstack(level="SM")
-
-        # Partition data set inte genes and spikeins
-        i_spikes = df.index.map(lambda s: bool(re.search("^ERCC", s[0])))
-        test = ScrnaseqTechnicalNoise(df[~i_spikes], df[i_spikes])
-        test.fit()
-        print(test.coefficients)
-        print(test._fitted_data.head())
-        # # Fit the model
-        # scrnaseq_brenecke_technical_noise(df[~i_spikes], df[i_spikes])
-        # #scrnaseq_brenecke_plot(df, spikein_re=re.compile(r"^ERCC"))
-        # f = figure()
-        # df = pd.DataFrame({'x': [1,2,3], 'y': [1,2,4]})
-        # source = ColumnDataSource(df)
-        # print(source)
-
-        # f.circle('x', 'y', source=source)
-        # print(dir(f))
-
-        from bokeh.plotting import output_file, show
-        from snakemakelib.graphics.regressionplots import plot_regression
-        from snakemakelib.graphics import scatter
-        
-        # output_file("tabort.html")
-        # fig = plot_regression("cv2", "normalized mean", test._fitted_data.dropna())
-        # show(fig)
-
+        scrnaseq_brenecke_plot(infile)
