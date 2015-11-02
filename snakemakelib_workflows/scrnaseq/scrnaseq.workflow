@@ -61,6 +61,7 @@ config_default = {
         'metadata' : None, ## Sample metadata
         'report' : {
             'directory' : 'report',
+            'annotation_url' : None,
         },
     },
     'bio.ngs.settings' : {

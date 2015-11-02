@@ -1,22 +1,29 @@
 <!-- -*- jinja2 -*- -->
 {% if rsem is defined %}
-<h3>rsem summary</h3>
-
-Gene expression quantified by rsem.
-
-<figure>
-  {{ rsem['pca']['div']|indent(8) }}
-  <figcaption>rsem summary plots. If present, click on any select
-    button to highlight the pca plot. Categorical variables will be
-    colored, numerical variables will change the size of the dots.
-    The number of detected genes are based on FPKM values > 1.0.
-  </figcaption>
-</figure>
-{% if rsem.spikein %} 
-  <figure> 
-    {{ rsem['spikein']['div'] | indent(8) }} 
-  </figure> 
-{% endif %} 
-
-
+  <h3>rsem summary</h3>
+  
+  Gene expression quantified by rsem.
+  
+  <figure>
+    {{ rsem['pca']['div']|indent(8) }}
+    <figcaption>rsem summary plots. If present, click on any select
+      button to highlight the pca plot. Categorical variables will be
+      colored, numerical variables will change the size of the dots.
+      The number of detected genes are based on FPKM values > 1.0.
+    </figcaption>
+  </figure>
+  {% if rsem.spikein %} 
+    <figure> 
+      {{ rsem['spikein']['div'] | indent(8) }} 
+    </figure> 
+  {% endif %} 
+  {% if rsem.brennecke %} 
+    <figure> 
+      {{ rsem['brennecke']['div'] | indent(8) }}
+      <figcaption>Brennecke noise plot for scrnaseq. See
+	http://www.ncbi.nlm.nih.gov/pubmed/24056876 for more
+	information.
+    </figcaption>
+    </figure> 
+  {% endif %}
 {% endif %}

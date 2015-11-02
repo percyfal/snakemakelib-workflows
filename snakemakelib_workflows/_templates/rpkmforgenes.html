@@ -17,5 +17,16 @@
     <figure> 
       {{ rpkmforgenes['spikein']['div'] | indent(8) }} 
     </figure> 
-  {% endif %} 
+  {% endif %}
+
+  {% if rpkmforgenes.brennecke %} 
+    <figure> 
+      {{ rpkmforgenes['brennecke']['div'] | indent(8) }}
+      <figcaption>Brennecke noise plot for scrnaseq. See
+      http://www.ncbi.nlm.nih.gov/pubmed/24056876 for more
+      information.
+    </figcaption>
+    </figure> 
+  {% endif %}
+  
 {% endif %}

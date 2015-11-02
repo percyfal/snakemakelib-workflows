@@ -29,14 +29,20 @@
       {{ rpkmforgenes['pca']['script'] | indent(8) }} 
       {% if rpkmforgenes.spikein %} 
       	{{ rpkmforgenes['spikein']['script'] }} 
-      {% endif %} 
+      {% endif %}
+      {% if rpkmforgenes.brennecke %}
+      	{{ rpkmforgenes['brennecke']['script'] }} 
+      {% endif %}
     {% endif %}
     
     {% if rsem is defined %}
       {{ rsem['pca']['script'] | indent(8) }} 
       {% if rsem.spikein %} 
       	{{ rsem['spikein']['script'] }} 
-      {% endif %} 
+      {% endif %}
+      {% if rsem.brennecke %}
+      	{{ rsem['brennecke']['script'] }} 
+      {% endif %}
     {% endif %}
     
   </head>

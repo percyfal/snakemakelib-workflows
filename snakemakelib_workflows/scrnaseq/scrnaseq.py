@@ -1,4 +1,5 @@
 # Copyright (C) 2015 by Per Unneberg
+import re
 import math
 import pandas as pd
 import jinja2
@@ -18,7 +19,7 @@ from bokehutils.geom import dotplot, points
 from bokehutils.tools import tooltips
 from snakemakelib.plot.sklearn import plot_pca
 from snakemakelib.statistics import pca, pca_results
-from snakemakelib.applications.rnaseq import  number_of_detected_genes
+from snakemakelib.applications import number_of_detected_genes, scrnaseq_brennecke_plot
 
 DEFAULT_TOOLS = "pan,wheel_zoom,box_zoom,box_select,lasso_select,resize,reset,save,hover"
 
@@ -228,21 +229,28 @@ def _align_rseqc_plot(infile):
 
 def scrnaseq_qc(config, input, output):
     """Do QC of scrnaseq"""
+    # Brennecke args
+    brennecke_args = {'plot_height':600, 'plot_width': 800, 'alpha':
+                      0.3, 'taptool_url': config['workflows.bio.scrnaseq']['report']['annotation_url'] + "@gene_id"}
     # Alignment stats
     d = {'align': _align_rseqc_plot(input.alignqc)}
-
     # rsem plots
     if input.rsemgenes:
         d.update({'rsem': plot_pca(input.rsemgenespca,
                                    config['workflows.bio.scrnaseq']['metadata'],
                                    input.rsemgenespca.replace(".pca.csv", ".pcaobj.pickle"))})
+        # FIXME: Instead of re use list
+        d['rsem'].update({'brennecke': scrnaseq_brennecke_plot(infile=input.rsemgenes, spikein_re=re.compile("^ERCC"),
+                                                               index=["SM", "gene_id", "transcript_id(s)", "gene_name"],
+                                                               **brennecke_args)})
 
     # rpkmforgenes plots
     if input.rpkmforgenes:
         d.update({'rpkmforgenes': plot_pca(input.rpkmforgenespca,
                                            config['workflows.bio.scrnaseq']['metadata'],
                                            input.rpkmforgenespca.replace(".pca.csv", ".pcaobj.pickle"))})
-
+        d['rpkmforgenes'].update({'brennecke': scrnaseq_brennecke_plot(infile=input.rpkmforgenes, spikein_re=re.compile("^ERCC"),
+                                                                       **brennecke_args)})
     
     d.update({'version' : config['_version'], 'config' : {'uri' : data_uri(input.globalconf), 'file' : input.globalconf}})
     d.update({'rulegraph': {'fig': input.rulegraph, 'uri': data_uri(input.rulegraph),

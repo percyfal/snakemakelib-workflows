@@ -1,7 +1,7 @@
 # -*- snakemake -*-
 import re
 import pandas as pd
-from snakemakelib.applications import summarize_expression_data, scrnaseq_brenecke_plot
+from snakemakelib.applications import summarize_expression_data
 from snakemakelib_workflows.scrnaseq import scrnaseq_pca, scrnaseq_qc, _save_align_rseqc_metrics
 
 
@@ -120,13 +120,3 @@ rule scrnaseq_qc:
     output: html = join("{path}", "scrnaseq_summary.html")
     run:
         scrnaseq_qc(config, input, output)
-
-
-
-##############################
-# Test rules
-##############################
-rule brenecke:
-    input: csv = "report_single_cell/rpkmforgenes.merge.annotated.csv"
-    run:
-        scrnaseq_brenecke_plot(infile)
