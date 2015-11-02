@@ -69,11 +69,11 @@ rule annotate_expression_data:
 def _rsem_merge_targets(wildcards):
     return make_targets(tgt_re = config['settings']['sample_organization'].sample_re,
                         samples = _samples,
-                        target_suffix = ".".join(["", wildcards.label, wildcards.type]) + '.results')
+                        target_suffix = "".join(["", wildcards.label, wildcards.type]) + '.results')
 
 rule rsem_summarize_expression_data:
     input: _rsem_merge_targets
-    output: csv = "{prefix}rsem.{label}{type,(\.genes|\.isoforms)}.csv"
+    output: csv = "{prefix}rsem{label}{type,(\.genes|\.isoforms)}.csv"
     run:
         summarize_expression_data(input, output.csv,
                                   config['settings']['sample_organization'].sample_re)
