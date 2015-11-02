@@ -159,7 +159,6 @@ if 'rsem' in config['workflows.bio.scrnaseq']['quantification']:
 
 REPORT=config['workflows.bio.scrnaseq']['report']['directory']
 REPORT_TARGETS = ['{report}/scrnaseq_summary.html'.format(report=REPORT)] +\
-                 ['{report}/star.Aligned.out.csv'.format(report=REPORT)] +\
                  ['{report}/rpkmforgenes.merge{annot}.csv'.format(report=REPORT, annot=annotationstring)] +\
                  ['{report}/rsem.merge.tx.genes{annot}.csv'.format(report=REPORT, annot=annotationstring),
                   '{report}/rsem.merge.tx.isoforms{annot}.csv'.format(report=REPORT, annot=annotationstring)]
