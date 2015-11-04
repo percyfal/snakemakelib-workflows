@@ -34,6 +34,7 @@ rule scrnaseq_pca:
     input: expr = "{prefix}.csv",
            annotation = config['bio.ngs.settings']['annotation']['transcript_annot_gtf'] if config['bio.ngs.settings']['annotation']['transcript_annot_gtf'] else []
     output: pca = "{prefix}.pca.csv",
+            pca = "{prefix}.pca.loadings.csv",
             pcaobj = "{prefix}.pcaobj.pickle"
     run:
         scrnaseq_pca(config, input, output)

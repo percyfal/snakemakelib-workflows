@@ -271,11 +271,13 @@ def scrnaseq_pca(config, input, output):
                                  index="SM")
     detected_genes = number_of_detected_genes(input.expr)
     pcaobj = pca(expr)
-    pcares = pca_results(pcaobj, expr, metadata=config['workflows.bio.scrnaseq']['metadata'])
+    pcares, loadings = pca_results(pcaobj, expr, metadata=config['workflows.bio.scrnaseq']['metadata'])
     if not detected_genes is None:
         pcares = pcares.join(detected_genes)
     with open(output.pca, "w") as fh:
         pcares.to_csv(fh)
+    with open(output.loadings, "w") as fh:
+        loadings.to_csv(fh)
     with open(output.pcaobj, "wb") as fh:
         pickle.dump(pcaobj, fh)
 
