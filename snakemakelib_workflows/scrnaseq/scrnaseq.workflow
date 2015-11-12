@@ -2,7 +2,7 @@
 import shutil
 import os
 import math
-from os.path import join, dirname, relpath, exists
+from os.path import join, dirname, relpath, exists, basename
 import pickle
 from snakemake.utils import update_config, set_temporary_output, set_protected_output
 from snakemake.workflow import workflow
@@ -15,20 +15,28 @@ from snakemakelib.bio.ngs.rnaseq.utils import read_gene_expression
 # Should be done first of all
 config["_samples"] = initialize_input(src_re = config['settings']['sample_organization'].raw_run_re,
                                       sampleinfo = config['settings'].get('sampleinfo', None),
+                                      metadata = config['settings'].get('metadata', None),
+                                      metadata_filter = config['settings'].get('metadata_filter', None),
                                       filter_suffix = config['bio.ngs.settings'].get("filter_suffix", ""),
                                       sample_column_map = config['bio.ngs.settings'].get("sample_column_map", ""))
 
-def _merge_tx_suffix(aligner):
+def _merge_suffix(aligner):
     align_config = config['bio.ngs.align.' + aligner]
     if aligner == "star":
-        return ".Aligned.toTranscriptome.out_unique.bam"
+        return ".Aligned.out_unique.bam"
+
+# FIXME: currently only checking in the case of rsem; only necessary case?
+def _merge_tx_suffix(aligner):
+    align_config = config['bio.ngs.align.' + aligner]
+    tx_string = "" if config['bio.ngs.rnaseq.rsem']['index_is_transcriptome'] else ".toTranscriptome"
+    if aligner == "star":
+        return ".Aligned{tx}.out_unique.bam".format(tx=tx_string)
 
 def _find_transcript_bam(wildcards):
-    sources = make_targets(tgt_re=config['settings']['sample_organization'].run_id_re,
-                           samples = _samples,
-                           target_suffix = _merge_tx_suffix(config['bio.ngs.settings']['aligner']))
     m = config['settings']['sample_organization'].sample_re.parse(wildcards.prefix)
-    sources = [src for src in sources if os.path.dirname(src).startswith(m['PATH'])]
+    sources = make_targets(tgt_re=config['settings']['sample_organization'].run_id_re,
+                           samples = [s for s in _samples if s["SM"]==m["SM"]],
+                           target_suffix = _merge_tx_suffix(config['bio.ngs.settings']['aligner']))
     return sources
 
 def find_scrnaseq_merge_inputs(wildcards):
@@ -37,11 +45,10 @@ def find_scrnaseq_merge_inputs(wildcards):
 
     NB: these are *not* the transcript-specific alignment files.
     """
-    sources = make_targets(tgt_re = config['settings']['sample_organization'].run_id_re,
-                           samples = _samples,
-                           target_suffix = config['bio.ngs.settings']['aligner'])
     m = config['settings']['sample_organization'].sample_re.parse(wildcards.prefix)
-    sources = [src for src in sources if os.path.dirname(src).startswith(m['PATH'])]
+    sources = make_targets(tgt_re = config['settings']['sample_organization'].run_id_re,
+                           samples = [s for s in _samples if s["SM"]==m["SM"]],
+                           target_suffix = _merge_suffix(config['bio.ngs.settings']['aligner']))
     return sources
 
 
@@ -75,7 +82,7 @@ config_default = {
         },
     },
     'bio.ngs.qc.rseqc' : {
-        'rules' : ['rseqc_qc_8'],
+        'rules' : ['rseqc_qc'],
     },
     'bio.ngs.rnaseq.rpkmforgenes' : {
         'rules' : ['rpkmforgenes_from_bam'],
@@ -119,15 +126,16 @@ if workflow._workdir is None:
 set_temporary_output(*[workflow.get_rule(x) for x in config['settings']['temporary_rules']])
 set_protected_output(*[workflow.get_rule(x) for x in config['settings']['protected_rules']])
 
-if config['bio.ngs.settings']['annotation']['transcript_annot_gtf']:
-    annotationstring = ".annotated"
+annotationstring = ".annotated" if config['bio.ngs.settings']['annotation']['transcript_annot_gtf'] else ""
 ##################################################
 # Target definitions
 ##################################################
 _samples = config["_samples"]
-if not config.get("samples", None)  is None:
-    # FIXME: samples should always be strings
+if not len(config.get("samples", [])) == 0:
     _samples = [s for s in _samples if s["SM"] in config["samples"]]
+
+REPORT=config['workflows.bio.scrnaseq']['report']['directory']
+REPORT_TARGETS = ['{report}/scrnaseq_summary.html'.format(report=REPORT)]
 
 ALIGN_TARGETS = make_targets(tgt_re = config['settings']['sample_organization'].run_id_re,
                                 samples = _samples,
@@ -141,28 +149,27 @@ UNIQUE_TARGETS = [x.replace(".bam", "_unique.bam") for x in ALIGN_TARGETS]
 
 RSEQC_TARGETS = make_targets(tgt_re = config['settings']['sample_organization'].sample_re,
                                 samples = _samples,
-                                target_suffix = '.merge_rseqc/rseqc_qc_8.txt')
-RSEQC_GENE_BODY_COVERAGE = [x.replace("rseqc_qc_8.txt", "geneBody_coverage.geneBodyCoverage.txt") for x in RSEQC_TARGETS]
-RSEQC_READ_DISTRIBUTION = [x.replace("rseqc_qc_8.txt", "read_distribution.txt") for x in RSEQC_TARGETS]
+                                target_suffix = '.merge_rseqc/rseqc_qc.txt')
+RSEQC_GENE_BODY_COVERAGE = [x.replace("rseqc_qc.txt", "geneBody_coverage.geneBodyCoverage.txt") for x in RSEQC_TARGETS] if config['bio.ngs.qc.rseqc']['rseqc_qc']['rseqc_geneBody_coverage'] else []
+RSEQC_READ_DISTRIBUTION = [x.replace("rseqc_qc.txt", "read_distribution.txt") for x in RSEQC_TARGETS] if config['bio.ngs.qc.rseqc']['rseqc_qc']['rseqc_read_distribution'] else []
 
 RPKMFORGENES_TARGETS = []
 if 'rpkmforgenes' in config['workflows.bio.scrnaseq']['quantification']:
     RPKMFORGENES_TARGETS = make_targets(tgt_re = config['settings']['sample_organization'].sample_re,
                                         samples = _samples,
                                         target_suffix = '.merge.rpkmforgenes')
+    REPORT_TARGETS += ['{report}/rpkmforgenes.merge{annot}.csv'.format(report=REPORT, annot=annotationstring)]
 
 
 RSEM_TARGETS = []
 if 'rsem' in config['workflows.bio.scrnaseq']['quantification']:
+    print(config['bio.ngs.rnaseq.rsem'])
+    tx = "" if config['bio.ngs.rnaseq.rsem']['index_is_transcriptome'] else ".tx"
     RSEM_TARGETS = make_targets(tgt_re = config['settings']['sample_organization'].sample_re,
                                 samples = _samples,
-                                target_suffix = '.merge.tx.genes.results')
-
-REPORT=config['workflows.bio.scrnaseq']['report']['directory']
-REPORT_TARGETS = ['{report}/scrnaseq_summary.html'.format(report=REPORT)] +\
-                 ['{report}/rpkmforgenes.merge{annot}.csv'.format(report=REPORT, annot=annotationstring)] +\
-                 ['{report}/rsem.merge.tx.genes{annot}.csv'.format(report=REPORT, annot=annotationstring),
-                  '{report}/rsem.merge.tx.isoforms{annot}.csv'.format(report=REPORT, annot=annotationstring)]
+                                target_suffix = '.merge{tx}.genes.results'.format(tx=tx))
+    REPORT_TARGETS += ['{report}/rsem.merge{tx}.genes{annot}.csv'.format(report=REPORT, annot=annotationstring, tx=tx),
+                       '{report}/rsem.merge{tx}.isoforms{annot}.csv'.format(report=REPORT, annot=annotationstring, tx=tx)]
 
 # Utility rules - rely on targets so must be placed last
 include: "./utils.rules"
