@@ -1,6 +1,67 @@
 Changelog
 =========
 
+0.1-alpha.2 (2015-11-24)
+------------------------
+
+- Add resources. [Per Unneberg]
+
+- Add release notes for 0.1-alpha.2. [Per Unneberg]
+
+- Fix number of detected genes with OrderedDict. [Per Unneberg]
+
+- Make use of tx variable for rsem. [Per Unneberg]
+
+- Require SM for merge targets. [Per Unneberg]
+
+  Much simplified filtering on SM
+
+- Add loadings output. [Per Unneberg]
+
+- Merge remote-tracking branch 'origin/develop' into develop. [Per
+  Unneberg]
+
+  Add Brennecke plot
+
+- Add scrnaseq_brenecke call. [Per Unneberg]
+
+- Remove old star target. [Per Unneberg]
+
+- Correct targets for rsem. [Per Unneberg]
+
+- Correct sample_organization key. [Per Unneberg]
+
+- Combine align/rseqc metrics. [Per Unneberg]
+
+- Add requirements. [Per Unneberg]
+
+- Put workflow utility rules in separate file. [Per Unneberg]
+
+- Pca plots work again. [Per Unneberg]
+
+- Rename sampleorg to sample_organization. [Per Unneberg]
+
+- Update atacseq workflow to mirror snakemakelib legacy. [Per Unneberg]
+
+- Add _template to setup and init. [Per Unneberg]
+
+- Add atacseq workflow template. [Per Unneberg]
+
+- Update configuration keys and add atacseq module. [Per Unneberg]
+
+- Add merge_sam function. [Per Unneberg]
+
+- Major update to atacseq.workflow. [Per Unneberg]
+
+  - remove generic_target_generator
+  - use simplified function for setting up inputs
+
+- Add atacseq. [Per Unneberg]
+
+- Add scrnaseq. [Per Unneberg]
+
+- Add missing documentation templates. [Per Unneberg]
+
 0.1-alpha.1 (2015-10-08)
 ------------------------
 

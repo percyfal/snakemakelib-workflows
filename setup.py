@@ -43,10 +43,12 @@ workflow_suffixes = ('.workflow')
                     
 package_path(join(ROOT, 'snakemakelib_workflows'), rule_suffixes)
 package_path(join(ROOT, 'snakemakelib_workflows'), workflow_suffixes)
+package_path(join(ROOT, 'snakemakelib_workflows', '_templates'))
 scripts = []
 
 REQUIRES = [
     'snakemake>=3.4.2',
+    'snakemakelib',
 ]
 
 try:
