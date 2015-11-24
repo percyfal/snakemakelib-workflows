@@ -47,7 +47,7 @@ package_path(join(ROOT, 'snakemakelib_workflows', '_templates'))
 scripts = []
 
 REQUIRES = [
-    'snakemake>=3.4.2',
+    'snakemake>=3.5.3',
     'snakemakelib',
 ]
 
