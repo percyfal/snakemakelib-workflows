@@ -5,11 +5,12 @@ import pandas as pd
 import jinja2
 import numpy as np
 import pickle
+from collections import OrderedDict
 from snakemake.report import data_uri
 from snakemakelib.odo.utils import annotate_df
 from snakemakelib.odo import star, rseqc
 from snakemakelib import SNAKEMAKELIB_TEMPLATES_PATH
-from snakemakelib.resources import css_files, js_files
+from snakemakelib.resources import bootstrap_css_files, bootstrap_js_files
 from snakemakelib.plot.bokeh import static_html
 from snakemakelib_workflows import SNAKEMAKELIB_WORKFLOWS_TEMPLATES_PATH
 from bokeh.models import ColumnDataSource, TableColumn, DataTable, HoverTool, BoxSelectTool
@@ -55,10 +56,10 @@ def _collect_rseqc_metrics(read_distribution, gene_body_coverage, parser):
         df['three_prime_map'] = 100.0 * df.loc[:, "91":"100"].sum(axis=1) / df.loc[:, "1":"100"].sum(axis=1)
         return df
     def _add_rd_rows(df):
-        ExonMap = df.loc['Introns', :]
+        exonmap = df.loc['Introns', :]
         cols = ["Total_bases", "Tag_count", "Tags/Kb"]
-        ExonMap.loc[cols] = 100 * (df.loc['CDS_Exons', cols] + df.loc["3'UTR_Exons", cols] + df.loc["5'UTR_Exons", cols]) / df.loc[:, cols].sum(axis=0)
-        df.loc["ExonMap_%", :] = ExonMap
+        exonmap.loc[cols] = 100 * (df.loc['CDS_Exons', cols] + df.loc["3'UTR_Exons", cols] + df.loc["5'UTR_Exons", cols]) / df.loc[:, cols].sum(axis=0)
+        df.loc["ExonMap_%", :] = exonmap
         return df
     gbc = pd.concat([_add_gbc_rows(annotate_df(f, parser)) for f in gene_body_coverage])
     gbc = gbc.set_index(gbc["SM"])
@@ -237,27 +238,29 @@ def scrnaseq_qc(config, input, output):
     # rsem plots
     if input.rsemgenes:
         d.update({'rsem': plot_pca(input.rsemgenespca,
-                                   config['workflows.bio.scrnaseq']['metadata'],
-                                   input.rsemgenespca.replace(".pca.csv", ".pcaobj.pickle"))})
+                                   config['settings']['metadata'],
+                                   input.rsemgenespca.replace(".pca.csv", ".pcaobj.pickle"),
+                                   taptool_url= config['workflows.bio.scrnaseq']['report']['annotation_url'] + "@gene_id")})
         # FIXME: Instead of re use list
-        d['rsem'].update({'brennecke': scrnaseq_brennecke_plot(infile=input.rsemgenes, spikein_re=re.compile("^ERCC"),
-                                                               index=["SM", "gene_id", "transcript_id(s)", "gene_name"],
-                                                               **brennecke_args)})
+        # d['rsem'].update({'brennecke': scrnaseq_brennecke_plot(infile=input.rsemgenes, spikein_re=re.compile("^ERCC"),
+        #                                                        index=["SM", "gene_id", "transcript_id(s)", "gene_name"],
+        #                                                        **brennecke_args)})
 
     # rpkmforgenes plots
     if input.rpkmforgenes:
         d.update({'rpkmforgenes': plot_pca(input.rpkmforgenespca,
-                                           config['workflows.bio.scrnaseq']['metadata'],
-                                           input.rpkmforgenespca.replace(".pca.csv", ".pcaobj.pickle"))})
-        d['rpkmforgenes'].update({'brennecke': scrnaseq_brennecke_plot(infile=input.rpkmforgenes, spikein_re=re.compile("^ERCC"),
-                                                                       **brennecke_args)})
+                                           config['settings']['metadata'],
+                                           input.rpkmforgenespca.replace(".pca.csv", ".pcaobj.pickle"),
+                                           taptool_url= config['workflows.bio.scrnaseq']['report']['annotation_url'] + "@gene_id")})
+        # d['rpkmforgenes'].update({'brennecke': scrnaseq_brennecke_plot(infile=input.rpkmforgenes, spikein_re=re.compile("^ERCC"),
+        #                                                                **brennecke_args)})
     
     d.update({'version' : config['_version'], 'config' : {'uri' : data_uri(input.globalconf), 'file' : input.globalconf}})
     d.update({'rulegraph': {'fig': input.rulegraph, 'uri': data_uri(input.rulegraph),
                             'target': 'scrnaseq_all'}})
     tp = Env.get_template('workflow_scrnaseq_qc.html')
     with open(output.html, "w") as fh:
-        fh.write(static_html(tp, template_variables=d, css_raw=css_files, js_raw=js_files))
+        fh.write(static_html(tp, template_variables=d, css_raw=bootstrap_css_files, js_raw=bootstrap_js_files))
 
 
 def scrnaseq_pca(config, input, output):
@@ -269,15 +272,25 @@ def scrnaseq_pca(config, input, output):
     expr_long["TPM"] = [math.log2(x+1.0) for x in expr_long["TPM"]]
     expr = expr_long.pivot_table(columns="gene_id", values="TPM",
                                  index="SM")
-    detected_genes = number_of_detected_genes(input.expr)
+    # Set multiindex on columns
+    n_genes = expr_long.groupby(["SM"]).size()[0]
+    tuples = [(k,v) for k,v in zip(list(expr_long["gene_id"][0:n_genes]), list(expr_long["gene_name"][0:n_genes]))]
+    index = pd.MultiIndex.from_tuples(tuples, names=['gene_id', 'gene_name'])
     pcaobj = pca(expr)
-    pcares, loadings = pca_results(pcaobj, expr, metadata=config['workflows.bio.scrnaseq']['metadata'])
+    pcaobj.gene_id = index.get_level_values('gene_id')
+    pcaobj.gene_name = index.get_level_values('gene_name')
+    pcares = pca_results(pcaobj, expr)
+    if not config['settings']['metadata'] is None:
+        try:
+            md = pd.read_csv(config['settings']['metadata'], index_col=expr.index.name)
+        except ValueError:
+            raise Exception("expression index name '{name}' not present in '{metadata}'; make sure '{name}' column exists in order to merge pca results with metadata".format(name=expr.index.name, metadata=config['settings']['metadata']))
+        pcares = pcares.join(md)
+    detected_genes = number_of_detected_genes(expr_long)
     if not detected_genes is None:
         pcares = pcares.join(detected_genes)
     with open(output.pca, "w") as fh:
         pcares.to_csv(fh)
-    with open(output.loadings, "w") as fh:
-        loadings.to_csv(fh)
     with open(output.pcaobj, "wb") as fh:
         pickle.dump(pcaobj, fh)
 
