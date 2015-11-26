@@ -5,6 +5,8 @@ from snakemake.utils import update_config, set_temporary_output, set_protected_o
 from snakemake_rules import SNAKEMAKE_RULES_PATH
 from snakemakelib.targets import make_targets
 from snakemakelib.sample.input import initialize_input
+from snakemakelib.application import SampleApplication, PlatformUnitApplication
+from snakemakelib.io import IOTarget, IOAggregateTarget
 from snakemakelib_workflows.atacseq import set_protected_output_by_extension, atacseq_summary
 
 # Should be done first of all
@@ -141,82 +143,119 @@ if not config.get("samples", None)  is None:
     # FIXME: samples should always be strings
     _samples = [s for s in _samples if s["SM"] in config["samples"]]
 
-TRIM_TARGETS = []
-if config['atacseq.workflow']['trimadaptor']:
-    TRIM_TARGETS = make_targets(tgt_re = config['settings']['sample_organization'].run_id_re,
-                                samples = _samples,
-                                target_suffix = ".cutadapt_metrics")
+
+##############################
+# Applications
+##############################
+run_id_re = config['settings']['sample_organization'].run_id_re
+Cutadapt = PlatformUnitApplication(
+    name="cutadapt",
+    iotargets={
+        'cutadapt':(IOTarget(run_id_re.file, suffix=".cutadapt_metrics"),
+                    IOAggregateTarget(""))},
+    units=_samples,
+    run=config['atacseq.workflow']['trimadaptor']
+)
+
+Align = PlatformUnitApplication(
+    name=aligner,
+    iotargets={
+        'bam': (IOTarget(run_id_re.file, suffix=ALIGN_TARGET_SUFFIX),
+                None)},
+    units=_samples
+)
 
 
-ALIGN_TARGETS = make_targets(tgt_re = config['settings']['sample_organization'].run_id_re,
-                             samples = _samples,
-                             target_suffix = ALIGN_TARGET_SUFFIX)
-
+sample_re=config['settings']['sample_organization'].sample_re
 MERGE_TARGET_SUFFIX = ".sort.merge.bam"
-MERGE_TARGETS = make_targets(tgt_re = config['settings']['sample_organization'].run_id_re,
-                             samples = _samples,
-                             target_suffix = MERGE_TARGET_SUFFIX)
+Merge = SampleApplication(
+    name="PicardMergeSam",
+    iotargets={
+        'bam': (IOTarget(sample_re.file, suffix=MERGE_TARGET_SUFFIX),
+                None)},
+    units=_samples
+)
 
-QUALIMAP_TARGETS = []
-QUALIMAP_TARGETS = make_targets(tgt_re = config['settings']['sample_organization'].sample_re,
-                                samples = _samples,
-                                target_suffix = MERGE_TARGET_SUFFIX + ".qualimap" + os.sep + 'genome_results.txt')
 
+Qualimap = SampleApplication(
+    name="Qualimap",
+    iotargets={
+        'txt': (IOTarget(sample_re.file, suffix=MERGE_TARGET_SUFFIX + ".qualimap" + os.sep + 'genome_results.txt'),
+                None)},
+    units=_samples
+)
+
+####################
+# Peak callers
+####################
 PREFIX = ".sort.merge.filter" if config['atacseq.workflow']['bamfilter'] else ".sort.merge"
 
-DFILTER_TARGET_SUFFIX = PREFIX + ".offset.dfilt.bed"
-DFILTER_TARGETS = []
-if 'dfilter' in config['atacseq.workflow']['peakcallers']:
-    DFILTER_TARGETS = make_targets(tgt_re = config['settings']['sample_organization'].sample_re,
-                                   target_suffix = DFILTER_TARGET_SUFFIX,
-                                   samples = _samples)
+Dfilter = SampleApplication(
+    name="Dfilter",
+    iotargets={
+        'bed': (IOTarget(sample_re.file, suffix=PREFIX + ".offset.dfilt.bed"),
+                None)},
+    units=_samples,
+    run=True if 'dfilter' in config['atacseq.workflow']['peakcallers'] else False,
+)
 
-MACS2_TARGET_SUFFIX = PREFIX + ".offset_peaks.xls"
-MACS2_TARGETS = []
-if 'macs2' in config['atacseq.workflow']['peakcallers']:
-    MACS2_TARGETS = make_targets(tgt_re = config['settings']['sample_organization'].sample_re, 
-                                 target_suffix = MACS2_TARGET_SUFFIX,
-                                 samples = _samples)
-                                 
-DUP_METRICS_SUFFIX = ".sort.merge.dup.dup_metrics"
-DUP_METRICS_TARGETS = make_targets(tgt_re = config['settings']['sample_organization'].sample_re, 
-                                   target_suffix =  DUP_METRICS_SUFFIX,
-                                   samples = _samples)
+Macs2 = SampleApplication(
+    name="MACS2",
+    iotargets={
+        'xls': (IOTarget(sample_re.file, suffix=PREFIX + ".offset_peaks.xls"),
+                None)},
+    units=_samples,
+    run=True if 'macs2' in config['atacseq.workflow']['peakcallers'] else False,
+)
 
-ALIGN_METRICS_SUFFIX = ".sort.merge.dup.align_metrics"
-ALIGN_METRICS_TARGETS = make_targets(tgt_re = config['settings']['sample_organization'].sample_re, 
-                                     target_suffix =  ALIGN_METRICS_SUFFIX, 
-                                     samples = _samples)
+MarkDuplicates = SampleApplication(
+    name="MarkDuplicates",
+    iotargets={
+        'dup_metrics': (IOTarget(sample_re.file, suffix=".sort.merge.dup.dup_metrics"),
+                        IOAggregateTarget(""))},
+    units=_samples,
+)
 
-INSERT_METRICS_SUFFIX = ".sort.merge.dup.insert_metrics"
-INSERT_METRICS_TARGETS = make_targets(tgt_re = config['settings']['sample_organization'].sample_re, 
-                                      target_suffix =  INSERT_METRICS_SUFFIX,
-                                      samples = _samples)
+AlignmentMetrics = SampleApplication(
+    name="AlignmentMetrics",
+    iotargets={
+        'align_metrics': (IOTarget(sample_re.file, suffix=".sort.merge.dup.align_metrics"),
+                          IOAggregateTarget(""))},
+    units=_samples,
+)
+
+InsertMetrics = SampleApplication(
+    name="InsertMetrics",
+    iotargets={
+        'insert_metrics': (IOTarget(sample_re.file, suffix=".sort.merge.dup.insert_metrics"),
+                           IOAggregateTarget(""))},
+    units=_samples,
+)
 
 REPORT_TARGETS = ["report/atacseq_all_rulegraph.png", "report/atacseq_summary.html"]
 
-BIGWIG_TARGETS = [x.replace(".bed", ".bed.wig.bw") for x in DFILTER_TARGETS] +\
-                 [x.replace("_peaks.xls", "_treat_pileup.bdg.bw") for x in MACS2_TARGETS] +\
-                 [x.replace("_peaks.xls", "_control_lambda.bdg.bw") for x in MACS2_TARGETS]
+BIGWIG_TARGETS = [x.replace(".bed", ".bed.wig.bw") for x in Dfilter.targets['bed']] +\
+                 [x.replace("_peaks.xls", "_treat_pileup.bdg.bw") for x in Macs2.targets['xls']] +\
+                 [x.replace("_peaks.xls", "_control_lambda.bdg.bw") for x in Macs2.targets['xls']]
 
 # ##############################
 # # Collection rules
 # ##############################
 rule atacseq_all:
     """Run ATAC-seq pipeline"""
-    input: DFILTER_TARGETS + MACS2_TARGETS + DUP_METRICS_TARGETS + ALIGN_METRICS_TARGETS + INSERT_METRICS_TARGETS + REPORT_TARGETS
+    input: Dfilter.targets['bed'] + Macs2.targets['xls'] + MarkDuplicates.targets['dup_metrics'] + AlignmentMetrics.targets['align_metrics'] + InsertMetrics.targets['insert_metrics'] + REPORT_TARGETS
 
 rule atacseq_align:
     """Run ATAC-seq alignment"""
-    input: ALIGN_TARGETS
+    input: Align.targets['bam']
 
 rule atacseq_merge:
     """Run ATAC-seq alignment, duplication removal and merge"""
-    input: MERGE_TARGETS
+    input: Merge.targets['bam']
 
 rule atacseq_metrics:
     """Run ATAC-seq alignment and corresponding metrics only"""
-    input: DUP_METRICS_TARGETS + ALIGN_METRICS_TARGETS + INSERT_METRICS_TARGETS
+    input: MarkDuplicates.targets['dup_metrics'] + AlignmentMetrics.targets['align_metrics'] + InsertMetrics.targets['insert_metrics']
 
 rule atacseq_bigwig:
     """Convert peak-calling bed output to bigwig"""
@@ -255,12 +294,12 @@ rule atacseq_correct_coordinates:
 
 rule atacseq_report:
     """Write report"""
-    input: cutadapt = TRIM_TARGETS if config['atacseq.workflow']['trimadaptor'] else [],
-           qualimap = QUALIMAP_TARGETS,
-           align_metrics = ALIGN_METRICS_TARGETS,
-           insert_metrics = INSERT_METRICS_TARGETS,
-           dup_metrics = DUP_METRICS_TARGETS,
-           rulegraph = "report/atacseq_all_rulegraph.png"
+    input: cutadapt = Cutadapt.targets['cutadapt'],# TRIM_TARGETS if config['atacseq.workflow']['trimadaptor'] else [],
+           # qualimap = Qualimap.targets['']
+           # align_metrics = AlignmentMetrics.targets['align_metrics']
+           # insert_metrics = InsertMetrics.targets['insert_metrics']
+           # dup_metrics = MarkDuplicates.targets['dup_metrics']
+           # rulegraph = "report/atacseq_all_rulegraph.png"
     output: html = join("{path}", "atacseq_summary.html")
     run:
         atacseq_summary(config, input, output)
