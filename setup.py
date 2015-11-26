@@ -48,7 +48,7 @@ scripts = []
 
 REQUIRES = [
     'snakemake>=3.5.3',
-    'snakemakelib',
+    'snakemakelib>=0.2-a2',
 ]
 
 try:

@@ -33,9 +33,9 @@ def _merge_tx_suffix(aligner):
         return ".Aligned{tx}.out_unique.bam".format(tx=tx_string)
 
 def _find_transcript_bam(wildcards):
-    m = config['settings']['sample_organization'].sample_re.parse(wildcards.prefix)
+    m = config['settings']['sample_organization'].sample_re.match(wildcards.prefix)
     sources = make_targets(tgt_re=config['settings']['sample_organization'].run_id_re,
-                           samples = [s for s in _samples if s["SM"]==m["SM"]],
+                           samples = [s for s in _samples if s["SM"]==m.groupdict()["SM"]],
                            target_suffix = _merge_tx_suffix(config['bio.ngs.settings']['aligner']))
     return sources
 
@@ -45,9 +45,9 @@ def find_scrnaseq_merge_inputs(wildcards):
 
     NB: these are *not* the transcript-specific alignment files.
     """
-    m = config['settings']['sample_organization'].sample_re.parse(wildcards.prefix)
+    m = config['settings']['sample_organization'].sample_re.match(wildcards.prefix)
     sources = make_targets(tgt_re = config['settings']['sample_organization'].run_id_re,
-                           samples = [s for s in _samples if s["SM"]==m["SM"]],
+                           samples = [s for s in _samples if s["SM"]==m.groupdict()["SM"]],
                            target_suffix = _merge_suffix(config['bio.ngs.settings']['aligner']))
     return sources
 
