@@ -7,6 +7,12 @@ from snakemakelib_workflows.scrnaseq import scrnaseq_pca, scrnaseq_qc, _save_ali
 ##############################
 # Additional merge rule for transcript alignment files
 ##############################
+def _find_transcript_bam(wildcards):
+    tgt = IOTarget(config['settings']['sample_organization'].run_id_re.file,
+                   suffix=_merge_tx_suffix(config['bio.ngs.settings']['aligner']))
+    m = config['settings']['sample_organization'].sample_re.match(wildcards.prefix)
+    return [src for src in make_targets(tgt_re=tgt, samples=_samples) if dirname(src).startswith(m.groupdict()['SM'])]
+
 rule scrnaseq_picard_merge_sam_transcript:
     """scrnaseq picard: merge sam files from transcript alignments.
 
@@ -92,12 +98,12 @@ rule rpkmforgenes_summarize_expression_data:
 
 rule save_align_rseqc_data:
     """Save joint alignment and rseqc data"""
-    input: align_log = ALIGN_LOG_TARGETS,
-           rseqc_read_distribution = RSEQC_READ_DISTRIBUTION,
-           rseqc_gene_body_coverage = RSEQC_GENE_BODY_COVERAGE
-    output: csv = "{prefix}align_rseqc.csv"
+    input: align_log = Align.targets['log'],
+           rseqc_read_distribution = RSeQC_readDistribution.targets['txt'],
+           rseqc_gene_body_coverage = RSeQC_geneBodyCoverage.targets['txt']
+    output: csv = join(config['scrnaseq.workflow']['aggregate_output_dir'], "align_rseqc.csv")
     run:
-        _save_align_rseqc_metrics(config, input, output)
+        _save_align_rseqc_metrics(config, output, Align, RSeQC_readDistribution, RSeQC_geneBodyCoverage)
 
 
 ##############################
@@ -119,3 +125,10 @@ rule scrnaseq_qc:
     output: html = join("{path}", "scrnaseq_summary.html")
     run:
         scrnaseq_qc(config, input, output)
+
+
+rule scrnaseq_qc_new:
+    input: results.aggregate_targets['alignrseqc']
+    output: html = join(config['scrnaseq.workflow']['report']['directory'], "scrnaseq_summary_new.html")
+    run:
+        scrnaseq_qc(config, input, output, results=results)
