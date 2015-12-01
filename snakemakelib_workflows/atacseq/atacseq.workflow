@@ -1,15 +1,17 @@
 # -*- snakemake -*-
-from os.path import join
+from os.path import join, dirname
 import pysam
+import pandas as pd
 from snakemake.utils import update_config, set_temporary_output, set_protected_output
 from snakemake_rules import SNAKEMAKE_RULES_PATH
 from snakemakelib.targets import make_targets
 from snakemakelib.sample.input import initialize_input
 from snakemakelib.application import SampleApplication, PlatformUnitApplication
 from snakemakelib.io import IOTarget, IOAggregateTarget
-from snakemakelib_workflows.atacseq import set_protected_output_by_extension, atacseq_summary
+from snakemakelib_workflows.atacseq import *
 
-# Should be done first of all
+# Collect information about inputs; _samples stores a list of
+# dictionaries, where each dictionary contains information on a sample
 config["_samples"] = initialize_input(src_re = config['settings']['sample_organization'].raw_run_re,
                                       sampleinfo = config['settings'].get('sampleinfo', None),
                                       filter_suffix = config['bio.ngs.settings'].get("filter_suffix", ""),
@@ -26,11 +28,13 @@ def _merge_suffix():
         return ".sort.bam"
 
 def _atacseq_picard_merge_sam_input_fn(wildcards):
-    sources = make_targets(tgt_re = config['settings']['sample_organization'].run_id_re,
-                           samples = _samples,
-                           target_suffix = config['bio.ngs.qc.picard']['merge_sam']['suffix'])
-    m = config['settings']['sample_organization'].sample_re.parse(wildcards.prefix)
-    sources = [src for src in sources if os.path.dirname(src).startswith(m['PATH'])]
+    """Picard merge sam input function.
+
+    """
+    tgt = IOTarget(config['settings']['sample_organization'].run_id_re.file, suffix=config['bio.ngs.qc.picard']['merge_sam']['suffix'])
+    sources = make_targets(tgt_re=tgt, samples=_samples)
+    m = config['settings']['sample_organization'].sample_re.match(wildcards.prefix)
+    sources = [src for src in sources if dirname(src).startswith(m.groupdict()['SM'])]
     return sources
 
 
@@ -43,6 +47,8 @@ atac_config = {
         'peakcallers' : ['dfilter', 'macs2'],
         'trimadaptor' : True,
         'bamfilter' : True,
+        'aggregate_output_dir': 'aggregated_results',
+        'report_output_dir': 'report',
     },
     'settings' : {
         'temporary_rules' : [],
@@ -85,8 +91,6 @@ aligner_config = {
         'align' : {
             'options' : '-X 2000',
         },
-    },
-    'bio.ngs.align.bwa' : {
     },
 }
 
@@ -140,22 +144,38 @@ if workflow._workdir is None:
 ##############################
 _samples = config["_samples"]
 if not config.get("samples", None)  is None:
-    # FIXME: samples should always be strings
     _samples = [s for s in _samples if s["SM"] in config["samples"]]
 
 
 ##############################
 # Applications
 ##############################
+# Platform run id level targets
 run_id_re = config['settings']['sample_organization'].run_id_re
 Cutadapt = PlatformUnitApplication(
     name="cutadapt",
     iotargets={
         'cutadapt':(IOTarget(run_id_re.file, suffix=".cutadapt_metrics"),
-                    IOAggregateTarget(""))},
+                    IOAggregateTarget(os.path.join(config['atacseq.workflow']['aggregate_output_dir'], "cutadapt.metrics")))},
     units=_samples,
     run=config['atacseq.workflow']['trimadaptor']
 )
+
+@Cutadapt.register_post_processing_hook('cutadapt')
+def _cutadapt_post_processing_hook(df, **kwargs):
+    df_wide = df.reset_index().pivot_table(values=["value"], index=["SM", "PU", "PlatformUnit"], columns="statistic")
+    df_wide.columns = df_wide.columns.droplevel()
+    df_wide["Read 1 percent"] = 100.0 * df_wide["Read 1 with adapter"] /\
+        df_wide["Total read pairs processed"]
+    df_wide["Read 2 percent"] = 100.0 * df_wide["Read 2 with adapter"] /\
+        df_wide["Total read pairs processed"]
+    df = df_wide.stack()
+    df.name = "value"
+    return df
+
+Cutadapt.register_plot('cutadapt')(_cutadapt_plot_metrics)
+
+    
 
 Align = PlatformUnitApplication(
     name=aligner,
@@ -166,6 +186,7 @@ Align = PlatformUnitApplication(
 )
 
 
+# Sample level targets
 sample_re=config['settings']['sample_organization'].sample_re
 MERGE_TARGET_SUFFIX = ".sort.merge.bam"
 Merge = SampleApplication(
@@ -180,10 +201,70 @@ Merge = SampleApplication(
 Qualimap = SampleApplication(
     name="Qualimap",
     iotargets={
-        'txt': (IOTarget(sample_re.file, suffix=MERGE_TARGET_SUFFIX + ".qualimap" + os.sep + 'genome_results.txt'),
-                None)},
+        'Globals': (IOTarget(sample_re.file, suffix=MERGE_TARGET_SUFFIX + ".qualimap" + os.sep + 'genome_results.txt'),
+                    IOAggregateTarget(os.path.join(config['atacseq.workflow']['aggregate_output_dir'], "qualimap.globals.csv"))),
+        'Coverage_per_contig' : (IOTarget(sample_re.file, suffix=MERGE_TARGET_SUFFIX + ".qualimap" + os.sep + 'genome_results.txt'),
+                                 IOAggregateTarget(os.path.join(config['atacseq.workflow']['aggregate_output_dir'], "qualimap.coverage_per_contig.csv"))),
+    },
     units=_samples
 )
+
+@Qualimap.register_post_processing_hook('Globals')
+def _qualimap_globals_post_processing_hook(df, **kwargs):
+    tmp = df.loc["number of mapped reads"] -  df.loc["number of duplicated reads"]
+    tmp['statistic'] = "number of unique reads"
+    tmp = tmp.reset_index().set_index(['statistic', 'SM'])
+    df = df.append(tmp)
+    df.sortlevel(inplace=True)
+    df["percent"] = df["value"]
+    df["percent"] = 100.0 * df["percent"] / df.loc["number of reads"]["percent"]
+    return df
+
+@Qualimap.register_post_processing_hook('Coverage_per_contig')
+def _qualimap_coverage_per_contig_post_processing_hook(df, **kwargs):
+    df['chrlen_percent'] = 100.0 * df['chrlen'] / sum(df['chrlen'])
+    df['mapped_bases_percent'] = 100.0 * df['mapped_bases'] / sum(df['mapped_bases'])
+    return df
+
+Qualimap.register_plot('Globals')(_qualimap_plot_globals)
+Qualimap.register_plot('Coverage_per_contig')(_qualimap_plot_coverage_per_contig)
+
+
+MarkDuplicates = SampleApplication(
+    name="MarkDuplicates",
+    iotargets={
+        'dup_metrics': (IOTarget(sample_re.file, suffix=".sort.merge.dup.dup_metrics"),
+                        IOAggregateTarget(os.path.join(config['atacseq.workflow']['aggregate_output_dir'], "MarkDuplicates.metrics"))),
+        'dup_metrics_hist': (IOTarget(sample_re.file, suffix=".sort.merge.dup.dup_metrics"),
+                             IOAggregateTarget(os.path.join(config['atacseq.workflow']['aggregate_output_dir'], "MarkDuplicates.hist"))),
+    },
+    units=_samples,
+)
+
+MarkDuplicates.register_plot('dup_metrics')(_mark_duplicates_plot)
+MarkDuplicates.register_plot('dup_metrics_hist')(_mark_duplicates_hist_plot)
+
+
+AlignmentMetrics = SampleApplication(
+    name="AlignmentMetrics",
+    iotargets={
+        'align_metrics': (IOTarget(sample_re.file, suffix=".sort.merge.dup.align_metrics"),
+                          IOAggregateTarget(os.path.join(config['atacseq.workflow']['aggregate_output_dir'], "AlignMetrics.metrics")))},
+    units=_samples,
+)
+
+InsertMetrics = SampleApplication(
+    name="InsertMetrics",
+    iotargets={
+        'insert_metrics': (IOTarget(sample_re.file, suffix=".sort.merge.dup.insert_metrics"),
+                           IOAggregateTarget(os.path.join(config['atacseq.workflow']['aggregate_output_dir'], "InsertMetrics.metrics"))),
+        'insert_metrics_hist': (IOTarget(sample_re.file, suffix=".sort.merge.dup.insert_metrics"),
+                                IOAggregateTarget(os.path.join(config['atacseq.workflow']['aggregate_output_dir'], "InsertMetrics.hist")))},
+    units=_samples,
+)
+
+InsertMetrics.register_plot('insert_metrics')(_insert_metrics_plot)
+InsertMetrics.register_plot('insert_metrics_hist')(_insert_metrics_hist_plot)
 
 ####################
 # Peak callers
@@ -208,39 +289,19 @@ Macs2 = SampleApplication(
     run=True if 'macs2' in config['atacseq.workflow']['peakcallers'] else False,
 )
 
-MarkDuplicates = SampleApplication(
-    name="MarkDuplicates",
-    iotargets={
-        'dup_metrics': (IOTarget(sample_re.file, suffix=".sort.merge.dup.dup_metrics"),
-                        IOAggregateTarget(""))},
-    units=_samples,
-)
 
-AlignmentMetrics = SampleApplication(
-    name="AlignmentMetrics",
-    iotargets={
-        'align_metrics': (IOTarget(sample_re.file, suffix=".sort.merge.dup.align_metrics"),
-                          IOAggregateTarget(""))},
-    units=_samples,
-)
 
-InsertMetrics = SampleApplication(
-    name="InsertMetrics",
-    iotargets={
-        'insert_metrics': (IOTarget(sample_re.file, suffix=".sort.merge.dup.insert_metrics"),
-                           IOAggregateTarget(""))},
-    units=_samples,
-)
-
-REPORT_TARGETS = ["report/atacseq_all_rulegraph.png", "report/atacseq_summary.html"]
+# Misc targets
+REPORT_TARGETS = [join(config['atacseq.workflow']['report_output_dir'], "atacseq_all_rulegraph.png"),
+                  join(config['atacseq.workflow']['report_output_dir'], "atacseq_summary.html")]
 
 BIGWIG_TARGETS = [x.replace(".bed", ".bed.wig.bw") for x in Dfilter.targets['bed']] +\
                  [x.replace("_peaks.xls", "_treat_pileup.bdg.bw") for x in Macs2.targets['xls']] +\
                  [x.replace("_peaks.xls", "_control_lambda.bdg.bw") for x in Macs2.targets['xls']]
 
-# ##############################
-# # Collection rules
-# ##############################
+##############################
+# Collection rules
+##############################
 rule atacseq_all:
     """Run ATAC-seq pipeline"""
     input: Dfilter.targets['bed'] + Macs2.targets['xls'] + MarkDuplicates.targets['dup_metrics'] + AlignmentMetrics.targets['align_metrics'] + InsertMetrics.targets['insert_metrics'] + REPORT_TARGETS
@@ -262,8 +323,66 @@ rule atacseq_bigwig:
     input: BIGWIG_TARGETS
 
 
+rule atacseq_aggregate_cutadapt_results:
+    input: cutadapt = Cutadapt.targets['cutadapt']
+    output: cutadapt = Cutadapt.aggregate_targets['cutadapt']
+    run:
+        aggregate_results(Cutadapt)
+
+rule atacseq_aggregate_qualimap_results:
+    input: qualimap = Qualimap.targets['Globals']
+    output: qualimap_globals = Qualimap.aggregate_targets['Globals'],
+            qualimap_coverage_per_contig = Qualimap.aggregate_targets['Coverage_per_contig'],
+    run:
+        aggregate_results(Qualimap)
+
+rule atacseq_aggregate_picard_results:
+    input: markduplicates = MarkDuplicates.targets['dup_metrics'],
+           alignmetrics = AlignmentMetrics.targets['align_metrics'],
+           insertmetrics = InsertMetrics.targets['insert_metrics']
+    output: dup_metrics = MarkDuplicates.aggregate_targets['dup_metrics'],
+            dup_metrics_hist = MarkDuplicates.aggregate_targets['dup_metrics_hist'],
+            insert_metrics = InsertMetrics.aggregate_targets['insert_metrics'],
+            insert_metrics_hist = InsertMetrics.aggregate_targets['insert_metrics_hist'],
+            align_metrics = AlignmentMetrics.aggregate_targets['align_metrics']
+    run:
+        aggregate_results(AlignmentMetrics)
+        aggregate_results(MarkDuplicates)
+        aggregate_results(InsertMetrics)
+
+        
+rule atacseq_aggregate_results:
+    """Aggregate application results, pseudo-rule"""
+    input: cutadapt = Cutadapt.aggregate_targets['cutadapt'],
+            qualimap_globals = Qualimap.aggregate_targets['Globals'],
+            qualimap_coverage_per_contig = Qualimap.aggregate_targets['Coverage_per_contig'],
+            dup_metrics = MarkDuplicates.aggregate_targets['dup_metrics'],
+            dup_metrics_hist = MarkDuplicates.aggregate_targets['dup_metrics_hist'],
+            insert_metrics = InsertMetrics.aggregate_targets['insert_metrics'],
+            insert_metrics_hist = InsertMetrics.aggregate_targets['insert_metrics_hist'],
+            align_metrics = AlignmentMetrics.aggregate_targets['align_metrics']
+        
+
+rule atacseq_report:
+    """Write report"""
+    input: cutadapt = Cutadapt.aggregate_targets['cutadapt'],
+           qualimap_globals = Qualimap.aggregate_targets['Globals'],
+           qualimap_coverage_per_contig = Qualimap.aggregate_targets['Coverage_per_contig'],
+           dup_metrics = MarkDuplicates.aggregate_targets['dup_metrics'],
+           dup_metrics_hist = MarkDuplicates.aggregate_targets['dup_metrics_hist'],
+           insert_metrics = InsertMetrics.aggregate_targets['insert_metrics'],
+           insert_metrics_hist = InsertMetrics.aggregate_targets['insert_metrics_hist'],
+           align_metrics = AlignmentMetrics.aggregate_targets['align_metrics'],
+           rulegraph = join(config['atacseq.workflow']['report_output_dir'], "atacseq_all_rulegraph.png")
+    output: html = join(config['atacseq.workflow']['report_output_dir'], "atacseq_summary.html")
+    run:
+        atacseq_summary(config, input, output, Cutadapt, Qualimap,
+                        MarkDuplicates, InsertMetrics, AlignmentMetrics)
+
+
+
 ##############################
-# Specific rules
+# Workflow-specific rules
 ##############################    
 rule atacseq_correct_coordinates:
     """From Buenrostro paper: 
@@ -292,19 +411,7 @@ rule atacseq_correct_coordinates:
                     s.pnext = min(l, s.pnext + 4)
             outfile.write(s)
 
-rule atacseq_report:
-    """Write report"""
-    input: cutadapt = Cutadapt.targets['cutadapt'],# TRIM_TARGETS if config['atacseq.workflow']['trimadaptor'] else [],
-           # qualimap = Qualimap.targets['']
-           # align_metrics = AlignmentMetrics.targets['align_metrics']
-           # insert_metrics = InsertMetrics.targets['insert_metrics']
-           # dup_metrics = MarkDuplicates.targets['dup_metrics']
-           # rulegraph = "report/atacseq_all_rulegraph.png"
-    output: html = join("{path}", "atacseq_summary.html")
-    run:
-        atacseq_summary(config, input, output)
-
-
+    
 # Set temporary and protected outputs
 set_temporary_output(*[workflow.get_rule(x) for x in config['settings']['temporary_rules']])
 set_protected_output(*[workflow.get_rule(x) for x in config['settings']['protected_rules']])
