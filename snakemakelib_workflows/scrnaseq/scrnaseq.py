@@ -16,11 +16,8 @@ from snakemakelib_workflows import SNAKEMAKELIB_WORKFLOWS_TEMPLATES_PATH
 from bokeh.models import ColumnDataSource, TableColumn, DataTable, HoverTool, BoxSelectTool
 from bokeh.plotting import figure, gridplot, output_file, show
 from snakemakelib.plot.sklearn import plot_pca
-from snakemakelib.statistics import pca, pca_results
 from snakemakelib.applications import number_of_detected_genes, scrnaseq_brennecke_plot
 from snakemakelib.graphics import dotplot, tooltips
-
-
 
 DEFAULT_TOOLS = "pan,wheel_zoom,box_zoom,box_select,lasso_select,resize,reset,save,hover"
 
@@ -161,37 +158,37 @@ def _results_plot_alignrseqc(df, **kwargs):
     return {'fig': gridplot([[p1, p2, p3], [p4, p5, p6], [p7]]), 'table': table}
 
 
-def scrnaseq_qc(config, input, output, results=None, **kwargs):
+def scrnaseq_qc(config, input, output, results=None, rsem=None, rpkmforgenes=None, **kwargs):
     """Do QC of scrnaseq"""
     # Collect results
     results.read_aggregate_data()
     
     # Brennecke args
     brennecke_args = {'plot_height':600, 'plot_width': 800, 'alpha':
-                      0.3, 'taptool_url': config['workflows.bio.scrnaseq']['report']['annotation_url'] + "@gene_id"}
+                      0.3, 'taptool_url': config['scrnaseq.workflow']['report']['annotation_url'] + "@gene_id"}
     # Alignment stats
     d = {'align': {'fig': results.plot('alignrseqc')[0]['fig'], 'table': results.plot('alignrseqc')[0]['table']}}
     # rsem plots
-    # if input.rsemgenes:
-    #     d.update({'rsem': plot_pca(input.rsemgenespca,
-    #                                config['settings']['metadata'],
-    #                                input.rsemgenespca.replace(".pca.csv", ".pcaobj.pickle"),
-    #                                taptool_url= config['workflows.bio.scrnaseq']['report']['annotation_url'] + "@gene_id")})
+    if rsem.run:
+        d.update({'rsem': plot_pca(rsem.targets['pca'][0],
+                                   config['scrnaseq.workflow']['metadata'],
+                                   rsem.targets['pca'][0].replace(".pca.csv", ".pcaobj.pickle"),
+                                   taptool_url= config['scrnaseq.workflow']['report']['annotation_url'] + "@gene_id")})
     #     # FIXME: Instead of re use list
     #     # d['rsem'].update({'brennecke': scrnaseq_brennecke_plot(infile=input.rsemgenes, spikein_re=re.compile("^ERCC"),
     #     #                                                        index=["SM", "gene_id", "transcript_id(s)", "gene_name"],
     #     #                                                        **brennecke_args)})
 
-    # # rpkmforgenes plots
-    # if input.rpkmforgenes:
-    #     d.update({'rpkmforgenes': plot_pca(input.rpkmforgenespca,
-    #                                        config['settings']['metadata'],
-    #                                        input.rpkmforgenespca.replace(".pca.csv", ".pcaobj.pickle"),
-    #                                        taptool_url= config['workflows.bio.scrnaseq']['report']['annotation_url'] + "@gene_id")})
+    # rpkmforgenes plots
+    if rpkmforgenes.run:
+        d.update({'rpkmforgenes': plot_pca(rpkmforgenes.targets['pca'][0],
+                                           config['scrnaseq.workflow']['metadata'],
+                                           rpkmforgenes.targets['pca'][0].replace(".pca.csv", ".pcaobj.pickle"),
+                                           taptool_url= config['scrnaseq.workflow']['report']['annotation_url'] + "@gene_id")})
     
-    # d.update({'version' : config['_version'], 'config' : {'uri' : data_uri(input.globalconf), 'file' : input.globalconf}})
-    # d.update({'rulegraph': {'fig': input.rulegraph, 'uri': data_uri(input.rulegraph),
-    #                         'target': 'scrnaseq_all'}})
+    d.update({'version' : config['_version'], 'config' : {'uri' : data_uri(input.globalconf), 'file' : input.globalconf}})
+    d.update({'rulegraph': {'fig': input.rulegraph, 'uri': data_uri(input.rulegraph),
+                            'target': 'scrnaseq_all'}})
     tp = Env.get_template('workflow_scrnaseq_qc.html')
     with open(output.html, "w") as fh:
         print(output.html)
@@ -199,10 +196,17 @@ def scrnaseq_qc(config, input, output, results=None, **kwargs):
 
 
 def scrnaseq_pca(config, input, output):
-    """Run pca on expression values
+    """WIP: Run pca on expression values.
+
     
     FIXME: generic enough to put in snakemakelib-core?
     """
+    kwargs = {}
+    if config['scrnaseq.workflow'] == "sparsePCA":
+        from sklearn.decomposition import sparsePCA as PCA
+    else:
+        from sklearn.decomposition import PCA
+    
     expr_long = pd.read_csv(input.expr)
     expr_long["TPM"] = [math.log2(x+1.0) for x in expr_long["TPM"]]
     expr = expr_long.pivot_table(columns="gene_id", values="TPM",
@@ -211,15 +215,18 @@ def scrnaseq_pca(config, input, output):
     n_genes = expr_long.groupby(["SM"]).size()[0]
     tuples = [(k,v) for k,v in zip(list(expr_long["gene_id"][0:n_genes]), list(expr_long["gene_name"][0:n_genes]))]
     index = pd.MultiIndex.from_tuples(tuples, names=['gene_id', 'gene_name'])
-    pcaobj = pca(expr)
+    pcaobj = PCA(n_components=10, whiten=False, **kwargs)
+    pcaobj.fit(expr)
     pcaobj.gene_id = index.get_level_values('gene_id')
     pcaobj.gene_name = index.get_level_values('gene_name')
-    pcares = pca_results(pcaobj, expr)
-    if not config['settings']['metadata'] is None:
+    pcares = pd.DataFrame(pcaobj.fit(expr).transform(expr))
+    if not expr.index.name is None:
+        pcares.index = expr.index
+    if not config['scrnaseq.workflow']['metadata'] is None:
         try:
-            md = pd.read_csv(config['settings']['metadata'], index_col=expr.index.name)
+            md = pd.read_csv(config['scrnaseq.workflow']['metadata'], index_col=expr.index.name)
         except ValueError:
-            raise Exception("expression index name '{name}' not present in '{metadata}'; make sure '{name}' column exists in order to merge pca results with metadata".format(name=expr.index.name, metadata=config['settings']['metadata']))
+            raise Exception("expression index name '{name}' not present in '{metadata}'; make sure '{name}' column exists in order to merge pca results with metadata".format(name=expr.index.name, metadata=config['scrnaseq.workflow']['metadata']))
         pcares = pcares.join(md)
     detected_genes = number_of_detected_genes(expr_long)
     if not detected_genes is None:

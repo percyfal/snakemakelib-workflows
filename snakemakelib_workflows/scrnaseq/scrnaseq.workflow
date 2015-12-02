@@ -12,7 +12,7 @@ from snakemakelib.sample.input import initialize_input
 from snakemakelib_workflows.scrnaseq import *
 from snakemakelib.application import SampleApplication, PlatformUnitApplication
 from snakemakelib.io import IOTarget, IOAggregateTarget
-from snakemakelib.bio.ngs.rnaseq.utils import read_gene_expression
+from snakemakelib.bio.ngs.rnaseq.utils import _gene_name_map_from_gtf
 
 # Collect information about inputs; _samples stores a list of
 # dictionaries, where each dictionary contains information on a sample
@@ -61,6 +61,9 @@ config_default = {
         },
         'db' : {
             'do_multo' : False,  ## Set to True to run generate multo database
+        },
+        'pca' : {
+            'type': 'sparsePCA',
         },
         'metadata' : None, ## Sample metadata
         'report' : {
@@ -124,9 +127,6 @@ if workflow._workdir is None:
 # # Set temporary and protected outputs
 set_temporary_output(*[workflow.get_rule(x) for x in config['settings']['temporary_rules']])
 set_protected_output(*[workflow.get_rule(x) for x in config['settings']['protected_rules']])
-
-annotationstring = ".annotated" if config['bio.ngs.settings']['annotation']['transcript_annot_gtf'] else ""
-
 
 ##################################################
 # Target definitions
@@ -214,7 +214,8 @@ rpkmforgenes = SampleApplication(
     iotargets={
         'rpkmforgenes': (IOTarget(sample_re.file, suffix=".merge.rpkmforgenes"),
                          IOAggregateTarget(join(config['scrnaseq.workflow']['aggregate_output_dir'], 'rpkmforgenes.csv'))),
-        #'csv': (IOTarget('{report}/rpkmforgenes.merge{annot}.csv'.format(report=REPORT, annot=annotationstring)), None),
+        'pca': (IOTarget(join(config['scrnaseq.workflow']['aggregate_output_dir'], 'rpkmforgenes.pca.csv')),
+                None),
     },
     units=_samples,
     run = True if 'rpkmforgenes' in config['scrnaseq.workflow']['quantification'] else False
@@ -228,16 +229,31 @@ rsem = SampleApplication(
                 IOAggregateTarget(join(config['scrnaseq.workflow']['aggregate_output_dir'], 'rsem.genes.csv'))),
         'isoforms': (IOTarget(sample_re.file, suffix='.merge{tx}.isoforms.results'.format(tx=tx)),
                      IOAggregateTarget(join(config['scrnaseq.workflow']['aggregate_output_dir'], 'rsem.isoforms.csv'))),
-        
-        #'genes': (IOTarget('{report}/rpkmforgenes.merge{annot}.csv'.format(report=REPORT, annot=annotationstring)), None),
-        #'isoforms': (IOTarget('{report}/rpkmforgenes.merge{annot}.csv'.format(report=REPORT, annot=annotationstring)), None),
+        'pca': (IOTarget(join(config['scrnaseq.workflow']['aggregate_output_dir'], 'rsem.genes.pca.csv')),
+                None),
     },
     units=_samples,
     run = True if 'rsem' in config['scrnaseq.workflow']['quantification'] else False
     )
+@rsem.register_aggregate_post_processing_hook('genes')
+@rpkmforgenes.register_aggregate_post_processing_hook('rpkmforgenes')
+def _annotate_genes_hook(df, annotation=config['bio.ngs.settings']['annotation']['transcript_annot_gtf'], **kwargs):
+    df.reset_index(inplace=True)
+    annot = pd.read_table(annotation, header=None)
+    mapping = _gene_name_map_from_gtf(annot, "gene_id", "gene_name")
+    df["gene_name"] = df["gene_id"].map(mapping.get)
+    return df
+@rsem.register_aggregate_post_processing_hook('isoforms')
+def _annotate_isoforms_hook(df, annotation=config['bio.ngs.settings']['annotation']['transcript_annot_gtf'], **kwargs):
+    df.reset_index(inplace=True)
+    annot = pd.read_table(annotation, header=None)
+    mapping = _gene_name_map_from_gtf(annot, "transcript_id", "transcript_name")
+    df["transcript_name"] = df["transcript_id"].map(mapping.get)
+    return df
+
 
 ##############################
-# Results class
+# Results class - composite results
 ##############################
 results = SampleApplication(
     name="results",
@@ -248,7 +264,9 @@ results = SampleApplication(
 )
 results.register_plot('alignrseqc')(_results_plot_alignrseqc)
 
-# Utility rules - rely on targets so must be placed last
+# Utility rules - these rely on previously defined targets so must be
+# placed here; everything up to here in this file is visible to the
+# included file
 include: "./utils.rules"
 
 # Workflow rules
@@ -273,7 +291,7 @@ rule scrnaseq_rpkmforgenes:
     input: rpkmforgenes.targets['rpkmforgenes']
 
 rule scrnaseq_rsem:
-    """Run rpkmforgenes"""
+    """Run rsem"""
     input: rsem.targets['genes']
 
 
@@ -303,6 +321,12 @@ rule scrnaseq_aggregate_rsem:
             isoforms = rsem.aggregate_targets['isoforms']
     run:
         rsem.aggregate().save_aggregate_data()
+
+rule scrnaseq_aggregate_rpkmforgenes:
+    input: rpkmforgenes = rpkmforgenes.targets['rpkmforgenes']
+    output: rpkmforgenes = rpkmforgenes.aggregate_targets['rpkmforgenes']
+    run:
+        rpkmforgenes.aggregate().save_aggregate_data()
 
     
 # Misc rules
