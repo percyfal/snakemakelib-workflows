@@ -21,6 +21,7 @@ from snakemakelib.applications import number_of_detected_genes, scrnaseq_brennec
 from snakemakelib.graphics import dotplot, tooltips
 
 
+
 DEFAULT_TOOLS = "pan,wheel_zoom,box_zoom,box_select,lasso_select,resize,reset,save,hover"
 
 # Template environment
@@ -68,11 +69,11 @@ def _results_plot_alignrseqc(df, **kwargs):
     kwargs = {'plot_width': 400, 'plot_height': 400,
               'title_text_font_size': "16pt",
               'x_axis_label': 'Sample',
-              #'x_axis_label_text_font_size': '12pt',
-              #'x_major_label_orientation': np.pi/3,
+              'x_axis_label_text_font_size': '12pt',
+              'x_major_label_orientation': np.pi/3,
               'y_axis_label': 'Reads',
-              #'y_axis_label_text_font_size': '12pt',
-              #'y_major_label_orientation': np.pi/3}
+              'y_axis_label_text_font_size': '12pt',
+              'y_major_label_orientation': np.pi/3
               }    
     # Input reads
     p1 = dotplot(
@@ -105,15 +106,18 @@ def _results_plot_alignrseqc(df, **kwargs):
                              ('Pct_unmapped', '@PCT_of_reads_unmapped')])
               
     # Mismatch/indel rate
-    p4 = figure(title="Mismatch and indel rates",
-                x_range=p1.x_range,
-                tools=DEFAULT_TOOLS,
-                **kwargs)
-    p4.circle(x="SM", y="Mismatch_rate_per_base,_PCT", source=source, legend="Mismatch")
-    p4.circle(x="SM", y="Insertion_rate_per_base", source=source, legend="Insertion", color="red")
-    p4.circle(x="SM", y="Deletion_rate_per_base", source=source, legend="Deletion", color="green")
-    #xaxis(p4, **kwxaxis)
-    #yaxis(p4, axis_label="Percent", **kwyaxis)
+    p4 = dotplot(
+        df=source,
+        tools=DEFAULT_TOOLS,
+        title="Unmapped reads",
+        x="SM",
+        y=[
+            "Mismatch_rate_per_base,_PCT",
+            "Insertion_rate_per_base",
+            "Deletion_rate_per_base"
+        ],
+        **dict(kwargs, **{'x_range': p1.x_range, 'y_range': [0, 1], 'color': ["blue", "red", "green"]})
+    )
     tooltips(p4, HoverTool,  [('Sample', '@SM'),
                               ('Mismatch rate per base',
                                '@Mismatch_rate_per_base,_PCT'),
