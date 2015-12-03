@@ -1,18 +1,16 @@
 # -*- snakemake -*-
-import shutil
 import os
+import shutil
 import math
+import pandas as pd
 from os.path import join, dirname, relpath, exists, basename
-import pickle
 from snakemake.utils import update_config, set_temporary_output, set_protected_output
 from snakemake.workflow import workflow
 from snakemake_rules import SNAKEMAKE_RULES_PATH
-from snakemakelib.io import make_targets
+from snakemakelib.io import make_targets, IOTarget, IOAggregateTarget
 from snakemakelib.sample.input import initialize_input
-from snakemakelib_workflows.scrnaseq import *
+from snakemakelib_workflows.scrnaseq.app import *
 from snakemakelib.application import SampleApplication, PlatformUnitApplication
-from snakemakelib.io import IOTarget, IOAggregateTarget
-from snakemakelib.bio.ngs.rnaseq.utils import _gene_name_map_from_gtf
 
 # Collect information about inputs; _samples stores a list of
 # dictionaries, where each dictionary contains information on a sample
@@ -23,18 +21,28 @@ config["_samples"] = initialize_input(src_re = config['settings']['sample_organi
                                       filter_suffix = config['bio.ngs.settings'].get("filter_suffix", ""),
                                       sample_column_map = config['bio.ngs.settings'].get("sample_column_map", ""))
 
+
 # FIXME: These functions will fail for aligners other than STAR
 def _merge_suffix(aligner):
     align_config = config['bio.ngs.align.' + aligner]
     if aligner == "star":
         return ".Aligned.out_unique.bam"
 
+    
 # FIXME: currently only checking in the case of rsem; only necessary case?
 def _merge_tx_suffix(aligner):
     align_config = config['bio.ngs.align.' + aligner]
     tx_string = "" if config['bio.ngs.rnaseq.rsem']['index_is_transcriptome'] else ".toTranscriptome"
     if aligner == "star":
         return ".Aligned{tx}.out_unique.bam".format(tx=tx_string)
+
+
+def _find_transcript_bam(wildcards):
+    """Find bam files from transcript output"""
+    tgt = IOTarget(config['settings']['sample_organization'].run_id_re.file,
+                   suffix=_merge_tx_suffix(config['bio.ngs.settings']['aligner']))
+    m = config['settings']['sample_organization'].sample_re.match(wildcards.prefix)
+    return [src for src in make_targets(tgt_re=tgt, samples=_samples) if dirname(src).startswith(m.groupdict()['SM'])]
 
     
 def find_scrnaseq_merge_inputs(wildcards):
@@ -52,7 +60,7 @@ def find_scrnaseq_merge_inputs(wildcards):
 # Configuration
 config_default = {
     'settings' : {
-        'temporary_rules': [], #['star_align', 'bamtools_filter_unique'],
+        'temporary_rules': [],
         'protected_rules': [],
     },
     'scrnaseq.workflow' : {
@@ -124,12 +132,13 @@ if config['scrnaseq.workflow']['db']['do_multo']:
 if workflow._workdir is None:
     raise Exception("no workdir set, or set after include of 'scrnaseq.workflow'; set workdir before include statement!")
 
-# # Set temporary and protected outputs
+# Set temporary and protected outputs
 set_temporary_output(*[workflow.get_rule(x) for x in config['settings']['temporary_rules']])
 set_protected_output(*[workflow.get_rule(x) for x in config['settings']['protected_rules']])
 
+
 ##################################################
-# Target definitions
+# Target definitions and applications
 ##################################################
 _samples = config["_samples"]
 if not len(config.get("samples", [])) == 0:
@@ -139,9 +148,6 @@ if not len(config.get("samples", [])) == 0:
 REPORT=config['scrnaseq.workflow']['report']['directory']
 REPORT_TARGETS = ['{report}/scrnaseq_summary.html'.format(report=REPORT)]
 
-##############################
-# Applications
-##############################
 # Platform unit applications
 run_id_re = config['settings']['sample_organization'].run_id_re
 Star = PlatformUnitApplication(
@@ -155,13 +161,7 @@ Star = PlatformUnitApplication(
                    None)},
     units=_samples
 )
-@Star.register_post_processing_hook('log')
-def _star_align_post_processing_hook(df, **kwargs):
-    df.loc['mismatch_sum', :] = df.loc['Mismatch rate per base, %',:].copy()
-    df.loc['mismatch_sum', "value"] = df.loc['Mismatch rate per base, %', "value"]   + df.loc['Deletion rate per base', "value"] + df.loc['Insertion rate per base', "value"]
-    df.loc['% of reads unmapped', :] = df.loc['% of reads unmapped: other', :]
-    df.loc['% of reads unmapped', "value"] = df.loc['% of reads unmapped: other', "value"] + df.loc['% of reads unmapped: too many mismatches', "value"] + df.loc['% of reads unmapped: too short', "value"]
-    return df
+Star.register_post_processing_hook('log')(scrnaseq_star_align_postprocessing_hook)
 
 # Set Align to Star for now
 Align = Star
@@ -185,10 +185,7 @@ RSeQC_geneBodyCoverage = SampleApplication(
     units=_samples,
     run = config['bio.ngs.qc.rseqc']['rseqc_qc']['rseqc_geneBody_coverage']
     )
-@RSeQC_geneBodyCoverage.register_post_processing_hook('txt')
-def _rseqc_genebody_coverage_hook(df, **kwargs):
-    df['three_prime_map'] = 100.0 * df.loc[:, "91":"100"].sum(axis=1) / df.loc[:, "1":"100"].sum(axis=1)
-    return df
+RSeQC_geneBodyCoverage.register_post_processing_hook('txt')(scrnaseq__rseqc_genebody_coverage_hook)
 
 RSeQC_readDistribution = SampleApplication(
     name="rseqc_read_distribution",
@@ -199,15 +196,7 @@ RSeQC_readDistribution = SampleApplication(
     units=_samples,
     run = config['bio.ngs.qc.rseqc']['rseqc_qc']['rseqc_read_distribution']
     )
-@RSeQC_readDistribution.register_post_processing_hook('txt')
-def _rseq_read_distribution_hook(df, **kwargs):
-    df = df.reset_index().set_index("Group")
-    exonmap = df.loc['Introns', :]
-    cols = ["Total_bases", "Tag_count", "Tags/Kb"]
-    exonmap.loc[cols] = 100 * (df.loc['CDS_Exons', cols] + df.loc["3'UTR_Exons", cols] + df.loc["5'UTR_Exons", cols]) / df.loc[:, cols].sum(axis=0)
-    df.loc["ExonMap_%", :] = exonmap
-    return df
-
+RSeQC_readDistribution.register_post_processing_hook('txt')(scrnaseq_rseqc_read_distribution_hook)
 
 rpkmforgenes = SampleApplication(
     name="rpkmforgenes",
@@ -235,26 +224,12 @@ rsem = SampleApplication(
     units=_samples,
     run = True if 'rsem' in config['scrnaseq.workflow']['quantification'] else False
     )
-@rsem.register_aggregate_post_processing_hook('genes')
-@rpkmforgenes.register_aggregate_post_processing_hook('rpkmforgenes')
-def _annotate_genes_hook(df, annotation=config['bio.ngs.settings']['annotation']['transcript_annot_gtf'], **kwargs):
-    df.reset_index(inplace=True)
-    annot = pd.read_table(annotation, header=None)
-    mapping = _gene_name_map_from_gtf(annot, "gene_id", "gene_name")
-    df["gene_name"] = df["gene_id"].map(mapping.get)
-    return df
-@rsem.register_aggregate_post_processing_hook('isoforms')
-def _annotate_isoforms_hook(df, annotation=config['bio.ngs.settings']['annotation']['transcript_annot_gtf'], **kwargs):
-    df.reset_index(inplace=True)
-    annot = pd.read_table(annotation, header=None)
-    mapping = _gene_name_map_from_gtf(annot, "transcript_id", "transcript_name")
-    df["transcript_name"] = df["transcript_id"].map(mapping.get)
-    return df
+rsem.register_aggregate_post_processing_hook('genes')(scrnaseq_annotate_genes_hook)
+rpkmforgenes.register_aggregate_post_processing_hook('rpkmforgenes')(scrnaseq_annotate_genes_hook)
+rsem.register_aggregate_post_processing_hook('isoforms')(scrnaseq_annotate_isoforms_hook)
 
 
-##############################
 # Results class - composite results
-##############################
 results = SampleApplication(
     name="results",
     iotargets={
@@ -262,14 +237,39 @@ results = SampleApplication(
                        IOAggregateTarget(join(config['scrnaseq.workflow']['aggregate_output_dir'], 'align_rseqc.csv'))),
     },
 )
-results.register_plot('alignrseqc')(_results_plot_alignrseqc)
+results.register_plot('alignrseqc')(scrnaseq_results_plot_alignrseqc)
 
-# Utility rules - these rely on previously defined targets so must be
-# placed here; everything up to here in this file is visible to the
-# included file
-include: "./utils.rules"
+##################################################
+# Rules
+##################################################
 
-# Workflow rules
+# Additional merge rule for transcript alignment files
+rule scrnaseq_picard_merge_sam_transcript:
+    """scrnaseq picard: merge sam files from transcript alignments.
+
+    NB: always outputs bam files!
+    """
+    params: cmd = config['bio.ngs.qc.picard']['cmd'] + "MergeSamFiles",
+            options = " ".join([config['bio.ngs.qc.picard']['options'],
+                                config['bio.ngs.qc.picard']['merge_sam']['options']])
+    input: _find_transcript_bam
+    output: merge="{prefix}.merge.tx.bam"
+    run: 
+      if (len(input) > 1):
+          inputstr = " ".join(["INPUT={}".format(x) for x in input])
+          shell("{cmd} {ips} OUTPUT={out} {opt}".format(cmd=params.cmd, ips=inputstr, out=output.merge, opt=params.options))
+      else:
+          if exists(output.merge):
+              os.unlink(output.merge)
+          shutil.copy(input[0], output.merge)
+
+
+
+
+
+##############################
+## Workflow rules
+##############################
 rule scrnaseq_all:
     """Run scRNAseq pipeline"""
     input: Align.targets['unique'] + RSeQC.targets['txt'] + rpkmforgenes.targets['rpkmforgenes'] + rsem.targets['genes'] + REPORT_TARGETS
@@ -320,15 +320,55 @@ rule scrnaseq_aggregate_rsem:
     output: genes = rsem.aggregate_targets['genes'],
             isoforms = rsem.aggregate_targets['isoforms']
     run:
-        rsem.aggregate().save_aggregate_data()
+        rsem.aggregate(annotation=config['bio.ngs.settings']['annotation']['transcript_annot_gtf']).save_aggregate_data()
 
 rule scrnaseq_aggregate_rpkmforgenes:
     input: rpkmforgenes = rpkmforgenes.targets['rpkmforgenes']
     output: rpkmforgenes = rpkmforgenes.aggregate_targets['rpkmforgenes']
     run:
-        rpkmforgenes.aggregate().save_aggregate_data()
+        rpkmforgenes.aggregate(annotation=config['bio.ngs.settings']['annotation']['transcript_annot_gtf']).save_aggregate_data()
 
-    
+
+##############################
+# pca rule
+##############################
+rule scrnaseq_pca:
+    input: expr = "{prefix}.csv"
+    output: pca = "{prefix}.pca.csv",
+            pcaobj = "{prefix}.pcaobj.pickle"
+    run:
+        expr_long = pd.read_csv(input.expr)
+        expr_long["TPM"] = [math.log2(x+1.0) for x in expr_long["TPM"]]
+        X = expr_long.pivot_table(columns="gene_id", values="TPM",
+                                 index="SM")
+        scrnaseq_pca(config, input, output, X=X)
+
+##############################
+# Rule to combine Align and RSeQC data
+##############################
+rule save_align_rseqc_data:
+    """Save joint alignment and rseqc data"""
+    input: align_log = Align.targets['log'],
+           rseqc_read_distribution = RSeQC_readDistribution.targets['txt'],
+           rseqc_gene_body_coverage = RSeQC_geneBodyCoverage.targets['txt']
+    output: csv = join(config['scrnaseq.workflow']['aggregate_output_dir'], "align_rseqc.csv")
+    run:
+        _save_align_rseqc_metrics(config, output, Align, RSeQC_readDistribution, RSeQC_geneBodyCoverage)
+
+
+##############################
+# QC - create html report
+##############################
+rule scrnaseq_qc_new:
+    input: alignrseqc = results.aggregate_targets['alignrseqc'],
+           rsem = rsem.targets['pca'],
+           rpkmforgenes = rpkmforgenes.targets['pca'],
+           rulegraph = join("{path}", "scrnaseq_all_rulegraph.png"),
+           globalconf = join("{path}", "smlconf_global.yaml")
+    output: html = join("{path}", "scrnaseq_summary_new.html")
+    run:
+        scrnaseq_qc(config, input, output, results=results, rsem=rsem, rpkmforgenes=rpkmforgenes)
+
 # Misc rules
 rule scrnaseq_targets:
     """Print targets """
