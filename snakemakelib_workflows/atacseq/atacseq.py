@@ -135,15 +135,15 @@ def atacseq_summary(config, input, output, Cutadapt, Qualimap,
                                    'coverage_per_contig': Qualimap.plot("Coverage_per_contig")[0]}}})
     
     InsertMetrics.read_aggregate_data()
-    plist = [InsertMetrics.plot('insert_metrics')[0]] + [x for sublist in InsertMetrics.plot("insert_metrics_hist")[0].children for x in sublist]
+    plist = [InsertMetrics.plot('metrics')[0]] + [x for sublist in InsertMetrics.plot("hist")[0].children for x in sublist]
     gp = gridplot([plist[i:i+3] for i in range(0, len(plist), 3)])
     d.update({'picard': {'InsertMetrics': {'atacseq' : {'fig': gp}}}})
 
     MarkDuplicates.read_aggregate_data()
     d['picard'].update({'DuplicationMetrics': {'atacseq':
                                                {'fig':
-                                                gridplot([[MarkDuplicates.plot('dup_metrics')[0],
-                                                           MarkDuplicates.plot('dup_metrics_hist')[0]]])}}})
+                                                gridplot([[MarkDuplicates.plot('metrics')[0],
+                                                           MarkDuplicates.plot('hist')[0]]])}}})
 
     d.update({'rulegraph' : {'fig' : input.rulegraph, 'uri': data_uri(input.rulegraph),
                              'target' : 'atacseq_all'}})

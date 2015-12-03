@@ -233,38 +233,38 @@ Qualimap.register_plot('Coverage_per_contig')(_qualimap_plot_coverage_per_contig
 MarkDuplicates = SampleApplication(
     name="MarkDuplicates",
     iotargets={
-        'dup_metrics': (IOTarget(sample_re.file, suffix=".sort.merge.dup.dup_metrics"),
+        'metrics': (IOTarget(sample_re.file, suffix=".sort.merge.dup.dup_metrics"),
                         IOAggregateTarget(os.path.join(config['atacseq.workflow']['aggregate_output_dir'], "MarkDuplicates.metrics"))),
-        'dup_metrics_hist': (IOTarget(sample_re.file, suffix=".sort.merge.dup.dup_metrics"),
+        'hist': (IOTarget(sample_re.file, suffix=".sort.merge.dup.dup_metrics"),
                              IOAggregateTarget(os.path.join(config['atacseq.workflow']['aggregate_output_dir'], "MarkDuplicates.hist"))),
     },
     units=_samples,
 )
 
-MarkDuplicates.register_plot('dup_metrics')(_mark_duplicates_plot)
-MarkDuplicates.register_plot('dup_metrics_hist')(_mark_duplicates_hist_plot)
+MarkDuplicates.register_plot('metrics')(_mark_duplicates_plot)
+MarkDuplicates.register_plot('hist')(_mark_duplicates_hist_plot)
 
 
 AlignmentMetrics = SampleApplication(
     name="AlignmentMetrics",
     iotargets={
-        'align_metrics': (IOTarget(sample_re.file, suffix=".sort.merge.dup.align_metrics"),
-                          IOAggregateTarget(os.path.join(config['atacseq.workflow']['aggregate_output_dir'], "AlignMetrics.metrics")))},
+        'metrics': (IOTarget(sample_re.file, suffix=".sort.merge.dup.align_metrics"),
+                    IOAggregateTarget(os.path.join(config['atacseq.workflow']['aggregate_output_dir'], "AlignMetrics.metrics")))},
     units=_samples,
 )
 
 InsertMetrics = SampleApplication(
     name="InsertMetrics",
     iotargets={
-        'insert_metrics': (IOTarget(sample_re.file, suffix=".sort.merge.dup.insert_metrics"),
+        'metrics': (IOTarget(sample_re.file, suffix=".sort.merge.dup.insert_metrics"),
                            IOAggregateTarget(os.path.join(config['atacseq.workflow']['aggregate_output_dir'], "InsertMetrics.metrics"))),
-        'insert_metrics_hist': (IOTarget(sample_re.file, suffix=".sort.merge.dup.insert_metrics"),
+        'hist': (IOTarget(sample_re.file, suffix=".sort.merge.dup.insert_metrics"),
                                 IOAggregateTarget(os.path.join(config['atacseq.workflow']['aggregate_output_dir'], "InsertMetrics.hist")))},
     units=_samples,
 )
 
-InsertMetrics.register_plot('insert_metrics')(_insert_metrics_plot)
-InsertMetrics.register_plot('insert_metrics_hist')(_insert_metrics_hist_plot)
+InsertMetrics.register_plot('metrics')(_insert_metrics_plot)
+InsertMetrics.register_plot('hist')(_insert_metrics_hist_plot)
 
 ####################
 # Peak callers
@@ -337,14 +337,14 @@ rule atacseq_aggregate_qualimap_results:
         aggregate_results(Qualimap)
 
 rule atacseq_aggregate_picard_results:
-    input: markduplicates = MarkDuplicates.targets['dup_metrics'],
-           alignmetrics = AlignmentMetrics.targets['align_metrics'],
-           insertmetrics = InsertMetrics.targets['insert_metrics']
-    output: dup_metrics = MarkDuplicates.aggregate_targets['dup_metrics'],
-            dup_metrics_hist = MarkDuplicates.aggregate_targets['dup_metrics_hist'],
-            insert_metrics = InsertMetrics.aggregate_targets['insert_metrics'],
-            insert_metrics_hist = InsertMetrics.aggregate_targets['insert_metrics_hist'],
-            align_metrics = AlignmentMetrics.aggregate_targets['align_metrics']
+    input: markduplicates = MarkDuplicates.targets['metrics'],
+           alignmetrics = AlignmentMetrics.targets['metrics'],
+           insertmetrics = InsertMetrics.targets['metrics']
+    output: dup_metrics = MarkDuplicates.aggregate_targets['metrics'],
+            dup_metrics_hist = MarkDuplicates.aggregate_targets['hist'],
+            insert_metrics = InsertMetrics.aggregate_targets['metrics'],
+            insert_metrics_hist = InsertMetrics.aggregate_targets['hist'],
+            align_metrics = AlignmentMetrics.aggregate_targets['metrics']
     run:
         aggregate_results(AlignmentMetrics)
         aggregate_results(MarkDuplicates)
@@ -356,11 +356,11 @@ rule atacseq_aggregate_results:
     input: cutadapt = Cutadapt.aggregate_targets['cutadapt'],
             qualimap_globals = Qualimap.aggregate_targets['Globals'],
             qualimap_coverage_per_contig = Qualimap.aggregate_targets['Coverage_per_contig'],
-            dup_metrics = MarkDuplicates.aggregate_targets['dup_metrics'],
-            dup_metrics_hist = MarkDuplicates.aggregate_targets['dup_metrics_hist'],
-            insert_metrics = InsertMetrics.aggregate_targets['insert_metrics'],
-            insert_metrics_hist = InsertMetrics.aggregate_targets['insert_metrics_hist'],
-            align_metrics = AlignmentMetrics.aggregate_targets['align_metrics']
+            dup_metrics = MarkDuplicates.aggregate_targets['metrics'],
+            dup_metrics_hist = MarkDuplicates.aggregate_targets['hist'],
+            insert_metrics = InsertMetrics.aggregate_targets['metrics'],
+            insert_metrics_hist = InsertMetrics.aggregate_targets['hist'],
+            align_metrics = AlignmentMetrics.aggregate_targets['metrics']
         
 
 rule atacseq_report:
@@ -368,11 +368,11 @@ rule atacseq_report:
     input: cutadapt = Cutadapt.aggregate_targets['cutadapt'],
            qualimap_globals = Qualimap.aggregate_targets['Globals'],
            qualimap_coverage_per_contig = Qualimap.aggregate_targets['Coverage_per_contig'],
-           dup_metrics = MarkDuplicates.aggregate_targets['dup_metrics'],
-           dup_metrics_hist = MarkDuplicates.aggregate_targets['dup_metrics_hist'],
-           insert_metrics = InsertMetrics.aggregate_targets['insert_metrics'],
-           insert_metrics_hist = InsertMetrics.aggregate_targets['insert_metrics_hist'],
-           align_metrics = AlignmentMetrics.aggregate_targets['align_metrics'],
+           dup_metrics = MarkDuplicates.aggregate_targets['metrics'],
+           dup_metrics_hist = MarkDuplicates.aggregate_targets['hist'],
+           insert_metrics = InsertMetrics.aggregate_targets['metrics'],
+           insert_metrics_hist = InsertMetrics.aggregate_targets['hist'],
+           align_metrics = AlignmentMetrics.aggregate_targets['metrics'],
            rulegraph = join(config['atacseq.workflow']['report_output_dir'], "atacseq_all_rulegraph.png")
     output: html = join(config['atacseq.workflow']['report_output_dir'], "atacseq_summary.html")
     run:
