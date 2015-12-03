@@ -4,8 +4,8 @@ from snakemakelib.bio.ngs.rnaseq.utils import _gene_name_map_from_gtf
 
 __all__ = ['scrnaseq_annotate_genes_hook', 'scrnaseq_annotate_isoforms_hook',
            'scrnaseq_rseqc_genebody_coverage_hook',
-           'scrnaseq_rseq_read_distribution_hook',
-           'scrnaseq_star_align_post_processing_hook']
+           'scrnaseq_rseqc_read_distribution_hook',
+           'scrnaseq_star_align_postprocessing_hook']
 
 
 def scrnaseq_annotate_genes_hook(df, annotation, **kwargs):
@@ -29,7 +29,7 @@ def scrnaseq_rseqc_genebody_coverage_hook(df, **kwargs):
     return df
 
 
-def scrnaseq_rseq_read_distribution_hook(df, **kwargs):
+def scrnaseq_rseqc_read_distribution_hook(df, **kwargs):
     df = df.reset_index().set_index("Group")
     exonmap = df.loc['Introns', :]
     cols = ["Total_bases", "Tag_count", "Tags/Kb"]
@@ -38,7 +38,7 @@ def scrnaseq_rseq_read_distribution_hook(df, **kwargs):
     return df
 
 
-def scrnaseq_star_align_post_processing_hook(df, **kwargs):
+def scrnaseq_star_align_postprocessing_hook(df, **kwargs):
     df.loc['mismatch_sum', :] = df.loc['Mismatch rate per base, %',:].copy()
     df.loc['mismatch_sum', "value"] = df.loc['Mismatch rate per base, %', "value"]   + df.loc['Deletion rate per base', "value"] + df.loc['Insertion rate per base', "value"]
     df.loc['% of reads unmapped', :] = df.loc['% of reads unmapped: other', :]

@@ -8,6 +8,7 @@ from snakemake.utils import update_config, set_temporary_output, set_protected_o
 from snakemake.workflow import workflow
 from snakemake_rules import SNAKEMAKE_RULES_PATH
 from snakemakelib.io import make_targets, IOTarget, IOAggregateTarget
+from snakemakelib.odo import star, rseqc 
 from snakemakelib.sample.input import initialize_input
 from snakemakelib_workflows.scrnaseq.app import *
 from snakemakelib.application import SampleApplication, PlatformUnitApplication
@@ -176,6 +177,8 @@ RSeQC = SampleApplication(
     },
     units=_samples
     )
+
+
 RSeQC_geneBodyCoverage = SampleApplication(
     name="rseqc_geneBody_coverage",
     iotargets={
@@ -185,7 +188,8 @@ RSeQC_geneBodyCoverage = SampleApplication(
     units=_samples,
     run = config['bio.ngs.qc.rseqc']['rseqc_qc']['rseqc_geneBody_coverage']
     )
-RSeQC_geneBodyCoverage.register_post_processing_hook('txt')(scrnaseq__rseqc_genebody_coverage_hook)
+RSeQC_geneBodyCoverage.register_post_processing_hook('txt')(scrnaseq_rseqc_genebody_coverage_hook)
+
 
 RSeQC_readDistribution = SampleApplication(
     name="rseqc_read_distribution",
@@ -198,6 +202,7 @@ RSeQC_readDistribution = SampleApplication(
     )
 RSeQC_readDistribution.register_post_processing_hook('txt')(scrnaseq_rseqc_read_distribution_hook)
 
+
 rpkmforgenes = SampleApplication(
     name="rpkmforgenes",
     iotargets={
@@ -209,6 +214,7 @@ rpkmforgenes = SampleApplication(
     units=_samples,
     run = True if 'rpkmforgenes' in config['scrnaseq.workflow']['quantification'] else False
     )
+
 
 tx = "" if config['bio.ngs.rnaseq.rsem']['index_is_transcriptome'] else ".tx"
 rsem = SampleApplication(
