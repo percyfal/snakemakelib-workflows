@@ -72,7 +72,7 @@ def scrnaseq_results_plot_alignrseqc(df, **kwargs):
     p4 = dotplot(
         df=source,
         tools=DEFAULT_TOOLS,
-        title="Unmapped reads",
+        title="Mismatch/indel rate",
         x="SM",
         y=[
             "Mismatch_rate_per_base,_PCT",

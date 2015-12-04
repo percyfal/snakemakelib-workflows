@@ -1,5 +1,6 @@
 # Copyright (C) 2015 by Per Unneberg
 import jinja2
+import pandas as pd
 from snakemake.report import data_uri
 from snakemakelib.resources import bootstrap_css_files, bootstrap_js_files
 from snakemakelib.plot.bokeh import static_html
