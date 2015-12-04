@@ -1,7 +1,6 @@
 # -*- snakemake -*-
 import os
 import shutil
-import math
 import pandas as pd
 from os.path import join, dirname, relpath, exists, basename
 from snakemake.utils import update_config, set_temporary_output, set_protected_output
@@ -104,6 +103,11 @@ config_default = {
     },
     'bio.ngs.align.star' : {
         'rules' : ['star_align', 'star_align_se', 'star_index', 'star_align_log']
+    },
+    'comp.settings': {
+        'python2': {
+            'activate_cmd': "",
+        },
     },
 }
 
@@ -208,7 +212,7 @@ rpkmforgenes = SampleApplication(
     iotargets={
         'rpkmforgenes': (IOTarget(sample_re.file, suffix=".merge.rpkmforgenes"),
                          IOAggregateTarget(join(config['scrnaseq.workflow']['aggregate_output_dir'], 'rpkmforgenes.csv'))),
-        'pca': (IOTarget(join(config['scrnaseq.workflow']['aggregate_output_dir'], 'rpkmforgenes.pca.csv')),
+        'pca': (IOTarget(join(config['scrnaseq.workflow']['report']['directory'], 'rpkmforgenes.pca.csv')),
                 None),
     },
     units=_samples,
@@ -224,7 +228,7 @@ rsem = SampleApplication(
                 IOAggregateTarget(join(config['scrnaseq.workflow']['aggregate_output_dir'], 'rsem.genes.csv'))),
         'isoforms': (IOTarget(sample_re.file, suffix='.merge{tx}.isoforms.results'.format(tx=tx)),
                      IOAggregateTarget(join(config['scrnaseq.workflow']['aggregate_output_dir'], 'rsem.isoforms.csv'))),
-        'pca': (IOTarget(join(config['scrnaseq.workflow']['aggregate_output_dir'], 'rsem.genes.pca.csv')),
+        'pca': (IOTarget(join(config['scrnaseq.workflow']['report']['directory'], 'rsem.genes.pca.csv')),
                 None),
     },
     units=_samples,
@@ -268,9 +272,6 @@ rule scrnaseq_picard_merge_sam_transcript:
           if exists(output.merge):
               os.unlink(output.merge)
           shutil.copy(input[0], output.merge)
-
-
-
 
 
 ##############################
@@ -335,19 +336,45 @@ rule scrnaseq_aggregate_rpkmforgenes:
         rpkmforgenes.aggregate(annotation=config['bio.ngs.settings']['annotation']['transcript_annot_gtf']).save_aggregate_data()
 
 
+rule scrnaseq_aggregate_data:
+    input: Align.aggregate_targets['log'],
+           RSeQC_readDistribution.aggregate_targets['txt'],
+           RSeQC_geneBodyCoverage.aggregate_targets['txt'],
+           rsem.aggregate_targets['genes'],
+           rpkmforgenes.aggregate_targets['rpkmforgenes']
+
 ##############################
 # pca rule
 ##############################
 rule scrnaseq_pca:
-    input: expr = "{prefix}.csv"
-    output: pca = "{prefix}.pca.csv",
-            pcaobj = "{prefix}.pcaobj.pickle"
+    """Run regular PCA and ad hoc feature selection on data.
+    """
+    input: expr = join(config['scrnaseq.workflow']['aggregate_output_dir'], "{prefix}.csv")
+    output: pca = join("{path}", "{prefix}.pca.csv"),
+            pcaobj = join("{path}", "{prefix}.pcaobj.pickle")
     run:
-        expr_long = pd.read_csv(input.expr)
-        expr_long["TPM"] = [math.log2(x+1.0) for x in expr_long["TPM"]]
-        X = expr_long.pivot_table(columns="gene_id", values="TPM",
-                                 index="SM")
-        scrnaseq_pca(config, input, output, X=X)
+        scrnaseq_pca_all(input.expr, output.pca, output.pcaobj, 
+                         metadata=config['scrnaseq.workflow']['metadata'])
+
+rule scrnaseq_sparse_pca:
+    """Run sparse PCA and feature selection on data.
+
+    Note that this procedure should really be subjected to cross
+    validation in order to select the regularization tuning parameter.
+
+    See Witten and Tibshirani (2011) and an article by Witten in
+    Statistical Analysis of Next Generation Sequencing Data (2014) for
+    a discussion on feature selection.
+
+    """
+    input: expr = "{prefix}.csv"
+    output: pca = "{prefix}.sparsepca.csv",
+            pcaobj = "{prefix}.sparsepcaobj.pickle"
+    run:
+        scrnaseq_pca_all(input.expr, output.pca, output.pcaobj, 
+                         metadata=config['scrnaseq.workflow']['metadata'],
+                         method="sparsePCA")
+
 
 ##############################
 # Rule to combine Align and RSeQC data
@@ -359,13 +386,14 @@ rule save_align_rseqc_data:
            rseqc_gene_body_coverage = RSeQC_geneBodyCoverage.targets['txt']
     output: csv = join(config['scrnaseq.workflow']['aggregate_output_dir'], "align_rseqc.csv")
     run:
-        _save_align_rseqc_metrics(config, output, Align, RSeQC_readDistribution, RSeQC_geneBodyCoverage)
+        scrnaseq_save_align_rseqc_metrics(config, output, Align, RSeQC_readDistribution, RSeQC_geneBodyCoverage)
 
 
 ##############################
 # QC - create html report
 ##############################
-rule scrnaseq_qc_new:
+rule scrnaseq_qc:
+    """Create qc html report"""
     input: alignrseqc = results.aggregate_targets['alignrseqc'],
            rsem = rsem.targets['pca'],
            rpkmforgenes = rpkmforgenes.targets['pca'],

@@ -48,7 +48,6 @@ scripts = []
 
 REQUIRES = [
     'snakemake>=3.5.3',
-    'snakemakelib>=0.2-a2',
 ]
 
 try:
@@ -95,6 +94,9 @@ setup(
     scripts=scripts,
     packages=[
         'snakemakelib_workflows',
+        'snakemakelib_workflows.atacseq',
+        'snakemakelib_workflows.scrnaseq',
+        'snakemakelib_workflows.scrnaseq.app',
     ],
     # namespace_packages = [
     #     'snakemakelib',
