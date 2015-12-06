@@ -8,7 +8,7 @@ from snakemakelib.targets import make_targets
 from snakemakelib.sample.input import initialize_input
 from snakemakelib.application import SampleApplication, PlatformUnitApplication
 from snakemakelib.io import IOTarget, IOAggregateTarget
-from snakemakelib_workflows.atacseq import *
+from snakemakelib_workflows.app import *
 
 # Collect information about inputs; _samples stores a list of
 # dictionaries, where each dictionary contains information on a sample
@@ -161,22 +161,9 @@ Cutadapt = PlatformUnitApplication(
     run=config['atacseq.workflow']['trimadaptor']
 )
 
-@Cutadapt.register_post_processing_hook('cutadapt')
-def _cutadapt_post_processing_hook(df, **kwargs):
-    df_wide = df.reset_index().pivot_table(values=["value"], index=["SM", "PU", "PlatformUnit"], columns="statistic")
-    df_wide.columns = df_wide.columns.droplevel()
-    df_wide["Read 1 percent"] = 100.0 * df_wide["Read 1 with adapter"] /\
-        df_wide["Total read pairs processed"]
-    df_wide["Read 2 percent"] = 100.0 * df_wide["Read 2 with adapter"] /\
-        df_wide["Total read pairs processed"]
-    df = df_wide.stack()
-    df.name = "value"
-    return df
-
-Cutadapt.register_plot('cutadapt')(_cutadapt_plot_metrics)
-
+Cutadapt.register_post_processing_hook('cutadapt')(atacseq_cutadapt_post_processing_hook)
+Cutadapt.register_plot('cutadapt')(atacseq_cutadapt_plot_metrics)
     
-
 Align = PlatformUnitApplication(
     name=aligner,
     iotargets={
@@ -209,25 +196,10 @@ Qualimap = SampleApplication(
     units=_samples
 )
 
-@Qualimap.register_post_processing_hook('Globals')
-def _qualimap_globals_post_processing_hook(df, **kwargs):
-    tmp = df.loc["number of mapped reads"] -  df.loc["number of duplicated reads"]
-    tmp['statistic'] = "number of unique reads"
-    tmp = tmp.reset_index().set_index(['statistic', 'SM'])
-    df = df.append(tmp)
-    df.sortlevel(inplace=True)
-    df["percent"] = df["value"]
-    df["percent"] = 100.0 * df["percent"] / df.loc["number of reads"]["percent"]
-    return df
-
-@Qualimap.register_post_processing_hook('Coverage_per_contig')
-def _qualimap_coverage_per_contig_post_processing_hook(df, **kwargs):
-    df['chrlen_percent'] = 100.0 * df['chrlen'] / sum(df['chrlen'])
-    df['mapped_bases_percent'] = 100.0 * df['mapped_bases'] / sum(df['mapped_bases'])
-    return df
-
-Qualimap.register_plot('Globals')(_qualimap_plot_globals)
-Qualimap.register_plot('Coverage_per_contig')(_qualimap_plot_coverage_per_contig)
+Qualimap.register_post_processing_hook('Globals')(atacseq_qualimap_globals_post_processing_hook)
+Qualimap.register_post_processing_hook('Coverage_per_contig')(atacseq_qualimap_coverage_per_contig_post_processing_hook)
+Qualimap.register_plot('Globals')(atacseq_qualimap_plot_globals)
+Qualimap.register_plot('Coverage_per_contig')(atacseq_qualimap_plot_coverage_per_contig)
 
 
 MarkDuplicates = SampleApplication(
@@ -241,8 +213,8 @@ MarkDuplicates = SampleApplication(
     units=_samples,
 )
 
-MarkDuplicates.register_plot('metrics')(_mark_duplicates_plot)
-MarkDuplicates.register_plot('hist')(_mark_duplicates_hist_plot)
+MarkDuplicates.register_plot('metrics')(atacseq_mark_duplicates_plot)
+MarkDuplicates.register_plot('hist')(atacseq_mark_duplicates_hist_plot)
 
 
 AlignmentMetrics = SampleApplication(
@@ -263,8 +235,8 @@ InsertMetrics = SampleApplication(
     units=_samples,
 )
 
-InsertMetrics.register_plot('metrics')(_insert_metrics_plot)
-InsertMetrics.register_plot('hist')(_insert_metrics_hist_plot)
+InsertMetrics.register_plot('metrics')(atacseq_insert_metrics_plot)
+InsertMetrics.register_plot('hist')(atacseq_insert_metrics_hist_plot)
 
 ####################
 # Peak callers
@@ -304,7 +276,7 @@ BIGWIG_TARGETS = [x.replace(".bed", ".bed.wig.bw") for x in Dfilter.targets['bed
 ##############################
 rule atacseq_all:
     """Run ATAC-seq pipeline"""
-    input: Dfilter.targets['bed'] + Macs2.targets['xls'] + MarkDuplicates.targets['dup_metrics'] + AlignmentMetrics.targets['align_metrics'] + InsertMetrics.targets['insert_metrics'] + REPORT_TARGETS
+    input: Dfilter.targets['bed'] + Macs2.targets['xls'] + MarkDuplicates.targets['metrics'] + MarkDuplicates.targets['hist'] + AlignmentMetrics.targets['metrics'] + InsertMetrics.targets['metrics'] + InsertMetrics.targets['hist'] + REPORT_TARGETS
 
 rule atacseq_align:
     """Run ATAC-seq alignment"""
@@ -316,7 +288,7 @@ rule atacseq_merge:
 
 rule atacseq_metrics:
     """Run ATAC-seq alignment and corresponding metrics only"""
-    input: MarkDuplicates.targets['dup_metrics'] + AlignmentMetrics.targets['align_metrics'] + InsertMetrics.targets['insert_metrics']
+    input: MarkDuplicates.targets['metrics'] + AlignmentMetrics.targets['metrics'] + InsertMetrics.targets['metrics'] + MarkDuplicates.targets['hist'] + InsertMetrics.targets['hist']
 
 rule atacseq_bigwig:
     """Convert peak-calling bed output to bigwig"""
@@ -415,8 +387,8 @@ rule atacseq_correct_coordinates:
 # Set temporary and protected outputs
 set_temporary_output(*[workflow.get_rule(x) for x in config['settings']['temporary_rules']])
 set_protected_output(*[workflow.get_rule(x) for x in config['settings']['protected_rules']])
-set_protected_output_by_extension(*[workflow.get_rule(x) for x in config['settings']['temporary_rules']],
-                                  re_extension = re.compile("(.align_metrics$|.dup_metrics$|.insert_metrics$)"))
+# set_protected_output_by_extension(*[workflow.get_rule(x) for x in config['settings']['temporary_rules']],
+#                                   re_extension = re.compile("(.align_metrics$|.dup_metrics$|.insert_metrics$)"))
 
 
 #
