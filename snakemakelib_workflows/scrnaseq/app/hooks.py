@@ -2,7 +2,8 @@
 import pandas as pd
 from snakemakelib.bio.ngs.rnaseq.utils import _gene_name_map_from_gtf
 
-__all__ = ['scrnaseq_annotate_genes_hook', 'scrnaseq_annotate_isoforms_hook',
+__all__ = ['scrnaseq_annotate_genes_hook',
+           'scrnaseq_annotate_isoforms_hook',
            'scrnaseq_rseqc_genebody_coverage_hook',
            'scrnaseq_rseqc_read_distribution_hook',
            'scrnaseq_star_align_postprocessing_hook']
@@ -13,6 +14,9 @@ def scrnaseq_annotate_genes_hook(df, annotation, **kwargs):
     annot = pd.read_table(annotation, header=None)
     mapping = _gene_name_map_from_gtf(annot, "gene_id", "gene_name")
     df["gene_name"] = df["gene_id"].map(mapping.get)
+    if "spikeins" in kwargs:
+        df["spikein"] = 0
+        df.loc[df["gene_name"].isin(kwargs['spikeins']), "spikein"] = 1
     return df
 
 
@@ -21,6 +25,9 @@ def scrnaseq_annotate_isoforms_hook(df, annotation, **kwargs):
     annot = pd.read_table(annotation, header=None)
     mapping = _gene_name_map_from_gtf(annot, "transcript_id", "transcript_name")
     df["transcript_name"] = df["transcript_id"].map(mapping.get)
+    if "spikein" in kwargs:
+        df["spikein"] = 0
+        df.loc[df["transcript_name"] in kwargs['spikeins']]["spikein"] = 1
     return df
 
 
@@ -44,3 +51,4 @@ def scrnaseq_star_align_postprocessing_hook(df, **kwargs):
     df.loc['% of reads unmapped', :] = df.loc['% of reads unmapped: other', :]
     df.loc['% of reads unmapped', "value"] = df.loc['% of reads unmapped: other', "value"] + df.loc['% of reads unmapped: too many mismatches', "value"] + df.loc['% of reads unmapped: too short', "value"]
     return df
+

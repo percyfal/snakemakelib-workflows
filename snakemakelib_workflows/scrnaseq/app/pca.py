@@ -2,19 +2,32 @@
 import pickle
 import math
 import pandas as pd
+from snakemakelib.log import LoggerManager
+
+smllogger = LoggerManager.getLogger(__name__)
 
 __all__ = ['scrnaseq_pca_all']
 
-def scrnaseq_pca_all(expr, pca_output_file, pcaobj_pickle_file, metadata=None, pca_quant="TPM", **kwargs):
+def scrnaseq_pca_all(expr, pca_output_file, pcaobj_pickle_file,
+                     metadata=None, pca_quant="TPM",
+                     screen_n=2000, **kwargs):
     """Wrapper for running pca and feature selection.
     
     Args:
       expr (str): input file name
       pca_output_file (str): output file name
       pcaobj_pickle_file (str): output file name for pickle serialization
-    
+      metadata (str): metadata file name
+      screen_n (int): number of features to keep based on variance
+      
+    Returns:
+      None - results are saved to given output files
     """
     expr_long = pd.read_csv(expr)
+    if not kwargs.get('samples', None) is None:
+        expr_long = expr_long.loc[expr_long.SM.isin(kwargs.pop('samples')), :]
+    if "spikein" in expr_long.columns:
+        expr_long = expr_long.loc[expr_long["spikein"]==0,]
     expr_long["TPM"] = [math.log2(x+1.0) for x in expr_long["TPM"]]
     expr_long["FPKM"] = [math.log2(x+1.0) for x in expr_long["FPKM"]]
     X = expr_long.pivot_table(columns="gene_id", values=pca_quant,
@@ -22,7 +35,13 @@ def scrnaseq_pca_all(expr, pca_output_file, pcaobj_pickle_file, metadata=None, p
     try:
         kwargs['labels'] = expr_long["gene_name"][0:X.shape[1]]
     except:
-        print("Failed to set labels")
+        smllogger.info("Failed to set labels on gene_name")
+    if not screen_n is None:
+        smllogger.info("Only using top {} variable features", screen_n)
+        sorted_vars = [i[0] for i in sorted(enumerate(list(X.var())), key=lambda x:x[1], reverse=True)]
+        X = X.ix[:, sorted_vars[:screen_n]]
+        if 'labels' in kwargs:
+            kwargs['labels'] = expr_long["gene_name"].iloc[sorted_vars[:screen_n]]
     pcares, pcaobj = scrnaseq_pca(X, metadata=metadata, **kwargs)
     detected_genes = expr_long.groupby(kwargs.get("groupby", 'SM')).agg(lambda x: sum(x > kwargs.get('cutoff', 1)))
     if not detected_genes is None:
@@ -45,7 +64,6 @@ def scrnaseq_pca(X, method="PCA", labels=None, metadata=None, **kwargs):
 
     FIXME: generic enough to put in snakemakelib-core?
     """
-    #kwargs = {}
     if method == "sparsePCA":
         ### Tuning parameter should be chosen from cross validation
         from sklearn.decomposition import sparsePCA as PCA
@@ -57,7 +75,7 @@ def scrnaseq_pca(X, method="PCA", labels=None, metadata=None, **kwargs):
     pcaobj.fit(X)
     pcaobj.features = X.columns.values
     if not labels is None:
-        pcaobj.labels = labels
+        pcaobj.labels = list(labels)
     pcares = pd.DataFrame(pcaobj.fit(X).transform(X))
     if not X.index.name is None:
         pcares.index = X.index
