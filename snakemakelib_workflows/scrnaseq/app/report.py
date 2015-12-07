@@ -36,9 +36,10 @@ Env = jinja2.Environment(loader=loader)
 
 def scrnaseq_qc(config, input, output, results=None, rsem=None, rpkmforgenes=None, **kwargs):
     """Do QC of scrnaseq"""
-    # Collect results
+    # Collect results - subset by samples if applicable
     results.read_aggregate_data()
-    
+    results.filter_aggregate_data('alignrseqc', 'SM', config["samples"])
+
     # Brennecke args
     brennecke_args = {'plot_height':600, 'plot_width': 800, 'alpha':
                       0.3, 'taptool_url': config['scrnaseq.workflow']['report']['annotation_url'] + "@gene_id"}
