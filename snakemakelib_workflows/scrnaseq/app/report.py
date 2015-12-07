@@ -6,7 +6,7 @@ from snakemakelib.resources import bootstrap_css_files, bootstrap_js_files
 from snakemakelib.plot.bokeh import static_html
 from snakemakelib.plot.sklearn import plot_pca
 from snakemakelib import SNAKEMAKELIB_TEMPLATES_PATH
-from snakemakelib_workflows import SNAKEMAKELIB_WORKFLOWS_TEMPLATES_PATH
+from snakemakelib_workflows import SNAKEMAKELIB_WORKFLOWS_TEMPLATES_PATH, all_versions
 
 __all__ = ['scrnaseq_save_align_rseqc_metrics', 'scrnaseq_qc']
 
@@ -23,9 +23,6 @@ def scrnaseq_save_align_rseqc_metrics(config, output, Align, RSeQC_readDistribut
     # Remember: ColumnDataSource column names cannot include spaces or %
     df.columns = [x.replace(" ", "_").replace("%", "PCT") for x in df.columns]
     df.to_csv(output.csv)
-    
-
-
 
 
 # Template environment
@@ -62,8 +59,9 @@ def scrnaseq_qc(config, input, output, results=None, rsem=None, rpkmforgenes=Non
                                            config['scrnaseq.workflow']['metadata'],
                                            rpkmforgenes.targets['pca'][0].replace(".pca.csv", ".pcaobj.pickle"),
                                            taptool_url= config['scrnaseq.workflow']['report']['annotation_url'] + "@gene_id")})
-    
-    d.update({'version' : config['_version'], 'config' : {'uri' : data_uri(input.globalconf), 'file' : input.globalconf}})
+
+
+    d.update({'version' : all_versions(), 'config' : {'uri' : data_uri(input.globalconf), 'file' : input.globalconf}})
     d.update({'rulegraph': {'fig': input.rulegraph, 'uri': data_uri(input.rulegraph),
                             'target': 'scrnaseq_all'}})
     tp = Env.get_template('workflow_scrnaseq_qc.html')
