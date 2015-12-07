@@ -32,16 +32,15 @@ def scrnaseq_pca_all(expr, pca_output_file, pcaobj_pickle_file,
     expr_long["FPKM"] = [math.log2(x+1.0) for x in expr_long["FPKM"]]
     X = expr_long.pivot_table(columns="gene_id", values=pca_quant,
                               index="SM")
-    try:
-        kwargs['labels'] = expr_long["gene_name"][0:X.shape[1]]
-    except:
-        smllogger.info("Failed to set labels on gene_name")
     if not screen_n is None:
         smllogger.info("Only using top {} variable features", screen_n)
         sorted_vars = [i[0] for i in sorted(enumerate(list(X.var())), key=lambda x:x[1], reverse=True)]
-        X = X.ix[:, sorted_vars[:screen_n]]
-        if 'labels' in kwargs:
-            kwargs['labels'] = expr_long["gene_name"].iloc[sorted_vars[:screen_n]]
+        X = X.iloc[:, sorted_vars[:screen_n]]
+    try:
+        df = expr_long[expr_long["gene_id"].isin(X.columns.values)].loc[:, ["gene_id", "gene_name"]]
+        kwargs['labels'] = {k:v for (k,v) in zip(df["gene_id"], df["gene_name"])}
+    except:
+        smllogger.warning("Failed to set labels on gene_name")
     pcares, pcaobj = scrnaseq_pca(X, metadata=metadata, **kwargs)
     detected_genes = expr_long.groupby(kwargs.get("groupby", 'SM')).agg(lambda x: sum(x > kwargs.get('cutoff', 1)))
     if not detected_genes is None:
@@ -75,7 +74,7 @@ def scrnaseq_pca(X, method="PCA", labels=None, metadata=None, **kwargs):
     pcaobj.fit(X)
     pcaobj.features = X.columns.values
     if not labels is None:
-        pcaobj.labels = list(labels)
+        pcaobj.labels = labels
     pcares = pd.DataFrame(pcaobj.fit(X).transform(X))
     if not X.index.name is None:
         pcares.index = X.index
