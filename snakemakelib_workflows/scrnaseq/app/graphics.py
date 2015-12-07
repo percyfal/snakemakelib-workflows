@@ -48,7 +48,7 @@ def scrnaseq_results_plot_alignrseqc(df, **kwargs):
                              ('Reads', '@Number_of_input_reads')])
               
     # Uniquely mapping
-    kwargs['x_axis_label'] = 'Percent'
+    kwargs['y_axis_label'] = 'Percent'
     p2 = dotplot(
         df=source,
         tools=DEFAULT_TOOLS, title="Uniquely mapping reads",

@@ -14,6 +14,10 @@ def get_extra_ref_ids(extra_refs):
     Returns:
       ids (list): list of identifiers
     """
+    extmap = {".fa":"fasta", ".fasta":"fasta"}
     ids = []
     for f in extra_refs:
-        _, ext = os.path.getext(f)
+        _, ext = os.path.splitext(f)
+        fh = open(f, "rU")
+        ids += [rec.id for rec in SeqIO.parse(fh, extmap[ext])]
+    return ids

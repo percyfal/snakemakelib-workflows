@@ -19,9 +19,10 @@ config["_samples"] = initialize_input(src_re = config['settings']['sample_organi
                                       metadata = config['settings'].get('metadata', None),
                                       metadata_filter = config['settings'].get('metadata_filter', None),
                                       filter_suffix = config['bio.ngs.settings'].get("filter_suffix", ""),
-                                      sample_column_map = config['bio.ngs.settings'].get("sample_column_map", ""))
-
-
+                                      sample_column_map = config['bio.ngs.settings'].get("sample_column_map", ""),
+                                      sample_filter = config.get("samples", None))
+_samples = config["_samples"]
+    
 # FIXME: These functions will fail for aligners other than STAR
 def _merge_suffix(aligner):
     align_config = config['bio.ngs.align.' + aligner]
@@ -145,11 +146,6 @@ set_protected_output(*[workflow.get_rule(x) for x in config['settings']['protect
 ##################################################
 # Target definitions and applications
 ##################################################
-_samples = config["_samples"]
-if not len(config.get("samples", [])) == 0:
-    _samples = [s for s in _samples if s["SM"] in config["samples"]]
-
-    
 REPORT=config['scrnaseq.workflow']['report']['directory']
 REPORT_TARGETS = ['{report}/scrnaseq_summary.html'.format(report=REPORT)]
 
@@ -327,13 +323,17 @@ rule scrnaseq_aggregate_rsem:
     output: genes = rsem.aggregate_targets['genes'],
             isoforms = rsem.aggregate_targets['isoforms']
     run:
-        rsem.aggregate(annotation=config['bio.ngs.settings']['annotation']['transcript_annot_gtf']).save_aggregate_data()
+        ids = get_extra_ref_ids(config['bio.ngs.settings']['db']['extra_ref'])
+        rsem.aggregate(annotation=config['bio.ngs.settings']['annotation']['transcript_annot_gtf'],
+                       spikeins=ids).save_aggregate_data()
 
 rule scrnaseq_aggregate_rpkmforgenes:
     input: rpkmforgenes = rpkmforgenes.targets['rpkmforgenes']
     output: rpkmforgenes = rpkmforgenes.aggregate_targets['rpkmforgenes']
     run:
-        rpkmforgenes.aggregate(annotation=config['bio.ngs.settings']['annotation']['transcript_annot_gtf']).save_aggregate_data()
+        ids = get_extra_ref_ids(config['bio.ngs.settings']['db']['extra_ref'])
+        rpkmforgenes.aggregate(annotation=config['bio.ngs.settings']['annotation']['transcript_annot_gtf'],
+                               spikeins=ids).save_aggregate_data()
 
 
 rule scrnaseq_aggregate_data:
@@ -354,8 +354,10 @@ rule scrnaseq_pca:
             pcaobj = join("{path}", "{prefix}.pcaobj.pickle")
     run:
         scrnaseq_pca_all(input.expr, output.pca, output.pcaobj, 
-                         metadata=config['scrnaseq.workflow']['metadata'])
+                         metadata=config['scrnaseq.workflow']['metadata'],
+                         samples=config['samples'])
 
+        
 rule scrnaseq_sparse_pca:
     """Run sparse PCA and feature selection on data.
 
@@ -373,7 +375,8 @@ rule scrnaseq_sparse_pca:
     run:
         scrnaseq_pca_all(input.expr, output.pca, output.pcaobj, 
                          metadata=config['scrnaseq.workflow']['metadata'],
-                         method="sparsePCA")
+                         method="sparsePCA",
+                         samples=config['samples'])
 
 
 ##############################
@@ -384,7 +387,7 @@ rule save_align_rseqc_data:
     input: align_log = Align.targets['log'],
            rseqc_read_distribution = RSeQC_readDistribution.targets['txt'],
            rseqc_gene_body_coverage = RSeQC_geneBodyCoverage.targets['txt']
-    output: csv = join(config['scrnaseq.workflow']['aggregate_output_dir'], "align_rseqc.csv")
+    output: csv = results.aggregate_targets['alignrseqc']
     run:
         scrnaseq_save_align_rseqc_metrics(config, output, Align, RSeQC_readDistribution, RSeQC_geneBodyCoverage)
 
