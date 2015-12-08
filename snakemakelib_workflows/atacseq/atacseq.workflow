@@ -32,10 +32,9 @@ def _atacseq_picard_merge_sam_input_fn(wildcards):
 
     """
     tgt = IOTarget(config['settings']['sample_organization'].run_id_re.file, suffix=config['bio.ngs.qc.picard']['merge_sam']['suffix'])
-    sources = make_targets(tgt_re=tgt, samples=_samples)
     m = config['settings']['sample_organization'].sample_re.match(wildcards.prefix)
-    sources = [src for src in sources if dirname(src).startswith(m.groupdict()['SM'])]
-    return sources
+    l = [x for x in _samples if x['SM'] == m.groupdict()['SM']]
+    return make_targets(tgt_re=tgt, samples=l)
 
 
 ##############################

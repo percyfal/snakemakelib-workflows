@@ -43,7 +43,8 @@ def _find_transcript_bam(wildcards):
     tgt = IOTarget(config['settings']['sample_organization'].run_id_re.file,
                    suffix=_merge_tx_suffix(config['bio.ngs.settings']['aligner']))
     m = config['settings']['sample_organization'].sample_re.match(wildcards.prefix)
-    return [src for src in make_targets(tgt_re=tgt, samples=_samples) if dirname(src).startswith(m.groupdict()['SM'])]
+    l = [x for x in _samples if x['SM'] == m.groupdict()['SM']]
+    return make_targets(tgt_re=tgt, samples=l)
 
     
 def find_scrnaseq_merge_inputs(wildcards):
@@ -55,7 +56,8 @@ def find_scrnaseq_merge_inputs(wildcards):
     tgt = IOTarget(config['settings']['sample_organization'].run_id_re.file,
                    suffix=_merge_suffix(config['bio.ngs.settings']['aligner']))
     m = config['settings']['sample_organization'].sample_re.match(wildcards.prefix)
-    return [src for src in make_targets(tgt_re=tgt, samples=_samples) if dirname(src).startswith(m.groupdict()['SM'])]
+    l = [x for x in _samples if x['SM'] == m.groupdict()['SM']]
+    return make_targets(tgt_re=tgt, samples=l)
 
 
 # Configuration
