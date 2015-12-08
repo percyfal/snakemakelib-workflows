@@ -400,9 +400,9 @@ rule scrnaseq_qc:
     input: alignrseqc = results.aggregate_targets['alignrseqc'],
            rsem = rsem.targets['pca'],
            rpkmforgenes = rpkmforgenes.targets['pca'],
-           rulegraph = join("{path}", "scrnaseq_all_rulegraph.png"),
-           globalconf = join("{path}", "smlconf_global.yaml")
-    output: html = join("{path}", "scrnaseq_summary_new.html")
+           rulegraph = join(REPORT, "scrnaseq_all_rulegraph.png"),
+           globalconf = join(REPORT, "smlconf_global.yaml")
+    output: html = join(REPORT, "scrnaseq_summary.html")
     run:
         scrnaseq_qc(config, input, output, results=results, rsem=rsem, rpkmforgenes=rpkmforgenes)
 
