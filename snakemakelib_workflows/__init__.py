@@ -1,8 +1,7 @@
 # Copyright (c) 2013 Per Unneberg
 import os
 from jinja2 import Environment, PackageLoader
-import logging
-logger = logging.getLogger(__name__)
+from .utils import all_versions
 
 __import__('pkg_resources').declare_namespace(__name__)
 
