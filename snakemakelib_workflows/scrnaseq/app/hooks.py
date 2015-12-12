@@ -9,25 +9,27 @@ __all__ = ['scrnaseq_annotate_genes_hook',
            'scrnaseq_star_align_postprocessing_hook']
 
 
-def scrnaseq_annotate_genes_hook(df, annotation, **kwargs):
+def scrnaseq_annotate_genes_hook(df, annotation=None, **kwargs):
     df.reset_index(inplace=True)
-    annot = pd.read_table(annotation, header=None)
-    mapping = _gene_name_map_from_gtf(annot, "gene_id", "gene_name")
-    df["gene_name"] = df["gene_id"].map(mapping.get)
+    if annotation:
+        annot = pd.read_table(annotation, header=None)
+        mapping = _gene_name_map_from_gtf(annot, "gene_id", "gene_name")
+        df["gene_name"] = df["gene_id"].map(mapping.get)
     if "spikeins" in kwargs:
         df["spikein"] = 0
-        df.loc[df["gene_name"].isin(kwargs['spikeins']), "spikein"] = 1
+        df.loc[df["gene_id"].isin(kwargs['spikeins']), "spikein"] = 1
     return df
 
 
-def scrnaseq_annotate_isoforms_hook(df, annotation, **kwargs):
+def scrnaseq_annotate_isoforms_hook(df, annotation=None, **kwargs):
     df.reset_index(inplace=True)
-    annot = pd.read_table(annotation, header=None)
-    mapping = _gene_name_map_from_gtf(annot, "transcript_id", "transcript_name")
-    df["transcript_name"] = df["transcript_id"].map(mapping.get)
+    if annotation:
+        annot = pd.read_table(annotation, header=None)
+        mapping = _gene_name_map_from_gtf(annot, "transcript_id", "transcript_name")
+        df["transcript_name"] = df["transcript_id"].map(mapping.get)
     if "spikein" in kwargs:
         df["spikein"] = 0
-        df.loc[df["transcript_name"] in kwargs['spikeins']]["spikein"] = 1
+        df.loc[df["transcript_id"] in kwargs['spikeins']]["spikein"] = 1
     return df
 
 
