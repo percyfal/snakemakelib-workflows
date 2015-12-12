@@ -356,8 +356,8 @@ rule scrnaseq_pca:
     """Run regular PCA and ad hoc feature selection on data.
     """
     input: expr = join(config['scrnaseq.workflow']['aggregate_output_dir'], "{prefix}.csv")
-    output: pca = join("{path}", "{prefix}.pca.csv"),
-            pcaobj = join("{path}", "{prefix}.pcaobj.pickle")
+    output: pca = join(REPORT, "{prefix}.pca.csv"),
+            pcaobj = join(REPORT, "{prefix}.pcaobj.pickle")
     run:
         scrnaseq_pca_all(input.expr, output.pca, output.pcaobj, 
                          metadata=config['scrnaseq.workflow']['metadata'],
@@ -376,8 +376,8 @@ rule scrnaseq_sparse_pca:
 
     """
     input: expr = "{prefix}.csv"
-    output: pca = "{prefix}.sparsepca.csv",
-            pcaobj = "{prefix}.sparsepcaobj.pickle"
+    output: pca = join(REPORT, "{prefix}.sparsepca.csv"),
+            pcaobj = join(REPORT, "{prefix}.sparsepcaobj.pickle")
     run:
         scrnaseq_pca_all(input.expr, output.pca, output.pcaobj, 
                          metadata=config['scrnaseq.workflow']['metadata'],
