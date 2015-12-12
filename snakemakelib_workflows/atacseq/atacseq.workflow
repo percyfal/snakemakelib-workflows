@@ -8,7 +8,7 @@ from snakemakelib.targets import make_targets
 from snakemakelib.sample.input import initialize_input
 from snakemakelib.application import SampleApplication, PlatformUnitApplication
 from snakemakelib.io import IOTarget, IOAggregateTarget
-from snakemakelib_workflows.app import *
+from snakemakelib_workflows.atacseq.app import *
 
 # Collect information about inputs; _samples stores a list of
 # dictionaries, where each dictionary contains information on a sample

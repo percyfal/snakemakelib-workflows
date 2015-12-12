@@ -1,5 +1,5 @@
 # Copyright (C) 2015 by Per Unneberg
-from pandas import pd
+import pandas as pd
 
 
 __all__ = ['atacseq_cutadapt_post_processing_hook',

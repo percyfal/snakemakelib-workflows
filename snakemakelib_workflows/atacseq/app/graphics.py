@@ -10,7 +10,7 @@ from bokeh.plotting import figure, gridplot
 from bokeh.models import HoverTool
 
 __all__ = ['atacseq_cutadapt_plot_metrics',
-           'atacseq_qualimap_plot_globals'
+           'atacseq_qualimap_plot_globals',
            'atacseq_qualimap_plot_coverage_per_contig',
            'atacseq_insert_metrics_plot',
            'atacseq_insert_metrics_hist_plot',
