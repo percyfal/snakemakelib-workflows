@@ -1,8 +1,84 @@
 Changelog
 =========
 
+0.1-alpha.3 (2015-12-12)
+------------------------
+
+- Update release notes. [Per Unneberg]
+
+- Add multimapped option, convert_samples_to_list. [Per Unneberg]
+
+- Check for more missing imports. [Per Unneberg]
+
+- Check for annotation=None case. [Per Unneberg]
+
+- Fix typo and missing imports. [Per Unneberg]
+
+- Make merge function less greedy. [Per Unneberg]
+
+  Fixes #4
+
+- Remove erroneous {path} wildcards. [Per Unneberg]
+
+  Fixes #3
+
+- Add wrapper for all_versions. [Per Unneberg]
+
+- Make gene_id to gene_name dictionary label map. [Per Unneberg]
+
+  Make sure gene_id - gene_name relationship preserved
+
+- Add spikein argument to workflow. [Per Unneberg]
+
+- Add filtering on spikein and var. [Per Unneberg]
+
+- Filter aggregate data on SM. [Per Unneberg]
+
+- Change atacseq module to reflect atacseq.app. [Per Unneberg]
+
+- Add atacseq.app. [Per Unneberg]
+
+- Add scrnaseq.utils. [Per Unneberg]
+
+- Add scrnaseq pca wrapper. [Per Unneberg]
+
+- Add module import, python2 config section. [Per Unneberg]
+
+- Simplify metrics, hist key names. [Per Unneberg]
+
+- Fix some types. [Per Unneberg]
+
+- Major refactoring of scrnaseq code. [Per Unneberg]
+
+  - remove scrnaseq.py, utils.rules
+  - create submodule app in which functions have been modularized by
+    application type
+
+- Use application class for rsem and rpkmforgenes. [Per Unneberg]
+
+  - much reduced code in utils.rules
+
+- Fix for axis parameters. [Per Unneberg]
+
+- Use snakemakelib.application classes and update plots. [Per Unneberg]
+
+- Add release notes for 0.1-alpha.3. [Per Unneberg]
+
+- Major update to atacseq pipeline. [Per Unneberg]
+
+  - use snakemakelib.application classes
+  - simplify plotting
+
+- Remove obsolete resources. [Per Unneberg]
+
+- Replace make_targets in favor of Application classes. [Per Unneberg]
+
+- Use snakemakelib.io for targets. [Per Unneberg]
+
 0.1-alpha.2 (2015-11-24)
 ------------------------
+
+- Update dependencies. [Per Unneberg]
 
 - Add resources. [Per Unneberg]
 
