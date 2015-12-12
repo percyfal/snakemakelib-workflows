@@ -1,7 +1,7 @@
 Changelog
 =========
 
-%%version%% (unreleased)
+0.1-alpha.4 (2015-12-12)
 ------------------------
 
 - Remove snakemakelib_workflows from conda build run dependency. [Per
