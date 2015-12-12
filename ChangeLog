@@ -1,6 +1,18 @@
 Changelog
 =========
 
+%%version%% (unreleased)
+------------------------
+
+- Add build number. [Per Unneberg]
+
+0.1-alpha.5 (2015-12-12)
+------------------------
+
+- Replace path wildcard with REPORT. [Per Unneberg]
+
+  Fixes #6
+
 0.1-alpha.4 (2015-12-12)
 ------------------------
 
