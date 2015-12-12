@@ -23,9 +23,10 @@ def scrnaseq_pca_all(expr, pca_output_file, pcaobj_pickle_file,
     Returns:
       None - results are saved to given output files
     """
+    samples = kwargs.pop("samples", None)
     expr_long = pd.read_csv(expr)
-    if not kwargs.get('samples', None) is None:
-        expr_long = expr_long.loc[expr_long.SM.isin(kwargs.pop('samples')), :]
+    if not samples is None:
+        expr_long = expr_long.loc[expr_long.SM.isin(samples), :]
     if "spikein" in expr_long.columns:
         expr_long = expr_long.loc[expr_long["spikein"]==0,]
     expr_long["TPM"] = [math.log2(x+1.0) for x in expr_long["TPM"]]
