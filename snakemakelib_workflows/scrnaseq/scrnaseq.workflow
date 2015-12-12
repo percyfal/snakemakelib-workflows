@@ -8,12 +8,13 @@ from snakemake.workflow import workflow
 from snakemake_rules import SNAKEMAKE_RULES_PATH
 from snakemakelib.io import make_targets, IOTarget, IOAggregateTarget
 from snakemakelib.odo import star, rseqc 
-from snakemakelib.sample.input import initialize_input
+from snakemakelib.sample.input import initialize_input, convert_samples_to_list
 from snakemakelib_workflows.scrnaseq.app import *
 from snakemakelib.application import SampleApplication, PlatformUnitApplication
 
 # Collect information about inputs; _samples stores a list of
 # dictionaries, where each dictionary contains information on a sample
+config["samples"] = convert_samples_to_list(config.get("samples", None))
 config["_samples"] = initialize_input(src_re = config['settings']['sample_organization'].raw_run_re,
                                       sampleinfo = config['settings'].get('sampleinfo', None),
                                       metadata = config['settings'].get('metadata', None),
@@ -22,20 +23,22 @@ config["_samples"] = initialize_input(src_re = config['settings']['sample_organi
                                       sample_column_map = config['bio.ngs.settings'].get("sample_column_map", ""),
                                       sample_filter = config.get("samples", None))
 _samples = config["_samples"]
-    
+
 # FIXME: These functions will fail for aligners other than STAR
 def _merge_suffix(aligner):
     align_config = config['bio.ngs.align.' + aligner]
+    unique = "" if config['scrnaseq.workflow']['use_multimapped'] else "_unique"
     if aligner == "star":
-        return ".Aligned.out_unique.bam"
+        return ".Aligned.out{unique}.bam".format(unique=unique)
 
     
 # FIXME: currently only checking in the case of rsem; only necessary case?
+# NB: rsem should be run on multimapping reads
 def _merge_tx_suffix(aligner):
     align_config = config['bio.ngs.align.' + aligner]
     tx_string = "" if config['bio.ngs.rnaseq.rsem']['index_is_transcriptome'] else ".toTranscriptome"
     if aligner == "star":
-        return ".Aligned{tx}.out_unique.bam".format(tx=tx_string)
+        return ".Aligned{tx}.out.bam".format(tx=tx_string)
 
 
 def _find_transcript_bam(wildcards):
@@ -82,7 +85,8 @@ config_default = {
             'annotation_url' : None,
         },
         'aggregate_output_dir': 'aggregated_results',
-        'quantification': ['rpkmforgenes', 'rsem']
+        'quantification': ['rpkmforgenes', 'rsem'],
+        'use_multimapped': False, # Set to true to use multimapped reads for quantification
     },
     'bio.ngs.settings' : {
         # Should be default for scrnaseq?
@@ -218,7 +222,7 @@ rpkmforgenes = SampleApplication(
     )
 
 
-tx = "" if config['bio.ngs.rnaseq.rsem']['index_is_transcriptome'] else ".tx"
+tx = ".noS" if config['bio.ngs.rnaseq.rsem']['index_is_transcriptome'] else ".tx"
 rsem = SampleApplication(
     name="rsem",
     iotargets={
@@ -386,14 +390,15 @@ rule scrnaseq_sparse_pca:
 ##############################
 rule save_align_rseqc_data:
     """Save joint alignment and rseqc data"""
-    input: align_log = Align.targets['log'],
-           rseqc_read_distribution = RSeQC_readDistribution.targets['txt'],
-           rseqc_gene_body_coverage = RSeQC_geneBodyCoverage.targets['txt']
+    input: align_log = Align.aggregate_targets['log'],
+           rseqc_read_distribution = RSeQC_readDistribution.aggregate_targets['txt'],
+           rseqc_gene_body_coverage = RSeQC_geneBodyCoverage.aggregate_targets['txt']
     output: csv = results.aggregate_targets['alignrseqc']
     run:
         scrnaseq_save_align_rseqc_metrics(config, output, Align, RSeQC_readDistribution, RSeQC_geneBodyCoverage)
 
 
+    
 ##############################
 # QC - create html report
 ##############################
