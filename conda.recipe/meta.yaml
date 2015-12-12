@@ -1,8 +1,8 @@
 package:
   name: snakemakelib-workflows
-  version: "0.1a.3"
+  version: "0.1a.4"
 source:
-  git_rev: "0.1-alpha.3"
+  git_rev: "0.1-alpha.4"
   git_url: https://github.com/percyfal/snakemakelib-workflows
 requirements:
   build:
@@ -14,7 +14,6 @@ requirements:
     - python
     - snakemake
     - pyyaml
-    - snakemakelib_workflows
 
 test:
   requires:
