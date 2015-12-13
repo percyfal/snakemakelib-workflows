@@ -4,10 +4,14 @@ Changelog
 %%version%% (unreleased)
 ------------------------
 
-- Add build number. [Per Unneberg]
+- Redefine unique targets for use_multimapped. [Per Unneberg]
+
+  Fixes #7
 
 0.1-alpha.5 (2015-12-12)
 ------------------------
+
+- Add build number. [Per Unneberg]
 
 - Replace path wildcard with REPORT. [Per Unneberg]
 
