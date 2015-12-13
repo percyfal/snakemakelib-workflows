@@ -157,6 +157,7 @@ REPORT_TARGETS = ['{report}/scrnaseq_summary.html'.format(report=REPORT)]
 
 # Platform unit applications
 run_id_re = config['settings']['sample_organization'].run_id_re
+_unique = ".bam" if config['scrnaseq.workflow']['use_multimapped'] else "_unique.bam"
 Star = PlatformUnitApplication(
     name=aligner,
     iotargets={
@@ -164,7 +165,7 @@ Star = PlatformUnitApplication(
                 None),
         'log': (IOTarget(run_id_re.file, suffix=".Log.final.out"),
                 IOAggregateTarget(join(config['scrnaseq.workflow']['aggregate_output_dir'], aligner + '.log'))),
-        'unique': (IOTarget(run_id_re.file, suffix=".Aligned.out.bam".replace(".bam", "_unique.bam")),
+        'unique': (IOTarget(run_id_re.file, suffix=".Aligned.out.bam".replace(".bam", _unique)),
                    None)},
     units=_samples
 )
