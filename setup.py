@@ -95,6 +95,7 @@ setup(
     packages=[
         'snakemakelib_workflows',
         'snakemakelib_workflows.atacseq',
+        'snakemakelib_workflows.atacseq.app',
         'snakemakelib_workflows.scrnaseq',
         'snakemakelib_workflows.scrnaseq.app',
     ],
