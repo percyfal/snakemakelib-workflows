@@ -1,6 +1,15 @@
 Changelog
 =========
 
+0.1-alpha.7 (2016-01-07)
+------------------------
+
+- Bump conda version. [Per Unneberg]
+
+- Add atacseq.app to setup. [Per Unneberg]
+
+  Fixes #8
+
 0.1-alpha.6 (2015-12-13)
 ------------------------
 
@@ -97,10 +106,10 @@ Changelog
 
 - Use snakemakelib.io for targets. [Per Unneberg]
 
+- Update dependencies. [Per Unneberg]
+
 0.1-alpha.2 (2015-11-24)
 ------------------------
-
-- Update dependencies. [Per Unneberg]
 
 - Add resources. [Per Unneberg]
 
