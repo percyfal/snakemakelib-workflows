@@ -1,13 +1,23 @@
 Changelog
 =========
 
-%%version%% (unreleased)
+0.1-alpha.8 (2016-01-08)
 ------------------------
 
-- Bump conda version. [Per Unneberg]
+- Add missing import statements. [Per Unneberg]
+
+  Fixes #9
+
+- Add release notes. [Per Unneberg]
+
+- Add deploy script. [Per Unneberg]
+
+- Update release notes. [Per Unneberg]
 
 0.1-alpha.7 (2016-01-07)
 ------------------------
+
+- Bump conda version. [Per Unneberg]
 
 - Update changelog. [Per Unneberg]
 
