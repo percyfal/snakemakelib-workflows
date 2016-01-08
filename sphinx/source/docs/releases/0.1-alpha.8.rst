@@ -3,5 +3,7 @@
 
 Add deploy script
 
+Hotfix (#9): add log10 import
+
 
 
