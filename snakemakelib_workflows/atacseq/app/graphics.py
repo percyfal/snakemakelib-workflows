@@ -1,5 +1,6 @@
 # Copyright (C) 2015 by Per Unneberg
 import pandas as pd
+from math import log10
 from snakemakelib.application import SampleApplication, PlatformUnitApplication
 from snakemakelib.io import IOTarget, IOAggregateTarget
 from snakemakelib.graphics import scatter, points, tooltips, facet_grid, colorbrewer, mlines, lines
@@ -51,11 +52,11 @@ def atacseq_qualimap_plot_globals(df, **kwargs):
     return gridplot([[p1, p2]])
 
 def atacseq_qualimap_plot_coverage_per_contig(df, **kwargs):
-    p, source = points(df=df, x="chrlen_percent",
-                       y="mapped_bases_percent", glyph="circle",
-                       return_source=True, legend="top_right",
-                       tools=DEFAULT_TOOLS, size=6, alpha=.9,
-                       color="SM", plot_height=600, plot_width=800)
+    p = points(df=df, x="chrlen_percent",
+               y="mapped_bases_percent", glyph="circle",
+               return_source=True, legend="top_right",
+               tools=DEFAULT_TOOLS, size=6, alpha=.9,
+               color="SM", plot_height=600, plot_width=800)
     p.xaxis.axis_label = "chrlen (% of genome)"
     p.yaxis.axis_label = "mapped reads (% of total)"
     tooltips(p, HoverTool, [('Sample', '@SM'),

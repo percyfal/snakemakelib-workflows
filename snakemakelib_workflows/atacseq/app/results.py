@@ -1,6 +1,7 @@
 # Copyright (C) 2015 by Per Unneberg
 import jinja2
 from snakemake.report import data_uri
+from bokeh.plotting import gridplot
 from snakemakelib import SNAKEMAKELIB_TEMPLATES_PATH
 from snakemakelib_workflows import SNAKEMAKELIB_WORKFLOWS_TEMPLATES_PATH
 from snakemakelib.resources import css_files

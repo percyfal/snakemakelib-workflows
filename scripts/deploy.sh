@@ -38,8 +38,8 @@ release_short=$( echo $release | sed 's|\([^\^.]*\)\(\^0\)$|\1|g' | sed 's/-alph
 if [[ ! -z "$release" ]]; then
     echo "You have triggered the release process"
 
-    # Make sure we start in master; should exit if uncommited changes
-    git checkout master
+    # Make sure we start in develop; should exit if uncommited changes
+    git checkout develop
 
     # create a new branch
     git checkout -b release_$release
@@ -78,6 +78,8 @@ if [[ ! -z "$release" ]]; then
 
     git tag -a $release -f
     git push origin $release
+
+    git checkout develop
 else
     echo "You have to pass -r tag."
     echo "Run ./deploy.sh -h to get some more help with the args to pass."
