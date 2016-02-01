@@ -1,0 +1,39 @@
+sudo: false
+
+language: python
+
+os:
+  - linux
+
+python:
+  - 3.4
+  # - 3.5
+
+env:
+  global:
+    - MINICONDA_VERSION="latest"
+
+
+script:
+  - py.test --cov-report= --cov=snakemakelib_workflows .
+
+branches:
+  only:
+    - master
+    - develop
+    - /^\d+.\d+.\d+$/
+    - /^\d+.\d+.\d+dev\d+$/
+    - /^\d+.\d+.\d+alpha\.\d+$/
+    - /^\d+.\d+.\d+alpha\.\d+dev\d+$/
+    - /^\d+.\d+.\d+beta\.\d+$/
+    - /^\d+.\d+.\d+beta\.\d+dev\d+$/
+
+before_install:
+    - export PATH="$HOME/miniconda/bin:$PATH"
+
+install:
+  - scripts/travis-setup.sh
+
+after_success:
+  coveralls
+
