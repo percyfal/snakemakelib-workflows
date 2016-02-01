@@ -15,6 +15,7 @@ requirements:
     - biopython
     - snakemake-rules
     - snakemakelib
+    - pysam
 
   run:
     - python
