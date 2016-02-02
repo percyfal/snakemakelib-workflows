@@ -24,11 +24,13 @@ DEFAULT_TOOLS = "pan,wheel_zoom,box_zoom,box_select,reset,save,hover,resize"
 
 # Plotting functions
 def atacseq_cutadapt_plot_metrics(df, **kwargs):
+    if df is None:
+        return figure(title="Cutadapt metrics (no data)", height=400, width=400)
     df.set_index(['SM', 'PU', 'PlatformUnit', 'statistic'], inplace=True)
     df.sortlevel(inplace=True)
     df = df.loc[pd.IndexSlice[:, :, :, ["Read 1 percent", "Read 2 percent"]], :].reset_index()
     from bokeh.charts import Scatter
-    p = Scatter(df, x="PlatformUnit", y="value",
+    p = Scatter(df, x="PlatformUnit", y="value", 
                 color="statistic", legend="top_right",
                 title="Cutadapt metrics", ylabel="% reads with adapter")
     return p
@@ -85,6 +87,8 @@ def atacseq_insert_metrics_hist_plot(df, **kwargs):
     return gp
 
 def atacseq_mark_duplicates_plot(df, **kwargs):
+    if df is None:
+        return figure(width=400, height=400, title="Percent duplication per sample (no data)")
     df["PERCENT_DUPLICATION"] = 100.0 * df["PERCENT_DUPLICATION"]
     df['SM'] = df['SM'].astype(str)
     p = Scatter(df, x="SM", y="PERCENT_DUPLICATION",
@@ -93,7 +97,9 @@ def atacseq_mark_duplicates_plot(df, **kwargs):
     return p
 
 def atacseq_mark_duplicates_hist_plot(df, **kwargs):
-    p = figure(width=400, height=400, title="Return of investment")
+    p = figure(width=400, height=400, title="Return of investment (no data)")
+    if df is None:
+        return p
     lines(p, df=df, groups=["SM"], x="BIN", y="VALUE", legend="SM",
           color="blue", line_width=2)
     return p
