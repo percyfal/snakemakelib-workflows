@@ -36,7 +36,7 @@ def _atacseq_picard_merge_sam_input_fn(wildcards):
 atac_config = {
     'atacseq.workflow' : {
         'aligner' : 'bowtie2',
-        'peakcallers' : ['dfilter', 'macs2'],
+        'peakcallers' : ['macs2'],
         'trimadaptor' : True,
         'bamfilter' : True,
         'aggregate_output_dir': 'aggregated_results',
