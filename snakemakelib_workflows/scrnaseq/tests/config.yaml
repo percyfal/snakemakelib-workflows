@@ -1,0 +1,7 @@
+bio.ngs.settings:
+  db:
+    ref: data/chr11.fa
+
+samples:
+  - s1
+  - s2
