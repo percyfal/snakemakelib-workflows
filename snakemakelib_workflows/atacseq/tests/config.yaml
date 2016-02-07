@@ -3,4 +3,4 @@ bio.ngs.settings:
     ref: data/chr11.fa
 
 samples:
-  - test
+  - s1

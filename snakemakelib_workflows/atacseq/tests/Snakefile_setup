@@ -7,7 +7,7 @@ workdir: join(SNAKEMAKELIB_WORKFLOWS_PATH, "atacseq/tests")
 
 
 rule all:
-    input: ["test/test_1.fastq.gz", "test/test_2.fastq.gz", "data/chr11.fa"]
+    input: ["s1/s1_1.fastq.gz", "s1/s1_2.fastq.gz", "data/chr11.fa"]
 
 # Rules to init samples
 rule link_fastq:

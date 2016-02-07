@@ -3,13 +3,13 @@ from os.path import join
 from snakemake_rules import SNAKEMAKE_RULES_PATH
 from snakemakelib_workflows import SNAKEMAKELIB_WORKFLOWS_PATH
 
-workdir: join(SNAKEMAKELIB_WORKFLOWS_PATH, "atacseq/tests")
+workdir: join(SNAKEMAKELIB_WORKFLOWS_PATH, "scrnaseq/tests")
 
 
 rule all:
     input: ["s1/s1_1.fastq.gz", "s1/s1_2.fastq.gz",\
            "s2/s2_1.fastq.gz", "s2/s2_2.fastq.gz",\
-           "data/chr11.fa"]
+            "data/chr11.fa", "data/gfp.fa"]
 
 # Rules to init samples
 rule link_fastq:
@@ -23,3 +23,10 @@ rule link_data:
     output: join("data", "chr11.fa")
     shell:
         "ln -s {input} {output}"
+
+rule gfp:
+    input: join(SNAKEMAKE_RULES_PATH, "tests/data", "chr11.fa")
+    output: join("data", "gfp.fa")
+    shell:
+        "echo '>gfp' > {output}; "
+        "cat {input} | tail -2 >> {output}"
