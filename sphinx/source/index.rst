@@ -17,4 +17,5 @@ Contents
 .. toctree::
    :maxdepth: 2
 
+   docs/workflows
    docs/release_notes

@@ -1,6 +1,11 @@
 ATAC-seq
----------
+----------
 
+Configuration
+""""""""""""""""""""
+
+Workflow
+"""""""""""""""
 
 .. graphviz::
 
@@ -63,3 +68,6 @@ ATAC-seq
 	0 -> 20
 	9 -> 20
    }         
+
+Troubleshooting
+"""""""""""""""""""
