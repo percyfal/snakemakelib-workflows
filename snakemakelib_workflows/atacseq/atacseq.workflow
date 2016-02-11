@@ -243,7 +243,7 @@ InsertMetrics.register_plot('hist')(atacseq_insert_metrics_hist_plot)
 ####################
 # Peak callers
 ####################
-PREFIX = ".sort.merge.filter" if config['atacseq.workflow']['bamfilter'] else ".sort.merge"
+PREFIX = ".sort.merge.dup.filter" if config['atacseq.workflow']['bamfilter'] else ".sort.merge.dup"
 
 Dfilter = SampleApplication(
     name="Dfilter",
