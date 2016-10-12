@@ -15,7 +15,7 @@ env:
 
 
 script:
-  - py.test --cov-report= --cov=snakemakelib_workflows .
+  - py.test --cov-report= --cov=snakemakelib_workflows snakemakelib_workflows
 
 branches:
   only:
