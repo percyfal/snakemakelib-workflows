@@ -24,7 +24,7 @@
 
 Snakemake workflows built on [snakemake-rules](https://github.com/percyfal/snakemake-rules) and [snakemakelib-core](https://github.com/percyfal/snakemakelib-core).
 
-See [the documentation](http://snakemakelib-workflows.readthedocs.org/en/latest/index.html)
+See [the documentation](http://percyfal.github.io/snakemakelib-workflows/index.html)
 for more information.
 
 ## Installation
