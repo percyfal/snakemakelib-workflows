@@ -13,7 +13,7 @@ The following options must be set in the configuration file:
        ref: # Reference sequence
      annotation:
        transcript_annot_gtf: # transcript annotation file in gtf format
-   
+
    samples: # list of sample identifiers
 
 Workflow specific configuration
@@ -23,13 +23,13 @@ Workflow specific configuration
 
    scrnaseq.workflow:
      quantification: # One or both of the following
-       - rsem 
+       - rsem
        - rpkmforgenes
      metadata: # Tab-delimited or csv file with additional information about the samples
      report:
        annotation_url: # optional link to gene database, e.g. ensembl
 
-       
+
 
 Other configuration
 """""""""""""""""""""""
@@ -172,8 +172,16 @@ above to generate ERCC spike-ins and the transcript annotation gtf.
 	25 -> 34
 	34 -> 35
 	24 -> 36
-   }          
+   }
 
-   
+
 Troubleshooting
 """"""""""""""""""
+
+Reference guide
+"""""""""""""""""""
+
+.. toctree::
+   :maxdepth: 2
+
+   ../reference/scrnaseq

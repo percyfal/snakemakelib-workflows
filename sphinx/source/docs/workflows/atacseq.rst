@@ -67,7 +67,15 @@ Workflow
 	2 -> 19
 	0 -> 20
 	9 -> 20
-   }         
+   }
 
 Troubleshooting
 """""""""""""""""""
+
+Reference guide
+""""""""""""""""
+
+.. toctree::
+   :maxdepth: 2
+
+   ../reference/atacseq
