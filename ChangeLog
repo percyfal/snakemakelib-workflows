@@ -1,8 +1,67 @@
 Changelog
 =========
 
+0.1-alpha.9 (2016-10-12)
+------------------------
+
+- Add documentation files. [Per Unneberg]
+
+- Update sphinx build config. [Per Unneberg]
+
+  - add gh-pages and gh-pages-dev
+  - add bokeh_plot directive
+  - update intersphinx search paths
+
+- Update call to py.test. [Per Unneberg]
+
+- Update documentation. [Per Unneberg]
+
+- Run peak calling on deduplicated bam file. [Per Unneberg]
+
+  Fixes #14
+
+- Add support for devel builds. [Per Unneberg]
+
+- Add README. [Per Unneberg]
+
+- Add missing dependencies. [Per Unneberg]
+
+- Move _samples after include statements. [Per Unneberg]
+
+  Solves issue of missing settings
+
+- Update test metadata so entire workflows run. [Per Unneberg]
+
+  rulegraph rules for scrnaseq_all and atacseq_all now ok.
+
+- Add to workflow docs. [Per Unneberg]
+
+- Add transcript reference file. [Per Unneberg]
+
+- Add scrnaseq test directory. [Per Unneberg]
+
+- Add workflows docs. [Per Unneberg]
+
+- Only do macs2 by default. [Per Unneberg]
+
+- Add support for qualimap >2.1. [Per Unneberg]
+
+  Fixes #12
+
+- Take care of missing data cases for plots. [Per Unneberg]
+
+- Add atacseq tests. [Per Unneberg]
+
+  Add test_atacseq
+
+- Add travis CI support. [Per Unneberg]
+
 0.1-alpha.8 (2016-01-08)
 ------------------------
+
+- Updating conda version to 0.1-alpha.8. [Per Unneberg]
+
+- Updating ChangeLog. [Per Unneberg]
 
 - Add missing import statements. [Per Unneberg]
 
@@ -12,12 +71,12 @@ Changelog
 
 - Add deploy script. [Per Unneberg]
 
+- Bump conda version. [Per Unneberg]
+
 - Update release notes. [Per Unneberg]
 
 0.1-alpha.7 (2016-01-07)
 ------------------------
-
-- Bump conda version. [Per Unneberg]
 
 - Update changelog. [Per Unneberg]
 
@@ -27,7 +86,7 @@ Changelog
 
   Fixes #8
 
-0.1-alpha.6 (2016-01-07)
+0.1-alpha.6 (2015-12-13)
 ------------------------
 
 - Redefine unique targets for use_multimapped. [Per Unneberg]
@@ -123,10 +182,10 @@ Changelog
 
 - Use snakemakelib.io for targets. [Per Unneberg]
 
+- Update dependencies. [Per Unneberg]
+
 0.1-alpha.2 (2015-11-24)
 ------------------------
-
-- Update dependencies. [Per Unneberg]
 
 - Add resources. [Per Unneberg]
 
