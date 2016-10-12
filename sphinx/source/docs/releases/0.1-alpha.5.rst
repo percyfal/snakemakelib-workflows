@@ -1,6 +1,0 @@
-0.1-alpha.5 (Dec 12 2015)
-=========================
-
-Hotfix (#6): replace wildcard path with REPORT in pca rule
-
-

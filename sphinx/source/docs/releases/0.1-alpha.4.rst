@@ -1,6 +1,0 @@
-0.1-alpha.4 (Dec 12 2015)
-=========================
-
-Hotfix: remove snakemakelib_workflows from conda run requirement
-
-

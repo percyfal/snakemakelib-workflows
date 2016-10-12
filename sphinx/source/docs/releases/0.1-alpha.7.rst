@@ -1,6 +1,0 @@
-0.1-alpha.7 (Jan 7 2016)
-=========================
-
-Hotfix (#8): import atacseq.app
-
-

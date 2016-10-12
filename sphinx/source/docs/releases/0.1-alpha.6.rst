@@ -1,6 +1,0 @@
-0.1-alpha.6 (Dec 13 2015)
-=========================
-
-Hotfix (#7): set Align['unique'] empty if use_multimapped
-
-
