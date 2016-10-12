@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>snakemakelib_workflows.scrnaseq.app.graphics &#8212; snakemakelib_workflows 0.1-alpha.9+1.g63cbc92 documentation</title>
+    
+    <link rel="stylesheet" href="../../../../_static/basic.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/bootstrap-3.3.4/css/bootstrap.min.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/bootstrap-3.3.4/css/bootstrap-theme.min.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/bootstrap-sphinx.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../../',
+        VERSION:     '0.1-alpha.9+1.g63cbc92',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="../../../../_static/js/jquery-1.11.0.min.js"></script>
+    <script type="text/javascript" src="../../../../_static/js/jquery-fix.js"></script>
+    <script type="text/javascript" src="../../../../_static/bootstrap-3.3.4/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../../../../_static/bootstrap-sphinx.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+    <link rel="top" title="snakemakelib_workflows 0.1-alpha.9+1.g63cbc92 documentation" href="../../../../index.html" />
+    <link rel="up" title="Module code" href="../../../index.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+
+  </head>
+  <body role="document">
+
+
+<div id="navbar" class="navbar navbar-inverse navbar-default navbar-fixed-top">
+
+    <div class="container">
+
+      <div class="navbar-header">
+
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+
+        <a class="navbar-brand" href="../../../../index.html">snakemakelib_workflows</a>
+        <span class="navbar-text navbar-version pull-left"><b>0.1-alpha.9+1.g63cbc92</b></span>
+      </div>
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            <li class="divider-vertical"></li>
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../../../../index.html">Site <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../docs/workflows.html">About</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../docs/workflows.html#general-comments">General comments</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../docs/workflows.html#workflow-list">Workflow list</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../docs/workflows/atacseq.html">ATAC-seq</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../docs/workflows/atacseq.html#configuration">Configuration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../docs/workflows/atacseq.html#workflow">Workflow</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../docs/workflows/atacseq.html#troubleshooting">Troubleshooting</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../docs/workflows/atacseq.html#reference-guide">Reference guide</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../docs/workflows/scrnaseq.html">Single cell RNA-seq</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../docs/workflows/scrnaseq.html#required-configuration">Required configuration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../docs/workflows/scrnaseq.html#workflow-specific-configuration">Workflow specific configuration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../docs/workflows/scrnaseq.html#other-configuration">Other configuration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../docs/workflows/scrnaseq.html#additional-advice">Additional advice</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../docs/workflows/scrnaseq.html#workflow">Workflow</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../docs/workflows/scrnaseq.html#troubleshooting">Troubleshooting</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../docs/workflows/scrnaseq.html#reference-guide">Reference guide</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../docs/workflows.html#known-issues">Known issues</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../docs/workflows.html#troubleshooting">Troubleshooting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../docs/reference.html">Reference Guide</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../docs/reference/atacseq.html"><code class="docutils literal"><span class="pre">snakemakelib_workflows.atacseq.app</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../docs/reference/atacseq.html#graphics"><code class="docutils literal"><span class="pre">graphics</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../docs/reference/atacseq.html#hooks"><code class="docutils literal"><span class="pre">hooks</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../docs/reference/atacseq.html#results"><code class="docutils literal"><span class="pre">results</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../docs/reference/scrnaseq.html"><code class="docutils literal"><span class="pre">snakemakelib_workflows.scrnaseq.app</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../docs/reference/scrnaseq.html#graphics"><code class="docutils literal"><span class="pre">graphics</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../docs/reference/scrnaseq.html#hooks"><code class="docutils literal"><span class="pre">hooks</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../docs/reference/scrnaseq.html#pca"><code class="docutils literal"><span class="pre">pca</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../docs/reference/scrnaseq.html#report"><code class="docutils literal"><span class="pre">report</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../docs/reference/scrnaseq.html#technicalnoise"><code class="docutils literal"><span class="pre">technicalnoise</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../docs/reference/scrnaseq.html#utils"><code class="docutils literal"><span class="pre">utils</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../docs/release_notes.html">Release notes</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../docs/release_notes.html#pre-releases">Pre-releases</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../docs/releases/0.1-alpha.9.html">0.1-alpha.9 (Oct 11 2016)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../docs/releases/0.1-alpha.8.html">0.1-alpha.8 (Jan 8 2016)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../docs/releases/0.1-alpha.7.html">0.1-alpha.7 (Jan 7 2016)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../docs/releases/0.1-alpha.6.html">0.1-alpha.6 (Dec 13 2015)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../docs/releases/0.1-alpha.5.html">0.1-alpha.5 (Dec 12 2015)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../docs/releases/0.1-alpha.4.html">0.1-alpha.4 (Dec 12 2015)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../docs/releases/0.1-alpha.3.html">0.1-alpha.3 (Dec 12 2015)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../docs/releases/0.1-alpha.2.html">0.1-alpha.2 (Nov 24 2015)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../docs/releases/0.1-alpha.1.html">0.1-alpha.1 (Oct 8 2015)</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</ul>
+</li>
+              
+                <li class="dropdown">
+  <a role="button"
+     id="dLabelLocalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="#">Page <b class="caret"></b></a>
+  <ul class="dropdown-menu localtoc"
+      role="menu"
+      aria-labelledby="dLabelLocalToc"></ul>
+</li>
+              
+            
+            
+            
+            
+            
+          </ul>
+
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="col-md-12">
+      
+  <h1>Source code for snakemakelib_workflows.scrnaseq.app.graphics</h1><div class="highlight"><pre>
+<span class="c"># Copyright (C) 2015 by Per Unneberg</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">bokeh.models</span> <span class="k">import</span> <span class="n">ColumnDataSource</span><span class="p">,</span> <span class="n">TableColumn</span><span class="p">,</span> <span class="n">DataTable</span><span class="p">,</span> <span class="n">HoverTool</span><span class="p">,</span> <span class="n">BoxSelectTool</span>
+<span class="kn">from</span> <span class="nn">bokeh.plotting</span> <span class="k">import</span> <span class="n">figure</span><span class="p">,</span> <span class="n">gridplot</span>
+<span class="kn">from</span> <span class="nn">snakemakelib.graphics</span> <span class="k">import</span> <span class="n">dotplot</span><span class="p">,</span> <span class="n">tooltips</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;scrnaseq_results_plot_alignrseqc&#39;</span><span class="p">]</span>
+
+<span class="n">DEFAULT_TOOLS</span> <span class="o">=</span> <span class="s">&quot;pan,wheel_zoom,box_zoom,box_select,lasso_select,resize,reset,save,hover&quot;</span>
+
+<div class="viewcode-block" id="scrnaseq_results_plot_alignrseqc"><a class="viewcode-back" href="../../../../docs/reference/scrnaseq.html#snakemakelib_workflows.scrnaseq.app.graphics.scrnaseq_results_plot_alignrseqc">[docs]</a><span class="k">def</span> <span class="nf">scrnaseq_results_plot_alignrseqc</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Plot scRNASeq QC summary.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">      df (DataFrame): data frame consisting of summary data from alignments and RSeQC</span>
+<span class="sd">      kwargs: keyword arguments to bokeh plot functions</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">      (dict): dictionary with a bokeh gridplot and a table</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s">&quot;SM&quot;</span><span class="p">)</span>
+    <span class="n">source</span> <span class="o">=</span> <span class="n">ColumnDataSource</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+    <span class="n">columns</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">TableColumn</span><span class="p">(</span><span class="n">field</span><span class="o">=</span><span class="s">&quot;SM&quot;</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s">&quot;Sample&quot;</span><span class="p">),</span>
+        <span class="n">TableColumn</span><span class="p">(</span><span class="n">field</span><span class="o">=</span><span class="s">&quot;Number_of_input_reads&quot;</span><span class="p">,</span>
+                    <span class="n">title</span><span class="o">=</span><span class="s">&quot;Number of input reads&quot;</span><span class="p">),</span>
+        <span class="n">TableColumn</span><span class="p">(</span><span class="n">field</span><span class="o">=</span><span class="s">&quot;Uniquely_mapped_reads_PCT&quot;</span><span class="p">,</span>
+                    <span class="n">title</span><span class="o">=</span><span class="s">&quot;Uniquely mapped reads (%)&quot;</span><span class="p">),</span>
+        <span class="n">TableColumn</span><span class="p">(</span><span class="n">field</span><span class="o">=</span><span class="s">&quot;Mismatch_rate_per_base,_PCT&quot;</span><span class="p">,</span>
+                    <span class="n">title</span><span class="o">=</span><span class="s">&quot;Mismatch rate per base (%)&quot;</span><span class="p">),</span>
+        <span class="n">TableColumn</span><span class="p">(</span><span class="n">field</span><span class="o">=</span><span class="s">&quot;Insertion_rate_per_base&quot;</span><span class="p">,</span>
+                    <span class="n">title</span><span class="o">=</span><span class="s">&quot;Insertion rate per base (%)&quot;</span><span class="p">),</span>
+        <span class="n">TableColumn</span><span class="p">(</span><span class="n">field</span><span class="o">=</span><span class="s">&quot;Deletion_rate_per_base&quot;</span><span class="p">,</span>
+                    <span class="n">title</span><span class="o">=</span><span class="s">&quot;Deletion rate per base (%)&quot;</span><span class="p">),</span>
+        <span class="n">TableColumn</span><span class="p">(</span><span class="n">field</span><span class="o">=</span><span class="s">&quot;PCT_of_reads_unmapped&quot;</span><span class="p">,</span>
+                    <span class="n">title</span><span class="o">=</span><span class="s">&quot;Unmapped reads (%)&quot;</span><span class="p">),</span>
+    <span class="p">]</span>
+    <span class="n">table</span> <span class="o">=</span> <span class="n">DataTable</span><span class="p">(</span><span class="n">source</span><span class="o">=</span><span class="n">source</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="n">columns</span><span class="p">,</span>
+                      <span class="n">editable</span><span class="o">=</span><span class="k">False</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span>
+
+    <span class="n">kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;plot_width&#39;</span><span class="p">:</span> <span class="mi">400</span><span class="p">,</span> <span class="s">&#39;plot_height&#39;</span><span class="p">:</span> <span class="mi">400</span><span class="p">,</span>
+              <span class="s">&#39;title_text_font_size&#39;</span><span class="p">:</span> <span class="s">&quot;16pt&quot;</span><span class="p">,</span>
+              <span class="s">&#39;x_axis_label&#39;</span><span class="p">:</span> <span class="s">&#39;Sample&#39;</span><span class="p">,</span>
+              <span class="s">&#39;x_axis_label_text_font_size&#39;</span><span class="p">:</span> <span class="s">&#39;12pt&#39;</span><span class="p">,</span>
+              <span class="s">&#39;x_major_label_orientation&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mi">3</span><span class="p">,</span>
+              <span class="s">&#39;y_axis_label&#39;</span><span class="p">:</span> <span class="s">&#39;Reads&#39;</span><span class="p">,</span>
+              <span class="s">&#39;y_axis_label_text_font_size&#39;</span><span class="p">:</span> <span class="s">&#39;12pt&#39;</span><span class="p">,</span>
+              <span class="s">&#39;y_major_label_orientation&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mi">3</span>
+              <span class="p">}</span>    
+    <span class="c"># Input reads</span>
+    <span class="n">p1</span> <span class="o">=</span> <span class="n">dotplot</span><span class="p">(</span>
+        <span class="n">df</span><span class="o">=</span><span class="n">source</span><span class="p">,</span>
+        <span class="n">title</span><span class="o">=</span><span class="s">&quot;Number of input reads&quot;</span><span class="p">,</span> <span class="n">tools</span><span class="o">=</span><span class="n">DEFAULT_TOOLS</span><span class="p">,</span> 
+        <span class="n">x</span><span class="o">=</span><span class="s">&quot;SM&quot;</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s">&quot;Number_of_input_reads&quot;</span><span class="p">,</span>
+        <span class="o">**</span><span class="nb">dict</span><span class="p">(</span><span class="n">kwargs</span><span class="p">,</span> <span class="o">**</span><span class="p">{</span><span class="s">&#39;x_range&#39;</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="p">),</span> <span class="s">&#39;y_axis_type&#39;</span><span class="p">:</span> <span class="s">&quot;log&quot;</span><span class="p">}))</span>
+    <span class="n">tooltips</span><span class="p">(</span><span class="n">p1</span><span class="p">,</span> <span class="n">HoverTool</span><span class="p">,</span> <span class="p">[(</span><span class="s">&#39;Sample&#39;</span><span class="p">,</span> <span class="s">&#39;@SM&#39;</span><span class="p">),</span>
+                             <span class="p">(</span><span class="s">&#39;Reads&#39;</span><span class="p">,</span> <span class="s">&#39;@Number_of_input_reads&#39;</span><span class="p">)])</span>
+              
+    <span class="c"># Uniquely mapping</span>
+    <span class="n">kwargs</span><span class="p">[</span><span class="s">&#39;y_axis_label&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;Percent&#39;</span>
+    <span class="n">p2</span> <span class="o">=</span> <span class="n">dotplot</span><span class="p">(</span>
+        <span class="n">df</span><span class="o">=</span><span class="n">source</span><span class="p">,</span>
+        <span class="n">tools</span><span class="o">=</span><span class="n">DEFAULT_TOOLS</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s">&quot;Uniquely mapping reads&quot;</span><span class="p">,</span>
+        <span class="n">x</span><span class="o">=</span><span class="s">&quot;SM&quot;</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s">&quot;Uniquely_mapped_reads_PCT&quot;</span><span class="p">,</span>
+        <span class="o">**</span><span class="nb">dict</span><span class="p">(</span><span class="n">kwargs</span><span class="p">,</span> <span class="o">**</span><span class="p">{</span><span class="s">&#39;x_range&#39;</span><span class="p">:</span> <span class="n">p1</span><span class="o">.</span><span class="n">x_range</span><span class="p">,</span> <span class="s">&#39;y_range&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">100</span><span class="p">]})</span>
+    <span class="p">)</span>
+    <span class="n">tooltips</span><span class="p">(</span><span class="n">p2</span><span class="p">,</span> <span class="n">HoverTool</span><span class="p">,</span> <span class="p">[(</span><span class="s">&#39;Sample&#39;</span><span class="p">,</span> <span class="s">&#39;@SM&#39;</span><span class="p">),</span>
+                             <span class="p">(</span><span class="s">&#39;Pct_mapped&#39;</span><span class="p">,</span> <span class="s">&#39;@Uniquely_mapped_reads_PCT&#39;</span><span class="p">)])</span>
+    
+    <span class="c"># Unmapped</span>
+    <span class="n">p3</span> <span class="o">=</span> <span class="n">dotplot</span><span class="p">(</span>
+        <span class="n">df</span><span class="o">=</span><span class="n">source</span><span class="p">,</span>
+        <span class="n">tools</span><span class="o">=</span><span class="n">DEFAULT_TOOLS</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s">&quot;Unmapped reads&quot;</span><span class="p">,</span>
+        <span class="n">x</span><span class="o">=</span><span class="s">&quot;SM&quot;</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s">&quot;PCT_of_reads_unmapped&quot;</span><span class="p">,</span>
+        <span class="o">**</span><span class="nb">dict</span><span class="p">(</span><span class="n">kwargs</span><span class="p">,</span> <span class="o">**</span><span class="p">{</span><span class="s">&#39;x_range&#39;</span><span class="p">:</span> <span class="n">p1</span><span class="o">.</span><span class="n">x_range</span><span class="p">,</span> <span class="s">&#39;y_range&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">100</span><span class="p">]})</span>
+    <span class="p">)</span>
+    <span class="n">tooltips</span><span class="p">(</span><span class="n">p3</span><span class="p">,</span> <span class="n">HoverTool</span><span class="p">,</span> <span class="p">[(</span><span class="s">&#39;Sample&#39;</span><span class="p">,</span> <span class="s">&#39;@SM&#39;</span><span class="p">),</span>
+                             <span class="p">(</span><span class="s">&#39;Pct_unmapped&#39;</span><span class="p">,</span> <span class="s">&#39;@PCT_of_reads_unmapped&#39;</span><span class="p">)])</span>
+              
+    <span class="c"># Mismatch/indel rate</span>
+    <span class="n">p4</span> <span class="o">=</span> <span class="n">dotplot</span><span class="p">(</span>
+        <span class="n">df</span><span class="o">=</span><span class="n">source</span><span class="p">,</span>
+        <span class="n">tools</span><span class="o">=</span><span class="n">DEFAULT_TOOLS</span><span class="p">,</span>
+        <span class="n">title</span><span class="o">=</span><span class="s">&quot;Mismatch/indel rate&quot;</span><span class="p">,</span>
+        <span class="n">x</span><span class="o">=</span><span class="s">&quot;SM&quot;</span><span class="p">,</span>
+        <span class="n">y</span><span class="o">=</span><span class="p">[</span>
+            <span class="s">&quot;Mismatch_rate_per_base,_PCT&quot;</span><span class="p">,</span>
+            <span class="s">&quot;Insertion_rate_per_base&quot;</span><span class="p">,</span>
+            <span class="s">&quot;Deletion_rate_per_base&quot;</span>
+        <span class="p">],</span>
+        <span class="o">**</span><span class="nb">dict</span><span class="p">(</span><span class="n">kwargs</span><span class="p">,</span> <span class="o">**</span><span class="p">{</span><span class="s">&#39;x_range&#39;</span><span class="p">:</span> <span class="n">p1</span><span class="o">.</span><span class="n">x_range</span><span class="p">,</span> <span class="s">&#39;y_range&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="s">&#39;color&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s">&quot;blue&quot;</span><span class="p">,</span> <span class="s">&quot;red&quot;</span><span class="p">,</span> <span class="s">&quot;green&quot;</span><span class="p">]})</span>
+    <span class="p">)</span>
+    <span class="n">tooltips</span><span class="p">(</span><span class="n">p4</span><span class="p">,</span> <span class="n">HoverTool</span><span class="p">,</span>  <span class="p">[(</span><span class="s">&#39;Sample&#39;</span><span class="p">,</span> <span class="s">&#39;@SM&#39;</span><span class="p">),</span>
+                              <span class="p">(</span><span class="s">&#39;Mismatch rate per base&#39;</span><span class="p">,</span>
+                               <span class="s">&#39;@Mismatch_rate_per_base,_PCT&#39;</span><span class="p">),</span>
+                              <span class="p">(</span><span class="s">&#39;Insertion rate per base&#39;</span><span class="p">,</span>
+                               <span class="s">&#39;@Insertion_rate_per_base&#39;</span><span class="p">),</span>
+                              <span class="p">(</span><span class="s">&#39;Deletion rate per base&#39;</span><span class="p">,</span>
+                               <span class="s">&#39;@Deletion_rate_per_base&#39;</span><span class="p">),</span> <span class="p">])</span>
+    <span class="n">select_tool</span> <span class="o">=</span> <span class="n">p4</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="n">BoxSelectTool</span><span class="p">))</span>
+    <span class="n">select_tool</span><span class="o">.</span><span class="n">dimensions</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;width&#39;</span><span class="p">]</span>
+    
+    <span class="c"># Unmapped</span>
+    <span class="n">p5</span> <span class="o">=</span> <span class="n">dotplot</span><span class="p">(</span>
+        <span class="n">tools</span><span class="o">=</span><span class="n">DEFAULT_TOOLS</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s">&quot;Mismatch/indel sum&quot;</span><span class="p">,</span>
+        <span class="n">x</span><span class="o">=</span><span class="s">&quot;SM&quot;</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s">&quot;mismatch_sum&quot;</span><span class="p">,</span> <span class="n">df</span><span class="o">=</span><span class="n">source</span><span class="p">,</span>
+        <span class="o">**</span><span class="nb">dict</span><span class="p">(</span><span class="n">kwargs</span><span class="p">,</span> <span class="o">**</span><span class="p">{</span><span class="s">&#39;x_range&#39;</span><span class="p">:</span> <span class="n">p1</span><span class="o">.</span><span class="n">x_range</span><span class="p">})</span>
+    <span class="p">)</span>
+    <span class="n">tooltips</span><span class="p">(</span><span class="n">p5</span><span class="p">,</span> <span class="n">HoverTool</span><span class="p">,</span> <span class="p">[(</span><span class="s">&#39;Sample&#39;</span><span class="p">,</span> <span class="s">&#39;@SM&#39;</span><span class="p">),</span>
+                             <span class="p">(</span><span class="s">&#39;Mismatch/indel rate per base&#39;</span><span class="p">,</span>
+                              <span class="s">&#39;@mismatch_sum&#39;</span><span class="p">),</span> <span class="p">])</span>
+    <span class="n">select_tool</span> <span class="o">=</span> <span class="n">p5</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="n">BoxSelectTool</span><span class="p">))</span>
+    <span class="n">select_tool</span><span class="o">.</span><span class="n">dimensions</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;width&#39;</span><span class="p">]</span>
+    
+    <span class="c"># Fraction reads mapping to 10% right-most end</span>
+    <span class="n">p6</span> <span class="o">=</span> <span class="n">dotplot</span><span class="p">(</span>
+        <span class="n">tools</span><span class="o">=</span><span class="n">DEFAULT_TOOLS</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s">&quot;Tags mapping to exons&quot;</span><span class="p">,</span>
+        <span class="n">x</span><span class="o">=</span><span class="s">&quot;SM&quot;</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s">&quot;ExonMap_PCT&quot;</span><span class="p">,</span> <span class="n">df</span><span class="o">=</span><span class="n">source</span><span class="p">,</span>
+        <span class="o">**</span><span class="nb">dict</span><span class="p">(</span><span class="n">kwargs</span><span class="p">,</span> <span class="o">**</span><span class="p">{</span><span class="s">&#39;x_range&#39;</span><span class="p">:</span> <span class="n">p1</span><span class="o">.</span><span class="n">x_range</span><span class="p">})</span>
+    <span class="p">)</span>
+    <span class="n">tooltips</span><span class="p">(</span><span class="n">p6</span><span class="p">,</span> <span class="n">HoverTool</span><span class="p">,</span> <span class="p">[(</span><span class="s">&#39;Sample&#39;</span><span class="p">,</span> <span class="s">&#39;@SM&#39;</span><span class="p">),</span>
+                             <span class="p">(</span><span class="s">&#39;ExonMap (%)&#39;</span><span class="p">,</span> <span class="s">&#39;@ExonMap_PCT&#39;</span><span class="p">),</span> <span class="p">])</span>
+    
+    <span class="c"># Fraction reads mapping to 10% right-most end</span>
+    <span class="n">p7</span> <span class="o">=</span> <span class="n">dotplot</span><span class="p">(</span>
+        <span class="n">tools</span><span class="o">=</span><span class="n">DEFAULT_TOOLS</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s">&quot;Reads mapping to 3&#39; end&quot;</span><span class="p">,</span>
+        <span class="n">x</span><span class="o">=</span><span class="s">&quot;SM&quot;</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s">&quot;three_prime_map&quot;</span><span class="p">,</span> <span class="n">df</span><span class="o">=</span><span class="n">source</span><span class="p">,</span>
+        <span class="o">**</span><span class="nb">dict</span><span class="p">(</span><span class="n">kwargs</span><span class="p">,</span> <span class="o">**</span><span class="p">{</span><span class="s">&#39;x_range&#39;</span><span class="p">:</span> <span class="n">p1</span><span class="o">.</span><span class="n">x_range</span><span class="p">})</span>
+    <span class="p">)</span>
+    <span class="n">tooltips</span><span class="p">(</span><span class="n">p7</span><span class="p">,</span> <span class="n">HoverTool</span><span class="p">,</span> <span class="p">[(</span><span class="s">&#39;Sample&#39;</span><span class="p">,</span> <span class="s">&#39;@SM&#39;</span><span class="p">),</span>
+                             <span class="p">(</span><span class="s">&quot;3&#39; map&quot;</span><span class="p">,</span> <span class="s">&#39;@three_prime_map&#39;</span><span class="p">),</span> <span class="p">])</span>
+    
+    <span class="k">return</span> <span class="p">{</span><span class="s">&#39;fig&#39;</span><span class="p">:</span> <span class="n">gridplot</span><span class="p">([[</span><span class="n">p1</span><span class="p">,</span> <span class="n">p2</span><span class="p">,</span> <span class="n">p3</span><span class="p">],</span> <span class="p">[</span><span class="n">p4</span><span class="p">,</span> <span class="n">p5</span><span class="p">,</span> <span class="n">p6</span><span class="p">],</span> <span class="p">[</span><span class="n">p7</span><span class="p">]]),</span> <span class="s">&#39;table&#39;</span><span class="p">:</span> <span class="n">table</span><span class="p">}</span></div>
+
+</pre></div>
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+        <br/>
+        
+      
+    </p>
+    <p>
+        &copy; Copyright 2015, Per Unneberg.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.8.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

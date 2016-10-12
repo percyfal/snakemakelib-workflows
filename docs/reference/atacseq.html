@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>snakemakelib_workflows.atacseq.app &#8212; snakemakelib_workflows 0.1-alpha.9+1.g63cbc92 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/basic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/bootstrap-3.3.4/css/bootstrap.min.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/bootstrap-3.3.4/css/bootstrap-theme.min.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/bootstrap-sphinx.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.1-alpha.9+1.g63cbc92',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="../../_static/js/jquery-1.11.0.min.js"></script>
+    <script type="text/javascript" src="../../_static/js/jquery-fix.js"></script>
+    <script type="text/javascript" src="../../_static/bootstrap-3.3.4/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../../_static/bootstrap-sphinx.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="top" title="snakemakelib_workflows 0.1-alpha.9+1.g63cbc92 documentation" href="../../index.html" />
+    <link rel="up" title="ATAC-seq" href="../workflows/atacseq.html" />
+    <link rel="next" title="Single cell RNA-seq" href="../workflows/scrnaseq.html" />
+    <link rel="prev" title="ATAC-seq" href="../workflows/atacseq.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+
+  </head>
+  <body role="document">
+
+
+<div id="navbar" class="navbar navbar-inverse navbar-default navbar-fixed-top">
+
+    <div class="container">
+
+      <div class="navbar-header">
+
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+
+        <a class="navbar-brand" href="../../index.html">snakemakelib_workflows</a>
+        <span class="navbar-text navbar-version pull-left"><b>0.1-alpha.9+1.g63cbc92</b></span>
+      </div>
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            <li class="divider-vertical"></li>
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../../index.html">Site <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../workflows.html">About</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../workflows.html#general-comments">General comments</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../workflows.html#workflow-list">Workflow list</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../workflows/atacseq.html">ATAC-seq</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../workflows/atacseq.html#configuration">Configuration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../workflows/atacseq.html#workflow">Workflow</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../workflows/atacseq.html#troubleshooting">Troubleshooting</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="../workflows/atacseq.html#reference-guide">Reference guide</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../workflows/scrnaseq.html">Single cell RNA-seq</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../workflows/scrnaseq.html#required-configuration">Required configuration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../workflows/scrnaseq.html#workflow-specific-configuration">Workflow specific configuration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../workflows/scrnaseq.html#other-configuration">Other configuration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../workflows/scrnaseq.html#additional-advice">Additional advice</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../workflows/scrnaseq.html#workflow">Workflow</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../workflows/scrnaseq.html#troubleshooting">Troubleshooting</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../workflows/scrnaseq.html#reference-guide">Reference guide</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../workflows.html#known-issues">Known issues</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../workflows.html#troubleshooting">Troubleshooting</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../reference.html">Reference Guide</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#"><code class="docutils literal"><span class="pre">snakemakelib_workflows.atacseq.app</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#graphics"><code class="docutils literal"><span class="pre">graphics</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#hooks"><code class="docutils literal"><span class="pre">hooks</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#results"><code class="docutils literal"><span class="pre">results</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="scrnaseq.html"><code class="docutils literal"><span class="pre">snakemakelib_workflows.scrnaseq.app</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="scrnaseq.html#graphics"><code class="docutils literal"><span class="pre">graphics</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="scrnaseq.html#hooks"><code class="docutils literal"><span class="pre">hooks</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="scrnaseq.html#pca"><code class="docutils literal"><span class="pre">pca</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="scrnaseq.html#report"><code class="docutils literal"><span class="pre">report</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="scrnaseq.html#technicalnoise"><code class="docutils literal"><span class="pre">technicalnoise</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="scrnaseq.html#utils"><code class="docutils literal"><span class="pre">utils</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../release_notes.html">Release notes</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../release_notes.html#pre-releases">Pre-releases</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../releases/0.1-alpha.9.html">0.1-alpha.9 (Oct 11 2016)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../releases/0.1-alpha.8.html">0.1-alpha.8 (Jan 8 2016)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../releases/0.1-alpha.7.html">0.1-alpha.7 (Jan 7 2016)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../releases/0.1-alpha.6.html">0.1-alpha.6 (Dec 13 2015)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../releases/0.1-alpha.5.html">0.1-alpha.5 (Dec 12 2015)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../releases/0.1-alpha.4.html">0.1-alpha.4 (Dec 12 2015)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../releases/0.1-alpha.3.html">0.1-alpha.3 (Dec 12 2015)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../releases/0.1-alpha.2.html">0.1-alpha.2 (Nov 24 2015)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../releases/0.1-alpha.1.html">0.1-alpha.1 (Oct 8 2015)</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</ul>
+</li>
+              
+                <li class="dropdown">
+  <a role="button"
+     id="dLabelLocalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="#">Page <b class="caret"></b></a>
+  <ul class="dropdown-menu localtoc"
+      role="menu"
+      aria-labelledby="dLabelLocalToc"><ul>
+<li><a class="reference internal" href="#"><code class="docutils literal"><span class="pre">snakemakelib_workflows.atacseq.app</span></code></a><ul>
+<li><a class="reference internal" href="#graphics"><code class="docutils literal"><span class="pre">graphics</span></code></a></li>
+<li><a class="reference internal" href="#hooks"><code class="docutils literal"><span class="pre">hooks</span></code></a></li>
+<li><a class="reference internal" href="#results"><code class="docutils literal"><span class="pre">results</span></code></a></li>
+</ul>
+</li>
+</ul>
+</ul>
+</li>
+              
+            
+            
+            
+            
+            
+          </ul>
+
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="col-md-12">
+      
+  <div class="section" id="module-snakemakelib_workflows.atacseq.app">
+<span id="snakemakelib-workflows-atacseq-app"></span><span id="snakemakelib-workflows-atacseq"></span><h1><code class="docutils literal"><span class="pre">snakemakelib_workflows.atacseq.app</span></code><a class="headerlink" href="#module-snakemakelib_workflows.atacseq.app" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="graphics">
+<h2><code class="docutils literal"><span class="pre">graphics</span></code><a class="headerlink" href="#graphics" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="snakemakelib_workflows.atacseq.app.graphics.atacseq_cutadapt_plot_metrics">
+<code class="descname">atacseq_cutadapt_plot_metrics</code><span class="sig-paren">(</span><em>df</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/snakemakelib_workflows/atacseq/app/graphics.html#atacseq_cutadapt_plot_metrics"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#snakemakelib_workflows.atacseq.app.graphics.atacseq_cutadapt_plot_metrics" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot cutadapt metrics.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>df</strong> (<a class="reference external" href="http://pandas.pydata.org/pandas-docs/stable/generated/pandas.DataFrame.html#pandas.DataFrame" title="(in pandas v0.19.0)"><code class="xref py py-class docutils literal"><span class="pre">DataFrame</span></code></a>) &#8211; data frame holding summary of cutadapt results. The summary is provided by  <code class="xref py py-meth docutils literal"><span class="pre">snakemakelib.odo.cutadapt.resource_cutadapt_metrics()</span></code>.</li>
+<li><strong>kwargs</strong> (<a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) &#8211; keyword arguments</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">a scatter plot</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><code class="xref py py-class docutils literal"><span class="pre">bokeh.charts.Scatter</span></code></p>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Examples:</p>
+<div class="highlight-python" id="atacseq.rst.bokeh-plot-0"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">pandas</span> <span class="kn">as</span> <span class="nn">pd</span>
+<span class="kn">from</span> <span class="nn">bokeh.plotting</span> <span class="kn">import</span> <span class="n">show</span>
+<span class="kn">from</span> <span class="nn">snakemakelib_workflows.atacseq.app</span> <span class="kn">import</span> <span class="n">atacseq_cutadapt_plot_metrics</span>
+
+<span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">([[</span><span class="s">&#39;S1&#39;</span><span class="p">,</span> <span class="s">&#39;P1&#39;</span><span class="p">,</span> <span class="s">&#39;S1_P1&#39;</span><span class="p">,</span> <span class="s">&#39;Read 1 percent&#39;</span><span class="p">,</span> <span class="mi">80</span><span class="p">],</span>
+                   <span class="p">[</span><span class="s">&#39;S1&#39;</span><span class="p">,</span> <span class="s">&#39;P2&#39;</span><span class="p">,</span> <span class="s">&#39;S1_P2&#39;</span><span class="p">,</span> <span class="s">&#39;Read 1 percent&#39;</span><span class="p">,</span> <span class="mi">40</span><span class="p">]],</span>
+                  <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s">&#39;SM&#39;</span><span class="p">,</span><span class="s">&#39;PU&#39;</span><span class="p">,</span><span class="s">&#39;PlatformUnit&#39;</span><span class="p">,</span><span class="s">&#39;statistic&#39;</span><span class="p">,</span><span class="s">&#39;value&#39;</span><span class="p">])</span>
+<span class="n">p</span> <span class="o">=</span> <span class="n">atacseq_cutadapt_plot_metrics</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">200</span><span class="p">)</span>
+<span class="n">show</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+</pre></div>
+</div>
+
+<script
+    src="atacseq.rst.bokeh-plot-0.js"
+    id="116f8e25-cd57-4761-9f86-65718195664d"
+    data-bokeh-model-id="39c22417-54ff-4cf7-954d-2a7b141ace7c"
+    data-bokeh-doc-id="59073132-39fc-4029-b311-d3ea7657395c"
+></script></dd></dl>
+
+<dl class="function">
+<dt id="snakemakelib_workflows.atacseq.app.graphics.atacseq_qualimap_plot_globals">
+<code class="descname">atacseq_qualimap_plot_globals</code><span class="sig-paren">(</span><em>df</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/snakemakelib_workflows/atacseq/app/graphics.html#atacseq_qualimap_plot_globals"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#snakemakelib_workflows.atacseq.app.graphics.atacseq_qualimap_plot_globals" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot qualimap global statistics.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>df</strong> (<a class="reference external" href="http://pandas.pydata.org/pandas-docs/stable/generated/pandas.DataFrame.html#pandas.DataFrame" title="(in pandas v0.19.0)"><code class="xref py py-class docutils literal"><span class="pre">DataFrame</span></code></a>) &#8211; data frame holding summary of qualimap results. The summary is provided by  <code class="xref py py-meth docutils literal"><span class="pre">snakemakelib.odo.qualimap.resource_genome_results()</span></code>.</li>
+<li><strong>kwargs</strong> (<a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) &#8211; keyword arguments</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">bokeh gridplot</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">(<code class="xref py py-class docutils literal"><span class="pre">bokeh.plotting.gridplot</span></code>)</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Examples:</p>
+<div class="highlight-python" id="atacseq.rst.bokeh-plot-1"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">pandas</span> <span class="kn">as</span> <span class="nn">pd</span>
+<span class="kn">from</span> <span class="nn">bokeh.plotting</span> <span class="kn">import</span> <span class="n">show</span>
+<span class="kn">from</span> <span class="nn">snakemakelib_workflows.atacseq.app</span> <span class="kn">import</span> <span class="n">atacseq_qualimap_plot_globals</span>
+
+<span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">([[</span><span class="s">&#39;S1&#39;</span><span class="p">,</span> <span class="s">&#39;number of reads&#39;</span><span class="p">,</span> <span class="mi">80</span><span class="p">,</span> <span class="mi">100</span><span class="p">],</span>
+                   <span class="p">[</span><span class="s">&#39;S1&#39;</span><span class="p">,</span> <span class="s">&#39;number of mapped reads&#39;</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">25</span><span class="p">],</span>
+                   <span class="p">[</span><span class="s">&#39;S1&#39;</span><span class="p">,</span> <span class="s">&#39;number of duplicated reads&#39;</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">25</span><span class="p">],</span>
+                   <span class="p">[</span><span class="s">&#39;S1&#39;</span><span class="p">,</span> <span class="s">&#39;number of unique reads&#39;</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mf">12.5</span><span class="p">]],</span>
+                  <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s">&#39;SM&#39;</span><span class="p">,</span><span class="s">&#39;statistic&#39;</span><span class="p">,</span><span class="s">&#39;value&#39;</span><span class="p">,</span> <span class="s">&#39;percent&#39;</span><span class="p">])</span>
+<span class="n">p</span> <span class="o">=</span> <span class="n">atacseq_qualimap_plot_globals</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">200</span><span class="p">)</span>
+<span class="n">show</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+</pre></div>
+</div>
+
+<script
+    src="atacseq.rst.bokeh-plot-1.js"
+    id="ba38dcde-0805-4bed-b716-f4863b450a43"
+    data-bokeh-model-id="e588af0a-e76f-4ebd-83e5-ed97d3146a79"
+    data-bokeh-doc-id="ff35e751-5546-425a-aa46-a28c59d759c3"
+></script></dd></dl>
+
+<dl class="function">
+<dt id="snakemakelib_workflows.atacseq.app.graphics.atacseq_qualimap_plot_coverage_per_contig">
+<code class="descname">atacseq_qualimap_plot_coverage_per_contig</code><span class="sig-paren">(</span><em>df</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/snakemakelib_workflows/atacseq/app/graphics.html#atacseq_qualimap_plot_coverage_per_contig"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#snakemakelib_workflows.atacseq.app.graphics.atacseq_qualimap_plot_coverage_per_contig" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot qualimap coverage per contig.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>df</strong> (<a class="reference external" href="http://pandas.pydata.org/pandas-docs/stable/generated/pandas.DataFrame.html#pandas.DataFrame" title="(in pandas v0.19.0)"><code class="xref py py-class docutils literal"><span class="pre">DataFrame</span></code></a>) &#8211; data frame holding summary of qualimap results. The summary is provided by  <code class="xref py py-meth docutils literal"><span class="pre">snakemakelib.odo.qualimap.resource_genome_results()</span></code>.</li>
+<li><strong>kwargs</strong> (<a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) &#8211; keyword arguments</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">bokeh scatter plot</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><code class="xref py py-class docutils literal"><span class="pre">bokeh.plotting.figure</span></code></p>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Examples:</p>
+<div class="highlight-python" id="atacseq.rst.bokeh-plot-2"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">pandas</span> <span class="kn">as</span> <span class="nn">pd</span>
+<span class="kn">from</span> <span class="nn">bokeh.plotting</span> <span class="kn">import</span> <span class="n">show</span>
+<span class="kn">from</span> <span class="nn">snakemakelib_workflows.atacseq.app</span> <span class="kn">import</span> <span class="n">atacseq_qualimap_plot_coverage_per_contig</span>
+
+<span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">([[</span><span class="s">&#39;S1&#39;</span><span class="p">,</span> <span class="s">&#39;chr1&#39;</span><span class="p">,</span> <span class="mf">4e6</span><span class="p">,</span> <span class="mf">8e6</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">80</span><span class="p">,</span> <span class="mi">40</span><span class="p">],</span>
+                   <span class="p">[</span><span class="s">&#39;S1&#39;</span><span class="p">,</span> <span class="s">&#39;chr2&#39;</span><span class="p">,</span> <span class="mf">1e6</span><span class="p">,</span> <span class="mf">12e6</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">60</span><span class="p">],</span>
+                   <span class="p">[</span><span class="s">&#39;S2&#39;</span><span class="p">,</span> <span class="s">&#39;chr1&#39;</span><span class="p">,</span> <span class="mf">4e6</span><span class="p">,</span> <span class="mf">12e6</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">80</span><span class="p">,</span> <span class="mi">60</span><span class="p">],</span>
+                   <span class="p">[</span><span class="s">&#39;S2&#39;</span><span class="p">,</span> <span class="s">&#39;chr2&#39;</span><span class="p">,</span> <span class="mf">1e6</span><span class="p">,</span> <span class="mf">8e6</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">40</span><span class="p">]],</span>
+                   <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s">&#39;SM&#39;</span><span class="p">,</span> <span class="s">&#39;chr&#39;</span><span class="p">,</span><span class="s">&#39;chrlen&#39;</span><span class="p">,</span> <span class="s">&#39;mapped_bases&#39;</span><span class="p">,</span> <span class="s">&#39;mean_coverage&#39;</span><span class="p">,</span> <span class="s">&#39;sd&#39;</span><span class="p">,</span> <span class="s">&#39;chrlen_percent&#39;</span><span class="p">,</span><span class="s">&#39;mapped_bases_percent&#39;</span><span class="p">])</span>
+<span class="n">p</span> <span class="o">=</span> <span class="n">atacseq_qualimap_plot_coverage_per_contig</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+<span class="n">show</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+</pre></div>
+</div>
+
+<script
+    src="atacseq.rst.bokeh-plot-2.js"
+    id="e2ff64f7-cc10-4c63-ae55-03053ba52b0d"
+    data-bokeh-model-id="84b1fa18-50e0-4e81-8898-6c682bc43289"
+    data-bokeh-doc-id="674befef-4bfd-4843-9537-043f0c29d5c8"
+></script></dd></dl>
+
+<dl class="function">
+<dt id="snakemakelib_workflows.atacseq.app.graphics.atacseq_insert_metrics_plot">
+<code class="descname">atacseq_insert_metrics_plot</code><span class="sig-paren">(</span><em>df</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/snakemakelib_workflows/atacseq/app/graphics.html#atacseq_insert_metrics_plot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#snakemakelib_workflows.atacseq.app.graphics.atacseq_insert_metrics_plot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot qualimap global statistics.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>df</strong> (<a class="reference external" href="http://pandas.pydata.org/pandas-docs/stable/generated/pandas.DataFrame.html#pandas.DataFrame" title="(in pandas v0.19.0)"><code class="xref py py-class docutils literal"><span class="pre">DataFrame</span></code></a>) &#8211; data frame holding summary of picard insert metrics results. The summary is provided by <code class="xref py py-meth docutils literal"><span class="pre">snakemakelib.odo.picard.resource_insert_metrics()</span></code>.</li>
+<li><strong>kwargs</strong> (<a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) &#8211; keyword arguments</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">bokeh scatterplot</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><code class="xref py py-class docutils literal"><span class="pre">bokeh.charts.Scatter</span></code></p>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Examples:</p>
+<div class="highlight-python" id="atacseq.rst.bokeh-plot-3"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">pandas</span> <span class="kn">as</span> <span class="nn">pd</span>
+<span class="kn">from</span> <span class="nn">bokeh.plotting</span> <span class="kn">import</span> <span class="n">show</span>
+<span class="kn">from</span> <span class="nn">snakemakelib_workflows.atacseq.app</span> <span class="kn">import</span> <span class="n">atacseq_insert_metrics_plot</span>
+
+<span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">([[</span><span class="s">&#39;S1&#39;</span><span class="p">,</span> <span class="mi">120</span><span class="p">,</span> <span class="s">&quot;FR&quot;</span><span class="p">],</span>
+                   <span class="p">[</span><span class="s">&#39;S1&#39;</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="s">&quot;RF&quot;</span><span class="p">],</span>
+                   <span class="p">[</span><span class="s">&#39;S2&#39;</span><span class="p">,</span> <span class="mi">140</span><span class="p">,</span> <span class="s">&quot;FR&quot;</span><span class="p">],</span>
+                   <span class="p">[</span><span class="s">&#39;S2&#39;</span><span class="p">,</span> <span class="mi">120</span><span class="p">,</span> <span class="s">&quot;RF&quot;</span><span class="p">]],</span>
+                  <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s">&#39;SM&#39;</span><span class="p">,</span><span class="s">&#39;MEAN_INSERT_SIZE&#39;</span><span class="p">,</span><span class="s">&#39;PAIR_ORIENTATION&#39;</span><span class="p">])</span>
+<span class="n">p</span> <span class="o">=</span> <span class="n">atacseq_insert_metrics_plot</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">200</span><span class="p">)</span>
+<span class="n">show</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+</pre></div>
+</div>
+
+<script
+    src="atacseq.rst.bokeh-plot-3.js"
+    id="70a7d950-9703-4ff9-ac05-67130c04ecda"
+    data-bokeh-model-id="a231ba62-f416-45b4-b8ee-839de08d5cf6"
+    data-bokeh-doc-id="58f26936-d3b4-4d25-a1d0-d81af2550446"
+></script></dd></dl>
+
+<dl class="function">
+<dt id="snakemakelib_workflows.atacseq.app.graphics.atacseq_insert_metrics_hist_plot">
+<code class="descname">atacseq_insert_metrics_hist_plot</code><span class="sig-paren">(</span><em>df</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/snakemakelib_workflows/atacseq/app/graphics.html#atacseq_insert_metrics_hist_plot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#snakemakelib_workflows.atacseq.app.graphics.atacseq_insert_metrics_hist_plot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot qualimap global statistics.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>df</strong> (<a class="reference external" href="http://pandas.pydata.org/pandas-docs/stable/generated/pandas.DataFrame.html#pandas.DataFrame" title="(in pandas v0.19.0)"><code class="xref py py-class docutils literal"><span class="pre">DataFrame</span></code></a>) &#8211; data frame holding summary of qualimap results. The summary is provided by <code class="xref py py-meth docutils literal"><span class="pre">snakemakelib.odo.picard.resource_insert_metrics()</span></code>.</li>
+<li><strong>kwargs</strong> (<a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) &#8211; keyword arguments</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">bokeh gridplot</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><code class="xref py py-class docutils literal"><span class="pre">bokeh.plotting.gridplot</span></code></p>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Examples:</p>
+<div class="highlight-python" id="atacseq.rst.bokeh-plot-4"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">pandas</span> <span class="kn">as</span> <span class="nn">pd</span>
+<span class="kn">from</span> <span class="nn">bokeh.plotting</span> <span class="kn">import</span> <span class="n">show</span>
+<span class="kn">from</span> <span class="nn">snakemakelib_workflows.atacseq.app</span> <span class="kn">import</span> <span class="n">atacseq_insert_metrics_hist_plot</span>
+
+<span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">([[</span><span class="s">&#39;S1&#39;</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span>
+                   <span class="p">[</span><span class="s">&#39;S1&#39;</span><span class="p">,</span> <span class="mi">21</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">4</span><span class="p">],</span>
+                   <span class="p">[</span><span class="s">&#39;S1&#39;</span><span class="p">,</span> <span class="mi">22</span><span class="p">,</span> <span class="mi">15</span><span class="p">,</span> <span class="mi">22</span><span class="p">],</span>
+                   <span class="p">[</span><span class="s">&#39;S2&#39;</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
+                   <span class="p">[</span><span class="s">&#39;S2&#39;</span><span class="p">,</span> <span class="mi">21</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span>
+                   <span class="p">[</span><span class="s">&#39;S2&#39;</span><span class="p">,</span> <span class="mi">22</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">10</span><span class="p">]],</span>
+                  <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s">&#39;SM&#39;</span><span class="p">,</span><span class="s">&#39;insert_size&#39;</span><span class="p">,</span><span class="s">&#39;All_Reads.fr_count&#39;</span><span class="p">,</span> <span class="s">&#39;All_Reads.rf_count&#39;</span><span class="p">])</span>
+<span class="n">p</span> <span class="o">=</span> <span class="n">atacseq_insert_metrics_hist_plot</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+<span class="n">show</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+</pre></div>
+</div>
+
+<script
+    src="atacseq.rst.bokeh-plot-4.js"
+    id="f73d39af-9725-4f7b-ac34-99a90bb5e97d"
+    data-bokeh-model-id="3b0a0a3a-ce35-451b-9aec-f94502bf9d21"
+    data-bokeh-doc-id="c9ba1479-921c-4244-9990-86ec6ce7fdd7"
+></script></dd></dl>
+
+<dl class="function">
+<dt id="snakemakelib_workflows.atacseq.app.graphics.atacseq_mark_duplicates_plot">
+<code class="descname">atacseq_mark_duplicates_plot</code><span class="sig-paren">(</span><em>df</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/snakemakelib_workflows/atacseq/app/graphics.html#atacseq_mark_duplicates_plot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#snakemakelib_workflows.atacseq.app.graphics.atacseq_mark_duplicates_plot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot qualimap global statistics.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>df</strong> (<a class="reference external" href="http://pandas.pydata.org/pandas-docs/stable/generated/pandas.DataFrame.html#pandas.DataFrame" title="(in pandas v0.19.0)"><code class="xref py py-class docutils literal"><span class="pre">DataFrame</span></code></a>) &#8211; data frame holding summary of qualimap results. The summary is provided by <code class="xref py py-meth docutils literal"><span class="pre">snakemakelib.odo.picard.resources_dup_metrics()</span></code>.</li>
+<li><strong>kwargs</strong> (<a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) &#8211; keyword arguments</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">bokeh scatter plot</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><code class="xref py py-class docutils literal"><span class="pre">bokeh.charts.Scatter</span></code></p>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Examples:</p>
+<div class="highlight-python" id="atacseq.rst.bokeh-plot-5"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">pandas</span> <span class="kn">as</span> <span class="nn">pd</span>
+<span class="kn">from</span> <span class="nn">bokeh.plotting</span> <span class="kn">import</span> <span class="n">show</span>
+<span class="kn">from</span> <span class="nn">snakemakelib_workflows.atacseq.app</span> <span class="kn">import</span> <span class="n">atacseq_mark_duplicates_plot</span>
+
+<span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">([[</span><span class="s">&#39;S1&#39;</span><span class="p">,</span> <span class="mi">20</span><span class="p">],</span>
+                   <span class="p">[</span><span class="s">&#39;S2&#39;</span><span class="p">,</span> <span class="mi">25</span><span class="p">]],</span>
+                  <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s">&#39;SM&#39;</span><span class="p">,</span><span class="s">&#39;PERCENT_DUPLICATION&#39;</span><span class="p">])</span>
+<span class="n">p</span> <span class="o">=</span> <span class="n">atacseq_mark_duplicates_plot</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+<span class="n">show</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+</pre></div>
+</div>
+
+<script
+    src="atacseq.rst.bokeh-plot-5.js"
+    id="ac2aafa3-a74f-4773-b7e8-610eab04a85e"
+    data-bokeh-model-id="ac5804b1-75af-4ea8-bc11-7af7c868dfea"
+    data-bokeh-doc-id="0d7bb9bb-49ef-40e4-9385-9e1615e0fc01"
+></script></dd></dl>
+
+<dl class="function">
+<dt id="snakemakelib_workflows.atacseq.app.graphics.atacseq_mark_duplicates_hist_plot">
+<code class="descname">atacseq_mark_duplicates_hist_plot</code><span class="sig-paren">(</span><em>df</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/snakemakelib_workflows/atacseq/app/graphics.html#atacseq_mark_duplicates_hist_plot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#snakemakelib_workflows.atacseq.app.graphics.atacseq_mark_duplicates_hist_plot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot qualimap global statistics.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>df</strong> (<a class="reference external" href="http://pandas.pydata.org/pandas-docs/stable/generated/pandas.DataFrame.html#pandas.DataFrame" title="(in pandas v0.19.0)"><code class="xref py py-class docutils literal"><span class="pre">DataFrame</span></code></a>) &#8211; data frame holding summary of qualimap results. The summary is provided by <code class="xref py py-meth docutils literal"><span class="pre">snakemakelib.odo.picard.resource_dup_metrics()</span></code>.</li>
+<li><strong>kwargs</strong> (<a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) &#8211; keyword arguments</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">bokeh figure</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><code class="xref py py-class docutils literal"><span class="pre">bokeh.plotting.figure</span></code></p>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Examples:</p>
+<div class="highlight-python" id="atacseq.rst.bokeh-plot-6"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">pandas</span> <span class="kn">as</span> <span class="nn">pd</span>
+<span class="kn">from</span> <span class="nn">bokeh.plotting</span> <span class="kn">import</span> <span class="n">show</span>
+<span class="kn">from</span> <span class="nn">snakemakelib_workflows.atacseq.app</span> <span class="kn">import</span> <span class="n">atacseq_mark_duplicates_hist_plot</span>
+
+<span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">([[</span><span class="s">&#39;S1&#39;</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">],</span>
+                   <span class="p">[</span><span class="s">&#39;S1&#39;</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mf">2.8</span><span class="p">],</span>
+                   <span class="p">[</span><span class="s">&#39;S2&#39;</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.9</span><span class="p">],</span>
+                   <span class="p">[</span><span class="s">&#39;S2&#39;</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mf">12.5</span><span class="p">]],</span>
+                  <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s">&#39;SM&#39;</span><span class="p">,</span><span class="s">&#39;BIN&#39;</span><span class="p">,</span><span class="s">&#39;VALUE&#39;</span><span class="p">])</span>
+<span class="n">p</span> <span class="o">=</span> <span class="n">atacseq_mark_duplicates_hist_plot</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mi">200</span><span class="p">)</span>
+<span class="n">show</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+</pre></div>
+</div>
+
+<script
+    src="atacseq.rst.bokeh-plot-6.js"
+    id="5e0e05ac-7d07-4c46-a211-a217393596ae"
+    data-bokeh-model-id="f7f0b35f-934e-44dd-8350-255fe050372b"
+    data-bokeh-doc-id="6cd27fec-3fcb-4b40-a259-a51e90d31be3"
+></script></dd></dl>
+
+</div>
+<div class="section" id="hooks">
+<h2><code class="docutils literal"><span class="pre">hooks</span></code><a class="headerlink" href="#hooks" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="snakemakelib_workflows.atacseq.app.hooks.atacseq_cutadapt_post_processing_hook">
+<code class="descname">atacseq_cutadapt_post_processing_hook</code><span class="sig-paren">(</span><em>df</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/snakemakelib_workflows/atacseq/app/hooks.html#atacseq_cutadapt_post_processing_hook"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#snakemakelib_workflows.atacseq.app.hooks.atacseq_cutadapt_post_processing_hook" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="snakemakelib_workflows.atacseq.app.hooks.atacseq_qualimap_globals_post_processing_hook">
+<code class="descname">atacseq_qualimap_globals_post_processing_hook</code><span class="sig-paren">(</span><em>df</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/snakemakelib_workflows/atacseq/app/hooks.html#atacseq_qualimap_globals_post_processing_hook"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#snakemakelib_workflows.atacseq.app.hooks.atacseq_qualimap_globals_post_processing_hook" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="snakemakelib_workflows.atacseq.app.hooks.atacseq_qualimap_coverage_per_contig_post_processing_hook">
+<code class="descname">atacseq_qualimap_coverage_per_contig_post_processing_hook</code><span class="sig-paren">(</span><em>df</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/snakemakelib_workflows/atacseq/app/hooks.html#atacseq_qualimap_coverage_per_contig_post_processing_hook"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#snakemakelib_workflows.atacseq.app.hooks.atacseq_qualimap_coverage_per_contig_post_processing_hook" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="results">
+<h2><code class="docutils literal"><span class="pre">results</span></code><a class="headerlink" href="#results" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="snakemakelib_workflows.atacseq.app.results.aggregate_results">
+<code class="descname">aggregate_results</code><span class="sig-paren">(</span><em>res</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/snakemakelib_workflows/atacseq/app/results.html#aggregate_results"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#snakemakelib_workflows.atacseq.app.results.aggregate_results" title="Permalink to this definition">¶</a></dt>
+<dd><p>Wrapper for aggregating and saving results for relevant applications</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="snakemakelib_workflows.atacseq.app.results.atacseq_summary">
+<code class="descname">atacseq_summary</code><span class="sig-paren">(</span><em>config</em>, <em>input</em>, <em>output</em>, <em>Cutadapt</em>, <em>Qualimap</em>, <em>MarkDuplicates</em>, <em>InsertMetrics</em>, <em>AlignmentMetrics</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/snakemakelib_workflows/atacseq/app/results.html#atacseq_summary"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#snakemakelib_workflows.atacseq.app.results.atacseq_summary" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make atacseq summary</p>
+</dd></dl>
+
+</div>
+</div>
+
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+        <br/>
+        
+<div id="sourcelink">
+  <a href="../../_sources/docs/reference/atacseq.txt"
+     rel="nofollow">Source</a>
+</div>
+      
+    </p>
+    <p>
+        &copy; Copyright 2015, Per Unneberg.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.8.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

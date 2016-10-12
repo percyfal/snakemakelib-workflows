@@ -1,0 +1,15 @@
+0.1-alpha.3 (Dec 12 2015)
+=========================
+
+Major updates to pipelines.
+
+- use snakemakelib.application classes for collecting results
+- remove bokehutils dependency
+- refactoring of workflow-specific code into app subdirectories
+
+Minor fixes:
+
+- bug fixes #3, #4, #5
+- 
+
+

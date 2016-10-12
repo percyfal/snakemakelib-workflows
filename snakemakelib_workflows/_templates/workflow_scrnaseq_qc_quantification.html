@@ -1,0 +1,9 @@
+<!-- -*- jinja2 -*- -->
+
+{% if rpkmforgenes is defined %}
+  {% include 'rpkmforgenes.html' ignore missing %}
+{% endif %}
+
+{% if rsem is defined %}
+  {% include 'rsem.html' ignore missing %}
+{% endif %}

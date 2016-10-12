@@ -1,0 +1,9 @@
+0.1-alpha.8 (Jan 8 2016)
+=========================
+
+Add deploy script
+
+Hotfix (#9): add log10 import
+
+
+

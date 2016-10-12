@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>snakemakelib_workflows.scrnaseq.app &#8212; snakemakelib_workflows 0.1-alpha.9+1.g63cbc92 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/basic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/bootstrap-3.3.4/css/bootstrap.min.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/bootstrap-3.3.4/css/bootstrap-theme.min.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/bootstrap-sphinx.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.1-alpha.9+1.g63cbc92',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="../../_static/js/jquery-1.11.0.min.js"></script>
+    <script type="text/javascript" src="../../_static/js/jquery-fix.js"></script>
+    <script type="text/javascript" src="../../_static/bootstrap-3.3.4/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../../_static/bootstrap-sphinx.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="top" title="snakemakelib_workflows 0.1-alpha.9+1.g63cbc92 documentation" href="../../index.html" />
+    <link rel="up" title="Single cell RNA-seq" href="../workflows/scrnaseq.html" />
+    <link rel="next" title="Reference Guide" href="../reference.html" />
+    <link rel="prev" title="Single cell RNA-seq" href="../workflows/scrnaseq.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+
+  </head>
+  <body role="document">
+
+
+<div id="navbar" class="navbar navbar-inverse navbar-default navbar-fixed-top">
+
+    <div class="container">
+
+      <div class="navbar-header">
+
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+
+        <a class="navbar-brand" href="../../index.html">snakemakelib_workflows</a>
+        <span class="navbar-text navbar-version pull-left"><b>0.1-alpha.9+1.g63cbc92</b></span>
+      </div>
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            <li class="divider-vertical"></li>
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../../index.html">Site <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../workflows.html">About</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../workflows.html#general-comments">General comments</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../workflows.html#workflow-list">Workflow list</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../workflows/atacseq.html">ATAC-seq</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../workflows/atacseq.html#configuration">Configuration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../workflows/atacseq.html#workflow">Workflow</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../workflows/atacseq.html#troubleshooting">Troubleshooting</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../workflows/atacseq.html#reference-guide">Reference guide</a></li>
+</ul>
+</li>
+<li class="toctree-l2 current"><a class="reference internal" href="../workflows/scrnaseq.html">Single cell RNA-seq</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../workflows/scrnaseq.html#required-configuration">Required configuration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../workflows/scrnaseq.html#workflow-specific-configuration">Workflow specific configuration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../workflows/scrnaseq.html#other-configuration">Other configuration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../workflows/scrnaseq.html#additional-advice">Additional advice</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../workflows/scrnaseq.html#workflow">Workflow</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../workflows/scrnaseq.html#troubleshooting">Troubleshooting</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="../workflows/scrnaseq.html#reference-guide">Reference guide</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../workflows.html#known-issues">Known issues</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../workflows.html#troubleshooting">Troubleshooting</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../reference.html">Reference Guide</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="atacseq.html"><code class="docutils literal"><span class="pre">snakemakelib_workflows.atacseq.app</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="atacseq.html#graphics"><code class="docutils literal"><span class="pre">graphics</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="atacseq.html#hooks"><code class="docutils literal"><span class="pre">hooks</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="atacseq.html#results"><code class="docutils literal"><span class="pre">results</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#"><code class="docutils literal"><span class="pre">snakemakelib_workflows.scrnaseq.app</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#graphics"><code class="docutils literal"><span class="pre">graphics</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#hooks"><code class="docutils literal"><span class="pre">hooks</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pca"><code class="docutils literal"><span class="pre">pca</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#report"><code class="docutils literal"><span class="pre">report</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#technicalnoise"><code class="docutils literal"><span class="pre">technicalnoise</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#utils"><code class="docutils literal"><span class="pre">utils</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../release_notes.html">Release notes</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../release_notes.html#pre-releases">Pre-releases</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../releases/0.1-alpha.9.html">0.1-alpha.9 (Oct 11 2016)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../releases/0.1-alpha.8.html">0.1-alpha.8 (Jan 8 2016)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../releases/0.1-alpha.7.html">0.1-alpha.7 (Jan 7 2016)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../releases/0.1-alpha.6.html">0.1-alpha.6 (Dec 13 2015)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../releases/0.1-alpha.5.html">0.1-alpha.5 (Dec 12 2015)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../releases/0.1-alpha.4.html">0.1-alpha.4 (Dec 12 2015)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../releases/0.1-alpha.3.html">0.1-alpha.3 (Dec 12 2015)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../releases/0.1-alpha.2.html">0.1-alpha.2 (Nov 24 2015)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../releases/0.1-alpha.1.html">0.1-alpha.1 (Oct 8 2015)</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</ul>
+</li>
+              
+                <li class="dropdown">
+  <a role="button"
+     id="dLabelLocalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="#">Page <b class="caret"></b></a>
+  <ul class="dropdown-menu localtoc"
+      role="menu"
+      aria-labelledby="dLabelLocalToc"><ul>
+<li><a class="reference internal" href="#"><code class="docutils literal"><span class="pre">snakemakelib_workflows.scrnaseq.app</span></code></a><ul>
+<li><a class="reference internal" href="#graphics"><code class="docutils literal"><span class="pre">graphics</span></code></a></li>
+<li><a class="reference internal" href="#hooks"><code class="docutils literal"><span class="pre">hooks</span></code></a></li>
+<li><a class="reference internal" href="#pca"><code class="docutils literal"><span class="pre">pca</span></code></a></li>
+<li><a class="reference internal" href="#report"><code class="docutils literal"><span class="pre">report</span></code></a></li>
+<li><a class="reference internal" href="#technicalnoise"><code class="docutils literal"><span class="pre">technicalnoise</span></code></a></li>
+<li><a class="reference internal" href="#utils"><code class="docutils literal"><span class="pre">utils</span></code></a></li>
+</ul>
+</li>
+</ul>
+</ul>
+</li>
+              
+            
+            
+            
+            
+            
+          </ul>
+
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="col-md-12">
+      
+  <div class="section" id="module-snakemakelib_workflows.scrnaseq.app">
+<span id="snakemakelib-workflows-scrnaseq-app"></span><span id="snakemakelib-workflows-scrnaseq"></span><h1><code class="docutils literal"><span class="pre">snakemakelib_workflows.scrnaseq.app</span></code><a class="headerlink" href="#module-snakemakelib_workflows.scrnaseq.app" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="graphics">
+<h2><code class="docutils literal"><span class="pre">graphics</span></code><a class="headerlink" href="#graphics" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="snakemakelib_workflows.scrnaseq.app.graphics.scrnaseq_results_plot_alignrseqc">
+<code class="descname">scrnaseq_results_plot_alignrseqc</code><span class="sig-paren">(</span><em>df</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/snakemakelib_workflows/scrnaseq/app/graphics.html#scrnaseq_results_plot_alignrseqc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#snakemakelib_workflows.scrnaseq.app.graphics.scrnaseq_results_plot_alignrseqc" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot scRNASeq QC summary.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>df</strong> (<em>DataFrame</em>) &#8211; data frame consisting of summary data from alignments and RSeQC</li>
+<li><strong>kwargs</strong> &#8211; keyword arguments to bokeh plot functions</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">dictionary with a bokeh gridplot and a table</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">(dict)</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="hooks">
+<h2><code class="docutils literal"><span class="pre">hooks</span></code><a class="headerlink" href="#hooks" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="snakemakelib_workflows.scrnaseq.app.hooks.scrnaseq_annotate_genes_hook">
+<code class="descname">scrnaseq_annotate_genes_hook</code><span class="sig-paren">(</span><em>df</em>, <em>annotation=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/snakemakelib_workflows/scrnaseq/app/hooks.html#scrnaseq_annotate_genes_hook"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#snakemakelib_workflows.scrnaseq.app.hooks.scrnaseq_annotate_genes_hook" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="snakemakelib_workflows.scrnaseq.app.hooks.scrnaseq_annotate_isoforms_hook">
+<code class="descname">scrnaseq_annotate_isoforms_hook</code><span class="sig-paren">(</span><em>df</em>, <em>annotation=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/snakemakelib_workflows/scrnaseq/app/hooks.html#scrnaseq_annotate_isoforms_hook"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#snakemakelib_workflows.scrnaseq.app.hooks.scrnaseq_annotate_isoforms_hook" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="snakemakelib_workflows.scrnaseq.app.hooks.scrnaseq_rseqc_genebody_coverage_hook">
+<code class="descname">scrnaseq_rseqc_genebody_coverage_hook</code><span class="sig-paren">(</span><em>df</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/snakemakelib_workflows/scrnaseq/app/hooks.html#scrnaseq_rseqc_genebody_coverage_hook"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#snakemakelib_workflows.scrnaseq.app.hooks.scrnaseq_rseqc_genebody_coverage_hook" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="snakemakelib_workflows.scrnaseq.app.hooks.scrnaseq_rseqc_read_distribution_hook">
+<code class="descname">scrnaseq_rseqc_read_distribution_hook</code><span class="sig-paren">(</span><em>df</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/snakemakelib_workflows/scrnaseq/app/hooks.html#scrnaseq_rseqc_read_distribution_hook"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#snakemakelib_workflows.scrnaseq.app.hooks.scrnaseq_rseqc_read_distribution_hook" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="snakemakelib_workflows.scrnaseq.app.hooks.scrnaseq_star_align_postprocessing_hook">
+<code class="descname">scrnaseq_star_align_postprocessing_hook</code><span class="sig-paren">(</span><em>df</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/snakemakelib_workflows/scrnaseq/app/hooks.html#scrnaseq_star_align_postprocessing_hook"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#snakemakelib_workflows.scrnaseq.app.hooks.scrnaseq_star_align_postprocessing_hook" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="pca">
+<h2><code class="docutils literal"><span class="pre">pca</span></code><a class="headerlink" href="#pca" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="snakemakelib_workflows.scrnaseq.app.pca.scrnaseq_pca_all">
+<code class="descname">scrnaseq_pca_all</code><span class="sig-paren">(</span><em>expr</em>, <em>pca_output_file</em>, <em>pcaobj_pickle_file</em>, <em>metadata=None</em>, <em>pca_quant='TPM'</em>, <em>screen_n=2000</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/snakemakelib_workflows/scrnaseq/app/pca.html#scrnaseq_pca_all"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#snakemakelib_workflows.scrnaseq.app.pca.scrnaseq_pca_all" title="Permalink to this definition">¶</a></dt>
+<dd><p>Wrapper for running pca and feature selection.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>expr</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; input file name</li>
+<li><strong>pca_output_file</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; output file name</li>
+<li><strong>pcaobj_pickle_file</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; output file name for pickle serialization</li>
+<li><strong>metadata</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; metadata file name</li>
+<li><strong>screen_n</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) &#8211; number of features to keep based on variance</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">None - results are saved to given output files</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="snakemakelib_workflows.scrnaseq.app.pca.scrnaseq_pca">
+<code class="descname">scrnaseq_pca</code><span class="sig-paren">(</span><em>X</em>, <em>method='PCA'</em>, <em>labels=None</em>, <em>metadata=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/snakemakelib_workflows/scrnaseq/app/pca.html#scrnaseq_pca"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#snakemakelib_workflows.scrnaseq.app.pca.scrnaseq_pca" title="Permalink to this definition">¶</a></dt>
+<dd><p>WIP: Run pca on expression values.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>X</strong> (<em>DataFrame</em>) &#8211; nxp gene expression matrix, where n=samples, p=features (genes)</li>
+<li><strong>method</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; what pca method to use</li>
+<li><strong>labels</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#list" title="(in Python v2.7)"><em>list</em></a>) &#8211; additional feature labels (e.g. matrix X has gene ids, whereas labels could be gene names)</li>
+<li><strong>metadata</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; metadata file name for annotation</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>FIXME: generic enough to put in snakemakelib-core?</p>
+</dd></dl>
+
+</div>
+<div class="section" id="report">
+<h2><code class="docutils literal"><span class="pre">report</span></code><a class="headerlink" href="#report" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="snakemakelib_workflows.scrnaseq.app.scrnaseq_save_align_rseqc_metrics">
+<code class="descname">scrnaseq_save_align_rseqc_metrics</code><span class="sig-paren">(</span><em>config</em>, <em>output</em>, <em>Align</em>, <em>RSeQC_readDistribution</em>, <em>RSeQC_geneBodyCoverage</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/snakemakelib_workflows/scrnaseq/app/report.html#scrnaseq_save_align_rseqc_metrics"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#snakemakelib_workflows.scrnaseq.app.scrnaseq_save_align_rseqc_metrics" title="Permalink to this definition">¶</a></dt>
+<dd><p>Helper function: join alignment results with rseqc results</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="snakemakelib_workflows.scrnaseq.app.scrnaseq_qc">
+<code class="descname">scrnaseq_qc</code><span class="sig-paren">(</span><em>config</em>, <em>input</em>, <em>output</em>, <em>results=None</em>, <em>rsem=None</em>, <em>rpkmforgenes=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/snakemakelib_workflows/scrnaseq/app/report.html#scrnaseq_qc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#snakemakelib_workflows.scrnaseq.app.scrnaseq_qc" title="Permalink to this definition">¶</a></dt>
+<dd><p>Do QC of scrnaseq</p>
+</dd></dl>
+
+</div>
+<div class="section" id="technicalnoise">
+<h2><code class="docutils literal"><span class="pre">technicalnoise</span></code><a class="headerlink" href="#technicalnoise" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="snakemakelib_workflows.scrnaseq.app.ScrnaseqTechnicalNoise">
+<em class="property">class </em><code class="descname">ScrnaseqTechnicalNoise</code><span class="sig-paren">(</span><em>df</em>, <em>df_spikein</em>, <em>quantile=0.95</em>, <em>cutoff=0.3</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/snakemakelib_workflows/scrnaseq/app/technicalnoise.html#ScrnaseqTechnicalNoise"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#snakemakelib_workflows.scrnaseq.app.ScrnaseqTechnicalNoise" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="snakemakelib_workflows.scrnaseq.app.scrnaseq_brennecke_plot">
+<code class="descname">scrnaseq_brennecke_plot</code><span class="sig-paren">(</span><em>infile, spikein_re, counts='TPM', index=['SM', 'gene_id', 'transcript_id', 'gene_name'], unstack='SM', tooltips=['gene_name', 'gene_id'], taptool_url=None, **kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/snakemakelib_workflows/scrnaseq/app/technicalnoise.html#scrnaseq_brennecke_plot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#snakemakelib_workflows.scrnaseq.app.scrnaseq_brennecke_plot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make the brennecke plot</p>
+</dd></dl>
+
+</div>
+<div class="section" id="utils">
+<h2><code class="docutils literal"><span class="pre">utils</span></code><a class="headerlink" href="#utils" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="snakemakelib_workflows.scrnaseq.app.utils.get_extra_ref_ids">
+<code class="descname">get_extra_ref_ids</code><span class="sig-paren">(</span><em>extra_refs</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/snakemakelib_workflows/scrnaseq/app/utils.html#get_extra_ref_ids"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#snakemakelib_workflows.scrnaseq.app.utils.get_extra_ref_ids" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the extra ref identifiers</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>extra_refs</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#list" title="(in Python v2.7)"><em>list</em></a>) &#8211; list of file names (typically defined in configuration key config[&#8216;bio.ngs.settings&#8217;][&#8216;db&#8217;][&#8216;extra_ref&#8217;])</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><strong>ids</strong> &#8211; list of identifiers</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/2/library/functions.html#list" title="(in Python v2.7)">list</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+</div>
+
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+        <br/>
+        
+<div id="sourcelink">
+  <a href="../../_sources/docs/reference/scrnaseq.txt"
+     rel="nofollow">Source</a>
+</div>
+      
+    </p>
+    <p>
+        &copy; Copyright 2015, Per Unneberg.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.8.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>snakemakelib_workflows.atacseq.app.graphics &#8212; snakemakelib_workflows 0.1-alpha.9+1.g63cbc92 documentation</title>
+    
+    <link rel="stylesheet" href="../../../../_static/basic.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/bootstrap-3.3.4/css/bootstrap.min.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/bootstrap-3.3.4/css/bootstrap-theme.min.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/bootstrap-sphinx.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../../',
+        VERSION:     '0.1-alpha.9+1.g63cbc92',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="../../../../_static/js/jquery-1.11.0.min.js"></script>
+    <script type="text/javascript" src="../../../../_static/js/jquery-fix.js"></script>
+    <script type="text/javascript" src="../../../../_static/bootstrap-3.3.4/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../../../../_static/bootstrap-sphinx.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+    <link rel="top" title="snakemakelib_workflows 0.1-alpha.9+1.g63cbc92 documentation" href="../../../../index.html" />
+    <link rel="up" title="Module code" href="../../../index.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+
+  </head>
+  <body role="document">
+
+
+<div id="navbar" class="navbar navbar-inverse navbar-default navbar-fixed-top">
+
+    <div class="container">
+
+      <div class="navbar-header">
+
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+
+        <a class="navbar-brand" href="../../../../index.html">snakemakelib_workflows</a>
+        <span class="navbar-text navbar-version pull-left"><b>0.1-alpha.9+1.g63cbc92</b></span>
+      </div>
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            <li class="divider-vertical"></li>
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../../../../index.html">Site <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../docs/workflows.html">About</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../docs/workflows.html#general-comments">General comments</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../docs/workflows.html#workflow-list">Workflow list</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../docs/workflows/atacseq.html">ATAC-seq</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../docs/workflows/atacseq.html#configuration">Configuration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../docs/workflows/atacseq.html#workflow">Workflow</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../docs/workflows/atacseq.html#troubleshooting">Troubleshooting</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../docs/workflows/atacseq.html#reference-guide">Reference guide</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../docs/workflows/scrnaseq.html">Single cell RNA-seq</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../docs/workflows/scrnaseq.html#required-configuration">Required configuration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../docs/workflows/scrnaseq.html#workflow-specific-configuration">Workflow specific configuration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../docs/workflows/scrnaseq.html#other-configuration">Other configuration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../docs/workflows/scrnaseq.html#additional-advice">Additional advice</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../docs/workflows/scrnaseq.html#workflow">Workflow</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../docs/workflows/scrnaseq.html#troubleshooting">Troubleshooting</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../docs/workflows/scrnaseq.html#reference-guide">Reference guide</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../docs/workflows.html#known-issues">Known issues</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../docs/workflows.html#troubleshooting">Troubleshooting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../docs/reference.html">Reference Guide</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../docs/reference/atacseq.html"><code class="docutils literal"><span class="pre">snakemakelib_workflows.atacseq.app</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../docs/reference/atacseq.html#graphics"><code class="docutils literal"><span class="pre">graphics</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../docs/reference/atacseq.html#hooks"><code class="docutils literal"><span class="pre">hooks</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../docs/reference/atacseq.html#results"><code class="docutils literal"><span class="pre">results</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../docs/reference/scrnaseq.html"><code class="docutils literal"><span class="pre">snakemakelib_workflows.scrnaseq.app</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../docs/reference/scrnaseq.html#graphics"><code class="docutils literal"><span class="pre">graphics</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../docs/reference/scrnaseq.html#hooks"><code class="docutils literal"><span class="pre">hooks</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../docs/reference/scrnaseq.html#pca"><code class="docutils literal"><span class="pre">pca</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../docs/reference/scrnaseq.html#report"><code class="docutils literal"><span class="pre">report</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../docs/reference/scrnaseq.html#technicalnoise"><code class="docutils literal"><span class="pre">technicalnoise</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../docs/reference/scrnaseq.html#utils"><code class="docutils literal"><span class="pre">utils</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../docs/release_notes.html">Release notes</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../docs/release_notes.html#pre-releases">Pre-releases</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../docs/releases/0.1-alpha.9.html">0.1-alpha.9 (Oct 11 2016)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../docs/releases/0.1-alpha.8.html">0.1-alpha.8 (Jan 8 2016)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../docs/releases/0.1-alpha.7.html">0.1-alpha.7 (Jan 7 2016)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../docs/releases/0.1-alpha.6.html">0.1-alpha.6 (Dec 13 2015)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../docs/releases/0.1-alpha.5.html">0.1-alpha.5 (Dec 12 2015)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../docs/releases/0.1-alpha.4.html">0.1-alpha.4 (Dec 12 2015)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../docs/releases/0.1-alpha.3.html">0.1-alpha.3 (Dec 12 2015)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../docs/releases/0.1-alpha.2.html">0.1-alpha.2 (Nov 24 2015)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../docs/releases/0.1-alpha.1.html">0.1-alpha.1 (Oct 8 2015)</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</ul>
+</li>
+              
+                <li class="dropdown">
+  <a role="button"
+     id="dLabelLocalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="#">Page <b class="caret"></b></a>
+  <ul class="dropdown-menu localtoc"
+      role="menu"
+      aria-labelledby="dLabelLocalToc"></ul>
+</li>
+              
+            
+            
+            
+            
+            
+          </ul>
+
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="col-md-12">
+      
+  <h1>Source code for snakemakelib_workflows.atacseq.app.graphics</h1><div class="highlight"><pre>
+<span class="c"># Copyright (C) 2015 by Per Unneberg</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">from</span> <span class="nn">math</span> <span class="k">import</span> <span class="n">log10</span>
+<span class="kn">from</span> <span class="nn">snakemakelib.application</span> <span class="k">import</span> <span class="n">SampleApplication</span><span class="p">,</span> <span class="n">PlatformUnitApplication</span>
+<span class="kn">from</span> <span class="nn">snakemakelib.io</span> <span class="k">import</span> <span class="n">IOTarget</span><span class="p">,</span> <span class="n">IOAggregateTarget</span>
+<span class="kn">from</span> <span class="nn">snakemakelib.graphics</span> <span class="k">import</span> <span class="n">scatter</span><span class="p">,</span> <span class="n">points</span><span class="p">,</span> <span class="n">tooltips</span><span class="p">,</span> <span class="n">facet_grid</span><span class="p">,</span> <span class="n">colorbrewer</span><span class="p">,</span> <span class="n">mlines</span><span class="p">,</span> <span class="n">lines</span>
+<span class="kn">from</span> <span class="nn">blaze</span> <span class="k">import</span> <span class="n">Data</span><span class="p">,</span> <span class="n">append</span><span class="p">,</span> <span class="n">odo</span><span class="p">,</span> <span class="n">DataFrame</span>
+<span class="kn">from</span> <span class="nn">snakemakelib.odo</span> <span class="k">import</span> <span class="n">cutadapt</span><span class="p">,</span> <span class="n">qualimap</span><span class="p">,</span> <span class="n">picard</span>
+<span class="kn">from</span> <span class="nn">bokeh.charts</span> <span class="k">import</span> <span class="n">Scatter</span>
+<span class="kn">from</span> <span class="nn">bokeh.plotting</span> <span class="k">import</span> <span class="n">figure</span><span class="p">,</span> <span class="n">gridplot</span>
+<span class="kn">from</span> <span class="nn">bokeh.models</span> <span class="k">import</span> <span class="n">HoverTool</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;atacseq_cutadapt_plot_metrics&#39;</span><span class="p">,</span>
+           <span class="s">&#39;atacseq_qualimap_plot_globals&#39;</span><span class="p">,</span>
+           <span class="s">&#39;atacseq_qualimap_plot_coverage_per_contig&#39;</span><span class="p">,</span>
+           <span class="s">&#39;atacseq_insert_metrics_plot&#39;</span><span class="p">,</span>
+           <span class="s">&#39;atacseq_insert_metrics_hist_plot&#39;</span><span class="p">,</span>
+           <span class="s">&#39;atacseq_mark_duplicates_plot&#39;</span><span class="p">,</span>
+           <span class="s">&#39;atacseq_mark_duplicates_hist_plot&#39;</span><span class="p">]</span>
+
+
+<span class="n">DEFAULT_TOOLS</span> <span class="o">=</span> <span class="s">&quot;pan,wheel_zoom,box_zoom,box_select,reset,save,hover,resize&quot;</span>
+
+
+<span class="c"># Plotting functions</span>
+<div class="viewcode-block" id="atacseq_cutadapt_plot_metrics"><a class="viewcode-back" href="../../../../docs/reference/atacseq.html#snakemakelib_workflows.atacseq.app.graphics.atacseq_cutadapt_plot_metrics">[docs]</a><span class="k">def</span> <span class="nf">atacseq_cutadapt_plot_metrics</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Plot cutadapt metrics.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">      df(:class:`~pandas.DataFrame`): data frame holding summary of cutadapt results. The summary is provided by  :meth:`snakemakelib.odo.cutadapt.resource_cutadapt_metrics`.</span>
+<span class="sd">      kwargs(dict): keyword arguments</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">      :class:`bokeh.charts.Scatter`: a scatter plot</span>
+
+<span class="sd">    Examples:</span>
+
+<span class="sd">    .. bokeh-plot::</span>
+<span class="sd">        :source-position: above</span>
+
+<span class="sd">        import pandas as pd</span>
+<span class="sd">        from bokeh.plotting import show</span>
+<span class="sd">        from snakemakelib_workflows.atacseq.app import atacseq_cutadapt_plot_metrics</span>
+
+<span class="sd">        df = pd.DataFrame([[&#39;S1&#39;, &#39;P1&#39;, &#39;S1_P1&#39;, &#39;Read 1 percent&#39;, 80],</span>
+<span class="sd">                           [&#39;S1&#39;, &#39;P2&#39;, &#39;S1_P2&#39;, &#39;Read 1 percent&#39;, 40]],</span>
+<span class="sd">                          columns=[&#39;SM&#39;,&#39;PU&#39;,&#39;PlatformUnit&#39;,&#39;statistic&#39;,&#39;value&#39;])</span>
+<span class="sd">        p = atacseq_cutadapt_plot_metrics(df, height=200, width=200)</span>
+<span class="sd">        show(p)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">df</span> <span class="ow">is</span> <span class="k">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">figure</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s">&quot;Cutadapt metrics (no data)&quot;</span><span class="p">,</span>
+                      <span class="n">height</span><span class="o">=</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;height&quot;</span><span class="p">,</span> <span class="mi">400</span><span class="p">),</span>
+                      <span class="n">width</span><span class="o">=</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;width&quot;</span><span class="p">,</span> <span class="mi">400</span><span class="p">))</span>
+    <span class="n">df</span><span class="o">.</span><span class="n">set_index</span><span class="p">([</span><span class="s">&#39;SM&#39;</span><span class="p">,</span> <span class="s">&#39;PU&#39;</span><span class="p">,</span> <span class="s">&#39;PlatformUnit&#39;</span><span class="p">,</span> <span class="s">&#39;statistic&#39;</span><span class="p">],</span> <span class="n">inplace</span><span class="o">=</span><span class="k">True</span><span class="p">)</span>
+    <span class="n">df</span><span class="o">.</span><span class="n">sortlevel</span><span class="p">(</span><span class="n">inplace</span><span class="o">=</span><span class="k">True</span><span class="p">)</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">IndexSlice</span><span class="p">[:,</span> <span class="p">:,</span> <span class="p">:,</span> <span class="p">[</span><span class="s">&quot;Read 1 percent&quot;</span><span class="p">,</span> <span class="s">&quot;Read 2 percent&quot;</span><span class="p">]],</span> <span class="p">:]</span><span class="o">.</span><span class="n">reset_index</span><span class="p">()</span>
+    <span class="kn">from</span> <span class="nn">bokeh.charts</span> <span class="k">import</span> <span class="n">Scatter</span>
+    <span class="n">p</span> <span class="o">=</span> <span class="n">Scatter</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="s">&quot;PlatformUnit&quot;</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s">&quot;value&quot;</span><span class="p">,</span>
+                <span class="n">color</span><span class="o">=</span><span class="s">&quot;statistic&quot;</span><span class="p">,</span> <span class="n">legend</span><span class="o">=</span><span class="s">&quot;top_right&quot;</span><span class="p">,</span>
+                <span class="n">title</span><span class="o">=</span><span class="s">&quot;Cutadapt metrics&quot;</span><span class="p">,</span> <span class="n">ylabel</span><span class="o">=</span><span class="s">&quot;% reads with adapter&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">p</span></div>
+
+<div class="viewcode-block" id="atacseq_qualimap_plot_globals"><a class="viewcode-back" href="../../../../docs/reference/atacseq.html#snakemakelib_workflows.atacseq.app.graphics.atacseq_qualimap_plot_globals">[docs]</a><span class="k">def</span> <span class="nf">atacseq_qualimap_plot_globals</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Plot qualimap global statistics.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">      df(:class:`~pandas.DataFrame`): data frame holding summary of qualimap results. The summary is provided by  :meth:`snakemakelib.odo.qualimap.resource_genome_results`.</span>
+<span class="sd">      kwargs(dict): keyword arguments</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">      (:class:`bokeh.plotting.gridplot`): bokeh gridplot</span>
+
+<span class="sd">    Examples:</span>
+
+<span class="sd">    .. bokeh-plot::</span>
+<span class="sd">        :source-position: above</span>
+
+<span class="sd">        import pandas as pd</span>
+<span class="sd">        from bokeh.plotting import show</span>
+<span class="sd">        from snakemakelib_workflows.atacseq.app import atacseq_qualimap_plot_globals</span>
+
+<span class="sd">        df = pd.DataFrame([[&#39;S1&#39;, &#39;number of reads&#39;, 80, 100],</span>
+<span class="sd">                           [&#39;S1&#39;, &#39;number of mapped reads&#39;, 20, 25],</span>
+<span class="sd">                           [&#39;S1&#39;, &#39;number of duplicated reads&#39;, 10, 25],</span>
+<span class="sd">                           [&#39;S1&#39;, &#39;number of unique reads&#39;, 10, 12.5]],</span>
+<span class="sd">                          columns=[&#39;SM&#39;,&#39;statistic&#39;,&#39;value&#39;, &#39;percent&#39;])</span>
+<span class="sd">        p = atacseq_qualimap_plot_globals(df, height=200, width=200)</span>
+<span class="sd">        show(p)</span>
+
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">READ_ROWS</span> <span class="o">=</span> <span class="p">[</span><span class="s">&quot;number of reads&quot;</span><span class="p">,</span>
+                 <span class="s">&quot;number of mapped reads&quot;</span><span class="p">,</span>
+                 <span class="s">&quot;number of duplicated reads&quot;</span><span class="p">,</span>
+                 <span class="s">&quot;number of unique reads&quot;</span><span class="p">]</span>
+    <span class="n">df</span><span class="o">.</span><span class="n">set_index</span><span class="p">([</span><span class="s">&#39;statistic&#39;</span><span class="p">,</span> <span class="s">&#39;SM&#39;</span><span class="p">],</span> <span class="n">inplace</span><span class="o">=</span><span class="k">True</span><span class="p">)</span>
+    <span class="n">df</span><span class="o">.</span><span class="n">sortlevel</span><span class="p">(</span><span class="n">inplace</span><span class="o">=</span><span class="k">True</span><span class="p">)</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">IndexSlice</span><span class="p">[</span><span class="n">READ_ROWS</span><span class="p">,</span> <span class="p">:]]</span><span class="o">.</span><span class="n">reset_index</span><span class="p">()</span>
+    <span class="n">df</span><span class="p">[</span><span class="s">&quot;value&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">log10</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">df</span><span class="p">[</span><span class="s">&quot;value&quot;</span><span class="p">]]</span>
+    <span class="n">df</span><span class="p">[</span><span class="s">&quot;SM&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s">&quot;SM&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span>
+    <span class="n">p1</span> <span class="o">=</span> <span class="n">Scatter</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="s">&quot;SM&quot;</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s">&quot;value&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s">&quot;statistic&quot;</span><span class="p">,</span>
+                 <span class="n">legend</span><span class="o">=</span><span class="s">&quot;top_right&quot;</span><span class="p">,</span> <span class="n">ylabel</span><span class="o">=</span><span class="s">&quot;log10(count)&quot;</span><span class="p">,</span>
+                 <span class="n">title</span><span class="o">=</span><span class="s">&quot;Qualimap read summary&quot;</span><span class="p">,</span>
+                 <span class="n">height</span><span class="o">=</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;height&quot;</span><span class="p">,</span> <span class="mi">400</span><span class="p">),</span>
+                 <span class="n">width</span><span class="o">=</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;width&quot;</span><span class="p">,</span> <span class="mi">400</span><span class="p">))</span>
+    <span class="n">p2</span> <span class="o">=</span> <span class="n">Scatter</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="s">&quot;SM&quot;</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s">&quot;percent&quot;</span><span class="p">,</span>
+                 <span class="n">color</span><span class="o">=</span><span class="s">&quot;statistic&quot;</span><span class="p">,</span> <span class="n">legend</span><span class="o">=</span><span class="s">&quot;top_right&quot;</span><span class="p">,</span>
+                 <span class="n">title</span><span class="o">=</span><span class="s">&quot;Qualimap read summary, percent&quot;</span><span class="p">,</span>
+                 <span class="n">height</span><span class="o">=</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;height&quot;</span><span class="p">,</span> <span class="mi">400</span><span class="p">),</span>
+                 <span class="n">width</span><span class="o">=</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;width&quot;</span><span class="p">,</span> <span class="mi">400</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">gridplot</span><span class="p">([[</span><span class="n">p1</span><span class="p">,</span> <span class="n">p2</span><span class="p">]])</span></div>
+
+<div class="viewcode-block" id="atacseq_qualimap_plot_coverage_per_contig"><a class="viewcode-back" href="../../../../docs/reference/atacseq.html#snakemakelib_workflows.atacseq.app.graphics.atacseq_qualimap_plot_coverage_per_contig">[docs]</a><span class="k">def</span> <span class="nf">atacseq_qualimap_plot_coverage_per_contig</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Plot qualimap coverage per contig.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">      df(:class:`~pandas.DataFrame`): data frame holding summary of qualimap results. The summary is provided by  :meth:`snakemakelib.odo.qualimap.resource_genome_results`.</span>
+<span class="sd">      kwargs(dict): keyword arguments</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">      :class:`bokeh.plotting.figure`: bokeh scatter plot</span>
+
+<span class="sd">    Examples:</span>
+
+<span class="sd">    .. bokeh-plot::</span>
+<span class="sd">        :source-position: above</span>
+
+<span class="sd">        import pandas as pd</span>
+<span class="sd">        from bokeh.plotting import show</span>
+<span class="sd">        from snakemakelib_workflows.atacseq.app import atacseq_qualimap_plot_coverage_per_contig</span>
+
+<span class="sd">        df = pd.DataFrame([[&#39;S1&#39;, &#39;chr1&#39;, 4e6, 8e6, 2, 5, 80, 40],</span>
+<span class="sd">                           [&#39;S1&#39;, &#39;chr2&#39;, 1e6, 12e6, 12, 20, 20, 60],</span>
+<span class="sd">                           [&#39;S2&#39;, &#39;chr1&#39;, 4e6, 12e6, 3, 5, 80, 60],</span>
+<span class="sd">                           [&#39;S2&#39;, &#39;chr2&#39;, 1e6, 8e6, 8, 20, 20, 40]],</span>
+<span class="sd">                           columns=[&#39;SM&#39;, &#39;chr&#39;,&#39;chrlen&#39;, &#39;mapped_bases&#39;, &#39;mean_coverage&#39;, &#39;sd&#39;, &#39;chrlen_percent&#39;,&#39;mapped_bases_percent&#39;])</span>
+<span class="sd">        p = atacseq_qualimap_plot_coverage_per_contig(df)</span>
+<span class="sd">        show(p)</span>
+
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">p</span> <span class="o">=</span> <span class="n">points</span><span class="p">(</span><span class="n">df</span><span class="o">=</span><span class="n">df</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="s">&quot;chrlen_percent&quot;</span><span class="p">,</span>
+               <span class="n">y</span><span class="o">=</span><span class="s">&quot;mapped_bases_percent&quot;</span><span class="p">,</span> <span class="n">glyph</span><span class="o">=</span><span class="s">&quot;circle&quot;</span><span class="p">,</span>
+               <span class="n">return_source</span><span class="o">=</span><span class="k">True</span><span class="p">,</span> <span class="n">legend</span><span class="o">=</span><span class="s">&quot;top_right&quot;</span><span class="p">,</span>
+               <span class="n">tools</span><span class="o">=</span><span class="n">DEFAULT_TOOLS</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=.</span><span class="mi">9</span><span class="p">,</span>
+               <span class="n">color</span><span class="o">=</span><span class="s">&quot;SM&quot;</span><span class="p">,</span> <span class="n">plot_height</span><span class="o">=</span><span class="mi">600</span><span class="p">,</span> <span class="n">plot_width</span><span class="o">=</span><span class="mi">800</span><span class="p">)</span>
+    <span class="n">p</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">axis_label</span> <span class="o">=</span> <span class="s">&quot;chrlen (% of genome)&quot;</span>
+    <span class="n">p</span><span class="o">.</span><span class="n">yaxis</span><span class="o">.</span><span class="n">axis_label</span> <span class="o">=</span> <span class="s">&quot;mapped reads (% of total)&quot;</span>
+    <span class="n">tooltips</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">HoverTool</span><span class="p">,</span> <span class="p">[(</span><span class="s">&#39;Sample&#39;</span><span class="p">,</span> <span class="s">&#39;@SM&#39;</span><span class="p">),</span>
+                            <span class="p">(</span><span class="s">&#39;Chromosome&#39;</span><span class="p">,</span> <span class="s">&#39;@chr&#39;</span><span class="p">)])</span>
+    <span class="k">return</span> <span class="n">p</span></div>
+
+
+<div class="viewcode-block" id="atacseq_insert_metrics_plot"><a class="viewcode-back" href="../../../../docs/reference/atacseq.html#snakemakelib_workflows.atacseq.app.graphics.atacseq_insert_metrics_plot">[docs]</a><span class="k">def</span> <span class="nf">atacseq_insert_metrics_plot</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Plot qualimap global statistics.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">      df(:class:`~pandas.DataFrame`): data frame holding summary of picard insert metrics results. The summary is provided by :meth:`snakemakelib.odo.picard.resource_insert_metrics`.</span>
+<span class="sd">      kwargs(dict): keyword arguments</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">      :class:`bokeh.charts.Scatter`: bokeh scatterplot</span>
+
+<span class="sd">    Examples:</span>
+
+<span class="sd">    .. bokeh-plot::</span>
+<span class="sd">        :source-position: above</span>
+
+<span class="sd">        import pandas as pd</span>
+<span class="sd">        from bokeh.plotting import show</span>
+<span class="sd">        from snakemakelib_workflows.atacseq.app import atacseq_insert_metrics_plot</span>
+
+<span class="sd">        df = pd.DataFrame([[&#39;S1&#39;, 120, &quot;FR&quot;],</span>
+<span class="sd">                           [&#39;S1&#39;, 100, &quot;RF&quot;],</span>
+<span class="sd">                           [&#39;S2&#39;, 140, &quot;FR&quot;],</span>
+<span class="sd">                           [&#39;S2&#39;, 120, &quot;RF&quot;]],</span>
+<span class="sd">                          columns=[&#39;SM&#39;,&#39;MEAN_INSERT_SIZE&#39;,&#39;PAIR_ORIENTATION&#39;])</span>
+<span class="sd">        p = atacseq_insert_metrics_plot(df, height=200, width=200)</span>
+<span class="sd">        show(p)</span>
+
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">df</span><span class="p">[</span><span class="s">&#39;SM&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s">&#39;SM&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span>
+    <span class="n">p</span> <span class="o">=</span> <span class="n">Scatter</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="s">&quot;SM&quot;</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s">&quot;MEAN_INSERT_SIZE&quot;</span><span class="p">,</span>
+                <span class="n">color</span><span class="o">=</span><span class="s">&quot;PAIR_ORIENTATION&quot;</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">400</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mi">400</span><span class="p">,</span>
+                <span class="n">legend</span><span class="o">=</span><span class="s">&quot;top_right&quot;</span><span class="p">,</span>
+                <span class="n">title</span><span class="o">=</span><span class="s">&quot;Mean insert size&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">p</span></div>
+
+<div class="viewcode-block" id="atacseq_insert_metrics_hist_plot"><a class="viewcode-back" href="../../../../docs/reference/atacseq.html#snakemakelib_workflows.atacseq.app.graphics.atacseq_insert_metrics_hist_plot">[docs]</a><span class="k">def</span> <span class="nf">atacseq_insert_metrics_hist_plot</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Plot qualimap global statistics.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">      df(:class:`~pandas.DataFrame`): data frame holding summary of qualimap results. The summary is provided by :meth:`snakemakelib.odo.picard.resource_insert_metrics`.</span>
+<span class="sd">      kwargs(dict): keyword arguments</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">      :class:`bokeh.plotting.gridplot`: bokeh gridplot</span>
+
+<span class="sd">    Examples:</span>
+
+<span class="sd">    .. bokeh-plot::</span>
+<span class="sd">        :source-position: above</span>
+
+<span class="sd">        import pandas as pd</span>
+<span class="sd">        from bokeh.plotting import show</span>
+<span class="sd">        from snakemakelib_workflows.atacseq.app import atacseq_insert_metrics_hist_plot</span>
+
+<span class="sd">        df = pd.DataFrame([[&#39;S1&#39;, 20, 2, 3],</span>
+<span class="sd">                           [&#39;S1&#39;, 21, 5, 4],</span>
+<span class="sd">                           [&#39;S1&#39;, 22, 15, 22],</span>
+<span class="sd">                           [&#39;S2&#39;, 20, 3, 1],</span>
+<span class="sd">                           [&#39;S2&#39;, 21, 4, 2],</span>
+<span class="sd">                           [&#39;S2&#39;, 22, 12, 10]],</span>
+<span class="sd">                          columns=[&#39;SM&#39;,&#39;insert_size&#39;,&#39;All_Reads.fr_count&#39;, &#39;All_Reads.rf_count&#39;])</span>
+<span class="sd">        p = atacseq_insert_metrics_hist_plot(df)</span>
+<span class="sd">        show(p)</span>
+
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">fig</span> <span class="o">=</span> <span class="n">figure</span><span class="p">(</span><span class="n">width</span><span class="o">=</span><span class="mi">400</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mi">400</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s">&quot;Insert size distribution&quot;</span><span class="p">)</span>
+    <span class="n">fig</span><span class="o">.</span><span class="n">title</span><span class="o">.</span><span class="n">text_font_size</span> <span class="o">=</span> <span class="s">&quot;10pt&quot;</span>
+    <span class="n">all_reads</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span> <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s">&quot;All_Reads&quot;</span><span class="p">)]</span>
+    <span class="n">mlines</span><span class="p">(</span><span class="n">fig</span><span class="p">,</span> <span class="n">df</span><span class="o">=</span><span class="n">df</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="s">&quot;insert_size&quot;</span><span class="p">,</span>
+           <span class="n">y</span><span class="o">=</span><span class="n">all_reads</span><span class="p">,</span> <span class="n">legend</span><span class="o">=</span><span class="n">all_reads</span><span class="p">,</span>
+           <span class="n">color</span><span class="o">=</span><span class="n">colorbrewer</span><span class="p">(</span><span class="n">datalen</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">all_reads</span><span class="p">)),</span> <span class="n">line_width</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">gp</span> <span class="o">=</span> <span class="n">facet_grid</span><span class="p">(</span><span class="n">fig</span><span class="p">,</span> <span class="n">df</span><span class="o">=</span><span class="n">df</span><span class="p">,</span> <span class="n">ncol</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+                    <span class="n">groups</span><span class="o">=</span><span class="p">[</span><span class="s">&quot;SM&quot;</span><span class="p">],</span> <span class="n">width</span><span class="o">=</span><span class="mi">300</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mi">300</span><span class="p">,</span>
+                    <span class="n">share_x_range</span><span class="o">=</span><span class="k">True</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="s">&#39;insert_size&#39;</span><span class="p">,</span>
+                    <span class="n">y</span><span class="o">=</span><span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">all_reads</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">gp</span></div>
+
+<div class="viewcode-block" id="atacseq_mark_duplicates_plot"><a class="viewcode-back" href="../../../../docs/reference/atacseq.html#snakemakelib_workflows.atacseq.app.graphics.atacseq_mark_duplicates_plot">[docs]</a><span class="k">def</span> <span class="nf">atacseq_mark_duplicates_plot</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Plot qualimap global statistics.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">      df(:class:`~pandas.DataFrame`): data frame holding summary of qualimap results. The summary is provided by :meth:`snakemakelib.odo.picard.resources_dup_metrics`.</span>
+<span class="sd">      kwargs(dict): keyword arguments</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">      :class:`bokeh.charts.Scatter`: bokeh scatter plot</span>
+
+<span class="sd">    Examples:</span>
+
+<span class="sd">    .. bokeh-plot::</span>
+<span class="sd">        :source-position: above</span>
+
+<span class="sd">        import pandas as pd</span>
+<span class="sd">        from bokeh.plotting import show</span>
+<span class="sd">        from snakemakelib_workflows.atacseq.app import atacseq_mark_duplicates_plot</span>
+
+<span class="sd">        df = pd.DataFrame([[&#39;S1&#39;, 20],</span>
+<span class="sd">                           [&#39;S2&#39;, 25]],</span>
+<span class="sd">                          columns=[&#39;SM&#39;,&#39;PERCENT_DUPLICATION&#39;])</span>
+<span class="sd">        p = atacseq_mark_duplicates_plot(df)</span>
+<span class="sd">        show(p)</span>
+
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">df</span> <span class="ow">is</span> <span class="k">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">figure</span><span class="p">(</span><span class="n">width</span><span class="o">=</span><span class="mi">400</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mi">400</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s">&quot;Percent duplication per sample (no data)&quot;</span><span class="p">)</span>
+    <span class="n">df</span><span class="p">[</span><span class="s">&quot;PERCENT_DUPLICATION&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">100.0</span> <span class="o">*</span> <span class="n">df</span><span class="p">[</span><span class="s">&quot;PERCENT_DUPLICATION&quot;</span><span class="p">]</span>
+    <span class="n">df</span><span class="p">[</span><span class="s">&#39;SM&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s">&#39;SM&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span>
+    <span class="n">p</span> <span class="o">=</span> <span class="n">Scatter</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="s">&quot;SM&quot;</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s">&quot;PERCENT_DUPLICATION&quot;</span><span class="p">,</span>
+                <span class="n">legend</span><span class="o">=</span><span class="s">&quot;top_right&quot;</span><span class="p">,</span>
+                <span class="n">title</span><span class="o">=</span><span class="s">&quot;Percent duplication per sample&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">p</span></div>
+
+<div class="viewcode-block" id="atacseq_mark_duplicates_hist_plot"><a class="viewcode-back" href="../../../../docs/reference/atacseq.html#snakemakelib_workflows.atacseq.app.graphics.atacseq_mark_duplicates_hist_plot">[docs]</a><span class="k">def</span> <span class="nf">atacseq_mark_duplicates_hist_plot</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Plot qualimap global statistics.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">      df(:class:`~pandas.DataFrame`): data frame holding summary of qualimap results. The summary is provided by :meth:`snakemakelib.odo.picard.resource_dup_metrics`.</span>
+<span class="sd">      kwargs(dict): keyword arguments</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">      :class:`bokeh.plotting.figure`: bokeh figure</span>
+
+<span class="sd">    Examples:</span>
+
+<span class="sd">    .. bokeh-plot::</span>
+<span class="sd">        :source-position: above</span>
+
+<span class="sd">        import pandas as pd</span>
+<span class="sd">        from bokeh.plotting import show</span>
+<span class="sd">        from snakemakelib_workflows.atacseq.app import atacseq_mark_duplicates_hist_plot</span>
+
+<span class="sd">        df = pd.DataFrame([[&#39;S1&#39;, 1.0, 1.5],</span>
+<span class="sd">                           [&#39;S1&#39;, 2.0, 2.8],</span>
+<span class="sd">                           [&#39;S2&#39;, 1.0, 1.9],</span>
+<span class="sd">                           [&#39;S2&#39;, 2.0, 12.5]],</span>
+<span class="sd">                          columns=[&#39;SM&#39;,&#39;BIN&#39;,&#39;VALUE&#39;])</span>
+<span class="sd">        p = atacseq_mark_duplicates_hist_plot(df, width=200, height=200)</span>
+<span class="sd">        show(p)</span>
+
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">p</span> <span class="o">=</span> <span class="n">figure</span><span class="p">(</span><span class="n">width</span><span class="o">=</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;width&#39;</span><span class="p">,</span> <span class="mi">400</span><span class="p">),</span>
+               <span class="n">height</span><span class="o">=</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;height&#39;</span><span class="p">,</span> <span class="mi">400</span><span class="p">),</span>
+               <span class="n">title</span><span class="o">=</span><span class="s">&quot;Return of investment (no data)&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">df</span> <span class="ow">is</span> <span class="k">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">p</span>
+    <span class="n">lines</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">df</span><span class="o">=</span><span class="n">df</span><span class="p">,</span> <span class="n">groups</span><span class="o">=</span><span class="p">[</span><span class="s">&quot;SM&quot;</span><span class="p">],</span> <span class="n">x</span><span class="o">=</span><span class="s">&quot;BIN&quot;</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s">&quot;VALUE&quot;</span><span class="p">,</span> <span class="n">legend</span><span class="o">=</span><span class="s">&quot;SM&quot;</span><span class="p">,</span>
+          <span class="n">color</span><span class="o">=</span><span class="s">&quot;blue&quot;</span><span class="p">,</span> <span class="n">line_width</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">p</span><span class="o">.</span><span class="n">title</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="s">&quot;Return of investment&quot;</span>
+    <span class="k">return</span> <span class="n">p</span></div>
+</pre></div>
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+        <br/>
+        
+      
+    </p>
+    <p>
+        &copy; Copyright 2015, Per Unneberg.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.8.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

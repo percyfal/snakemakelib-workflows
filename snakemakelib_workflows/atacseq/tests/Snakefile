@@ -1,0 +1,11 @@
+# -*- snakemake -*-
+from os.path import join
+from snakemake_rules import SNAKEMAKE_RULES_PATH
+from snakemakelib_workflows import SNAKEMAKELIB_WORKFLOWS_PATH
+
+workdir: join(SNAKEMAKELIB_WORKFLOWS_PATH, "atacseq/tests")
+
+configfile: "config.yaml"
+
+include: join(SNAKEMAKELIB_WORKFLOWS_PATH, "atacseq/atacseq.workflow")
+
