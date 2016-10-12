@@ -9,6 +9,16 @@ __all__ = ['scrnaseq_results_plot_alignrseqc']
 DEFAULT_TOOLS = "pan,wheel_zoom,box_zoom,box_select,lasso_select,resize,reset,save,hover"
 
 def scrnaseq_results_plot_alignrseqc(df, **kwargs):
+    """
+    Plot scRNASeq QC summary.
+
+    Args:
+      df (DataFrame): data frame consisting of summary data from alignments and RSeQC
+      kwargs: keyword arguments to bokeh plot functions
+
+    Returns:
+      (dict): dictionary with a bokeh gridplot and a table
+    """
     df = df.set_index("SM")
     source = ColumnDataSource(df)
     columns = [

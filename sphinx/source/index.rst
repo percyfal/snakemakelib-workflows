@@ -8,7 +8,7 @@ snakemakelib-workflows - snakemake workflows
 
 .. _about:
 
-`snakemakelib` workflows based on `snakemakelib-rules`.
+`snakemakelib` workflows based on `snakemake-rules` and `snakemakelib`.
 
 
 Contents
@@ -17,4 +17,6 @@ Contents
 .. toctree::
    :maxdepth: 2
 
+   docs/workflows
+   docs/reference
    docs/release_notes

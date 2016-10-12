@@ -20,7 +20,8 @@ def atacseq_cutadapt_post_processing_hook(df, **kwargs):
 
 
 def atacseq_qualimap_globals_post_processing_hook(df, **kwargs):
-    tmp = df.loc["number of mapped reads"] -  df.loc["number of duplicated reads"]
+    dupreads = "number of duplicated reads (estimated)" if "number of duplicated reads (estimated)" in df.index.get_level_values('statistic').unique() else "number of duplicated reads"
+    tmp = df.loc["number of mapped reads"] -  df.loc[dupreads]
     tmp['statistic'] = "number of unique reads"
     tmp = tmp.reset_index().set_index(['statistic', 'SM'])
     df = df.append(tmp)

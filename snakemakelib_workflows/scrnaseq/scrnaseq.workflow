@@ -12,18 +12,6 @@ from snakemakelib.sample.input import initialize_input, convert_samples_to_list
 from snakemakelib_workflows.scrnaseq.app import *
 from snakemakelib.application import SampleApplication, PlatformUnitApplication
 
-# Collect information about inputs; _samples stores a list of
-# dictionaries, where each dictionary contains information on a sample
-config["samples"] = convert_samples_to_list(config.get("samples", None))
-config["_samples"] = initialize_input(src_re = config['settings']['sample_organization'].raw_run_re,
-                                      sampleinfo = config['settings'].get('sampleinfo', None),
-                                      metadata = config['settings'].get('metadata', None),
-                                      metadata_filter = config['settings'].get('metadata_filter', None),
-                                      filter_suffix = config['bio.ngs.settings'].get("filter_suffix", ""),
-                                      sample_column_map = config['bio.ngs.settings'].get("sample_column_map", ""),
-                                      sample_filter = config.get("samples", None))
-_samples = config["_samples"]
-
 # FIXME: These functions will fail for aligners other than STAR
 def _merge_suffix(aligner):
     align_config = config['bio.ngs.align.' + aligner]
@@ -109,7 +97,7 @@ config_default = {
 
     },
     'bio.ngs.align.star' : {
-        'rules' : ['star_align', 'star_align_se', 'star_index', 'star_align_log']
+        'rules' : ['star_align_pe', 'star_align_se', 'star_index', 'star_align_log']
     },
     'comp.settings': {
         'python2': {
@@ -152,6 +140,21 @@ set_protected_output(*[workflow.get_rule(x) for x in config['settings']['protect
 ##################################################
 # Target definitions and applications
 ##################################################
+# Collect information about inputs; _samples stores a list of
+# dictionaries, where each dictionary contains information on a sample
+if config.get('settings', {}).get('sample_organization', None) is None:
+    from snakemakelib.sample.organization import sample
+config["samples"] = convert_samples_to_list(config.get("samples", None))
+config["_samples"] = initialize_input(src_re = config['settings']['sample_organization'].raw_run_re,
+                                      sampleinfo = config['settings'].get('sampleinfo', None),
+                                      metadata = config['settings'].get('metadata', None),
+                                      metadata_filter = config['settings'].get('metadata_filter', None),
+                                      filter_suffix = config['bio.ngs.settings'].get("filter_suffix", ""),
+                                      sample_column_map = config['bio.ngs.settings'].get("sample_column_map", ""),
+                                      sample_filter = config.get("samples", None))
+_samples = config["_samples"]
+
+
 REPORT=config['scrnaseq.workflow']['report']['directory']
 REPORT_TARGETS = ['{report}/scrnaseq_summary.html'.format(report=REPORT)]
 

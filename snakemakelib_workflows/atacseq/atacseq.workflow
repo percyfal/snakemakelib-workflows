@@ -10,13 +10,6 @@ from snakemakelib.application import SampleApplication, PlatformUnitApplication
 from snakemakelib.io import IOTarget, IOAggregateTarget
 from snakemakelib_workflows.atacseq.app import *
 
-# Collect information about inputs; _samples stores a list of
-# dictionaries, where each dictionary contains information on a sample
-config["_samples"] = initialize_input(src_re = config['settings']['sample_organization'].raw_run_re,
-                                      sampleinfo = config['settings'].get('sampleinfo', None),
-                                      filter_suffix = config['bio.ngs.settings'].get("filter_suffix", ""),
-                                      sample_column_map = config['bio.ngs.settings'].get("sample_column_map", ""))
-
 ##############################
 # Functions
 ##############################
@@ -43,7 +36,7 @@ def _atacseq_picard_merge_sam_input_fn(wildcards):
 atac_config = {
     'atacseq.workflow' : {
         'aligner' : 'bowtie2',
-        'peakcallers' : ['dfilter', 'macs2'],
+        'peakcallers' : ['macs2'],
         'trimadaptor' : True,
         'bamfilter' : True,
         'aggregate_output_dir': 'aggregated_results',
@@ -141,6 +134,16 @@ if workflow._workdir is None:
 ##############################
 # Targets
 ##############################
+# Collect information about inputs; _samples stores a list of
+# dictionaries, where each dictionary contains information on a sample
+if config.get('settings', {}).get('sample_organization', None) is None:
+    from snakemakelib.sample.organization import sample
+config["_samples"] = initialize_input(src_re = config['settings']['sample_organization'].raw_run_re,
+                                      sampleinfo = config['settings'].get('sampleinfo', None),
+                                      filter_suffix = config['bio.ngs.settings'].get("filter_suffix", ""),
+                                      sample_column_map = config['bio.ngs.settings'].get("sample_column_map", ""))
+
+
 _samples = config["_samples"]
 if not config.get("samples", None)  is None:
     _samples = [s for s in _samples if s["SM"] in config["samples"]]
@@ -240,7 +243,7 @@ InsertMetrics.register_plot('hist')(atacseq_insert_metrics_hist_plot)
 ####################
 # Peak callers
 ####################
-PREFIX = ".sort.merge.filter" if config['atacseq.workflow']['bamfilter'] else ".sort.merge"
+PREFIX = ".sort.merge.dup.filter" if config['atacseq.workflow']['bamfilter'] else ".sort.merge.dup"
 
 Dfilter = SampleApplication(
     name="Dfilter",

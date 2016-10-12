@@ -9,7 +9,7 @@ def get_extra_ref_ids(extra_refs):
     """Get the extra ref identifiers
 
     Args:
-      extra_refs (list): list of file names (typically defined in configuration key config['bio.ngs.settings']['db']['extra_ref']
+      extra_refs (list): list of file names (typically defined in configuration key config['bio.ngs.settings']['db']['extra_ref'])
 
     Returns:
       ids (list): list of identifiers

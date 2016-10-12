@@ -21,7 +21,8 @@ import sphinx_bootstrap_theme
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
-sys.path.insert(0, os.path.abspath('../..'))
+ROOTDIR=os.path.abspath(os.path.join(os.path.dirname(__file__), '../..'))
+sys.path.insert(0, ROOTDIR)
 
 # -- General configuration ------------------------------------------------
 
@@ -40,6 +41,8 @@ extensions = [
     'sphinx.ext.ifconfig',
     'sphinx.ext.viewcode',
     'sphinx.ext.napoleon',
+    'sphinx.ext.graphviz',
+    'bokeh.sphinxext.bokeh_plot',
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -64,6 +67,12 @@ author = 'Per Unneberg'
 # built documents.
 
 from snakemakelib_workflows import __version__
+
+DOTVERSION=os.path.join(ROOTDIR, ".version")
+if os.path.exists(DOTVERSION):
+    with open(DOTVERSION, "r") as fh:
+        __version__ = fh.readline().strip()
+
 #
 # The short X.Y version.
 version = __version__
@@ -95,7 +104,7 @@ exclude_patterns = []
 
 # If true, the current module name will be prepended to all description
 # unit titles (such as .. function::).
-#add_module_names = True
+add_module_names = False
 
 # If true, sectionauthor and moduleauthor directives will be shown in the
 # output. They are ignored by default.
@@ -341,6 +350,11 @@ texinfo_documents = [
 
 # Example configuration for intersphinx: refer to the Python standard library.
 intersphinx_mapping = {
-    'http://docs.python.org/3.4': None,
-    'http://python.readthedocs.org/en/latest/' : None,
+    'python': ('https://docs.python.org/', None),
+    'pandas': ('http://pandas.pydata.org/pandas-docs/stable/', None),
+    'numpy': ('http://docs.scipy.org/doc/numpy/', None),
+    'bokeh': ('bokeh.pydata.org/en/latest/docs/', None),
+    'snakemake': ('http://snakemake.readthedocs.org/', None),
+    'snakemake-rules': ('http://percyfal.github.io/snakemake-rules/', None),
+    'snakemakelib': ('http://percyfal.github.io/snakemakelib-core/', None),
 }
